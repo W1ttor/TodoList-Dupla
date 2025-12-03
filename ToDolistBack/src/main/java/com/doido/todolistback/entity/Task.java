@@ -6,9 +6,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class User {
+public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long UUID;
+
+    private String title;
+    private String desc;
+
+    private Boolean completed;
 }
