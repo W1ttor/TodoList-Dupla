@@ -19,8 +19,30 @@ public class TaskServiceImple implements TaskService {
 
 
     @Override
-    public TaskDto addTask(Task task){
-        taskRepository.save(task);
-        return taskMapper.toTaskDto(task);
+    public TaskDto addTask(TaskDto task){
+
+        Task taskEntity = taskMapper.toTask(task);
+        taskEntity.setCompleted(false);
+
+        taskRepository.save(taskEntity);
+        return task;
+    }
+
+    @Override
+    public TaskDto updateTask(TaskDto task){
+        Task taskEntity = taskMapper.toTask(task);
+
+        if (taskEntity.getTitle() != null && !taskEntity.getTitle().equals("")){
+            taskEntity.setTitle(taskEntity.getTitle());
+        }
+        if (taskEntity.getDesc() != null && !taskEntity.getDesc().equals("")){
+            taskEntity.setDesc(taskEntity.getDesc());
+        }
+
+        taskRepository.save(taskEntity);
+
+        task = taskMapper.toTaskDto(taskEntity);
+
+        return task;
     }
 }
