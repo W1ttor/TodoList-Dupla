@@ -4,6 +4,7 @@ import com.doido.todolistback.entity.dtos.TaskDto;
 import com.doido.todolistback.service.ImplService.TaskServiceImple;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,5 +23,13 @@ public class TaskController {
     public TaskDto updateTask(@Valid @RequestBody TaskDto task){
         return taskService.updateTask(task);
     }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id){
+        taskService.deleteTask(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
 
 }

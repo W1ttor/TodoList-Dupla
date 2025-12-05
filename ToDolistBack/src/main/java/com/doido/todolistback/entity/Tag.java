@@ -6,25 +6,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Entity
-@Table(name = "TABLE_TASK")
+@Table(name = "TABLE_TAG")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class Task {
+@NoArgsConstructor
+public class Tag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long Id;
+    private Long id;
 
-    private String title;
-    private String desc;
+    private String nameTag;
 
-    private Boolean completed;
+    @ManyToOne
+    @JoinColumn(name = "task_id")
+    private Task task;
 
-    @OneToMany(mappedBy = "task")
-    private List<Tag> tags;
 }

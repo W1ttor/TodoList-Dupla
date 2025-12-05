@@ -6,4 +6,5 @@ import com.doido.todolistback.entity.dtos.TaskDto;
 public interface TaskService {
     TaskDto addTask(TaskDto task);
     TaskDto updateTask(TaskDto task);
+    void deleteTask(Long id);
 }
