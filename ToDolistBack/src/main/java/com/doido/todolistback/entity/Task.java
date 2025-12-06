@@ -21,10 +21,17 @@ public class Task {
     private Long Id;
 
     private String title;
-    private String desc;
+    private String description;
 
     private Boolean completed;
 
     @OneToMany(mappedBy = "task")
     private List<Tag> tags;
+
+    @ManyToOne
+    @JoinColumn(name = "list_id")
+    private ListClass listClass;
+
+    @OneToMany(mappedBy = "task")
+    private List<SubTask> subTasks;
 }

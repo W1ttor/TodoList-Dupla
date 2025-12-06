@@ -1,10 +1,12 @@
 package com.doido.todolistback.service;
 
-import com.doido.todolistback.entity.Task;
-import com.doido.todolistback.entity.dtos.TaskDto;
+import java.util.List;
+
+import com.doido.todolistback.entity.dtos.request.TaskDto;
 
 public interface TaskService {
     TaskDto addTask(TaskDto task);
-    TaskDto updateTask(TaskDto task);
+    List<TaskDto> findAll();
+    TaskDto updateTask(Long id, TaskDto task);
     void deleteTask(Long id);
 }

@@ -1,6 +1,5 @@
-package com.doido.todolistback.entity.dtos;
+package com.doido.todolistback.entity.dtos.request;
 
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +12,6 @@ import lombok.Setter;
 @Setter
 public class TaskDto {
 
-    @Max(50)
     @NotBlank(message = "O titulo nao pode ser vazio")
     private String title;
 

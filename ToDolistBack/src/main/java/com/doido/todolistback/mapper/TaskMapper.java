@@ -1,7 +1,8 @@
 package com.doido.todolistback.mapper;
 
-import com.doido.todolistback.entity.dtos.TaskDto;
 import com.doido.todolistback.entity.Task;
+import com.doido.todolistback.entity.dtos.request.TaskDto;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

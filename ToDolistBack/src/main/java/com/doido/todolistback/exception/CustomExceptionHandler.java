@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.doido.todolistback.exception.CustomsExceptions.TaskNotFound;
 import com.doido.todolistback.exception.CustomsExceptions.UserNotFoundHandler;
 
 @ControllerAdvice
@@ -17,5 +18,12 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler{
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(threatResponse);
     }
 
+    @ExceptionHandler(TaskNotFound.class)
+    public ResponseEntity<ApiErrorMenssage> taskNotFoundHandler(TaskNotFound exception){
+        ApiErrorMenssage apiErrorMenssage = new ApiErrorMenssage(HttpStatus.NOT_FOUND, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiErrorMenssage);
+    }
+
+    
     
 }
