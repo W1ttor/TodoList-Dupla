@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 export default function Login() {
   const [isRegistering, setIsRegistering] = useState(false);
 
-  const [name, setName] = useState(""); // <-- NOVO estado do nome
+  const [name, setName] = useState(""); 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -23,7 +23,7 @@ export default function Login() {
     e.preventDefault();
 
     const userData = {
-      name: name,                // <-- Enviando nome ao backend
+      name: name,                
       email: email,
       password: password,
       confirmPassword: confirmPassword,
@@ -69,7 +69,7 @@ export default function Login() {
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-4">
 
-              {/* INPUT DE NOME – aparece só no cadastro */}
+              {/* INPUT DE NOME – vai aparecer só no cadastro */}
               {isRegistering && (
                 <Input
                   label="Nome"
