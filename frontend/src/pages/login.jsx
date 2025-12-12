@@ -13,41 +13,40 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  // estado para mensagem de erro
+  const [error, setError] = useState("");
+
   const navigate = useNavigate();
 
   const handleRegisterClick = () => {
     setIsRegistering(!isRegistering);
+    setError(""); // limpa erros ao alternar tela
+  };
+
+  const showError = (msg) => {
+    setError(msg);
+
+    // remove o erro em 3 segundos
+    setTimeout(() => setError(""), 3000);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const userData = {
-      name: name,                
-      email: email,
-      password: password,
-      confirmPassword: confirmPassword,
-    };
-
-    console.log("Enviando dados:", userData);
-
-    try {
-      const response = await fetch("http://localhost:8080/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
-      });
-
-      if (response.ok) {
-        navigate("/home");
-      } else {
-        alert("Erro ao cadastrar!");
-      }
-    } catch (error) {
-      console.error("Erro no cadastro:", error);
+    if (isRegistering) {
+      // Validações do cadastro
+      if (!name.trim()) return showError("Por favor, insira seu nome completo.");
+      if (!email.trim()) return showError("Informe um e-mail válido.");
+      if (!password.trim()) return showError("A senha não pode ser vazia.");
+      if (password !== confirmPassword) return showError("As senhas não coincidem.");
+    } else {
+      // Validações do login
+      if (!email.trim()) return showError("Informe seu e-mail.");
+      if (!password.trim()) return showError("Digite sua senha.");
     }
+
+    // como ainda não tem backend → redireciona direto
+    navigate("/home");
   };
 
   return (
@@ -62,14 +61,20 @@ export default function Login() {
 
         {/* LADO DIREITO */}
         <div className="w-1/2 p-12 flex flex-col justify-center">
-          <h2 className="text-3xl font-bold mb-8">
+          <h2 className="text-3xl font-bold mb-6">
             {isRegistering ? "Cadastrar" : "Entrar"}
           </h2>
+
+          {/* MENSAGEM DE ERRO */}
+          {error && (
+            <div className="bg-red-200 text-red-800 p-3 rounded-md mb-4 text-sm">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-4">
 
-              {/* INPUT DE NOME – vai aparecer só no cadastro */}
               {isRegistering && (
                 <Input
                   label="Nome"
@@ -107,7 +112,10 @@ export default function Login() {
               )}
             </div>
 
-            <Button className="w-full mt-6 bg-gray-400 hover:bg-gray-500 text-black font-semibold">
+            <Button 
+              type="submit"
+              className="w-full mt-6 bg-gray-400 hover:bg-gray-500 text-black font-semibold"
+            >
               {isRegistering ? "Cadastrar" : "Entrar"}
             </Button>
 
