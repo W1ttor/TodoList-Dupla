@@ -2,10 +2,12 @@ package com.doido.todolistback.service.ImplService;
 
 import com.doido.todolistback.exception.CustomsExceptions.TaskNotFound;
 import com.doido.todolistback.entity.Task;
-import com.doido.todolistback.entity.dtos.request.TaskDto;
+import com.doido.todolistback.entity.dtos.post.PostTaskDto;
+import com.doido.todolistback.entity.dtos.request.RequestTaskDto;
 import com.doido.todolistback.mapper.TaskMapper;
 import com.doido.todolistback.repository.TaskRepository;
 import com.doido.todolistback.service.TaskService;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -23,9 +25,9 @@ public class TaskServiceImple implements TaskService {
 
 
     @Override
-    public TaskDto addTask(TaskDto task){
+    public PostTaskDto addTask(PostTaskDto task){
 
-        Task taskEntity = taskMapper.toTask(task);
+        Task taskEntity = taskMapper.toTaskPost(task);
         taskEntity.setCompleted(false);
 
         taskRepository.save(taskEntity);
@@ -33,7 +35,7 @@ public class TaskServiceImple implements TaskService {
     }
 
     @Override
-    public TaskDto updateTask(Long id, TaskDto task){
+    public PostTaskDto updateTask(Long id, PostTaskDto task){
 
         Task taskEntity = taskRepository.findById(id)
                             .orElseThrow(()->new TaskNotFound());
@@ -47,7 +49,7 @@ public class TaskServiceImple implements TaskService {
 
         taskRepository.save(taskEntity);
 
-        return taskMapper.toTaskDto(taskEntity);
+        return taskMapper.toPostTaskDto(taskEntity);
     }
 
     @Override
@@ -57,13 +59,13 @@ public class TaskServiceImple implements TaskService {
     }
 
     @Override
-    public List<TaskDto> findAll(){
+    public List<RequestTaskDto> findAll(){
         List<Task> task = taskRepository.findAll();
 
-        List<TaskDto> taskdto = task.stream()
-            .map(taskMapper::toTaskDto)
+        List<RequestTaskDto> requestTaskDto = task.stream()
+            .map(taskMapper::toRequestTaskDto)
             .toList();
 
-        return taskdto;
+        return requestTaskDto;
     }
 }

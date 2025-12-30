@@ -1,5 +1,4 @@
 package com.doido.todolistback.entity.dtos.request;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class TaskDto {
+public class RequestTaskDto {
 
     @NotBlank(message = "O titulo nao pode ser vazio")
     private String title;
@@ -20,3 +19,5 @@ public class TaskDto {
 
     private Boolean completed;
 }
+
+

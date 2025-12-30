@@ -1,7 +1,10 @@
 package com.doido.todolistback.mapper;
 
 import com.doido.todolistback.entity.Task;
-import com.doido.todolistback.entity.dtos.request.TaskDto;
+import com.doido.todolistback.entity.dtos.post.PostTaskDto;
+import com.doido.todolistback.entity.dtos.request.RequestTaskDto;
+
+import io.micrometer.core.ipc.http.HttpSender.Request;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -11,6 +14,9 @@ public interface TaskMapper {
 
     TaskMapper INSTANCE = Mappers.getMapper(TaskMapper.class);
 
-    TaskDto toTaskDto(Task task);
-    Task toTask(TaskDto taskDto);
+    PostTaskDto toPostTaskDto(Task task);
+    Task toTaskPost(PostTaskDto taskDto);
+
+    RequestTaskDto toRequestTaskDto(Task task);
+    Task toTaskRequest(RequestTaskDto taskDto);
 }

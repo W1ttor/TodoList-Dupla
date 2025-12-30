@@ -2,11 +2,12 @@ package com.doido.todolistback.service;
 
 import java.util.List;
 
-import com.doido.todolistback.entity.dtos.request.TaskDto;
+import com.doido.todolistback.entity.dtos.post.PostTaskDto;
+import com.doido.todolistback.entity.dtos.request.RequestTaskDto;
 
 public interface TaskService {
-    TaskDto addTask(TaskDto task);
-    List<TaskDto> findAll();
-    TaskDto updateTask(Long id, TaskDto task);
+    PostTaskDto addTask(PostTaskDto task);
+    List<RequestTaskDto> findAll();
+    PostTaskDto updateTask(Long id, PostTaskDto task);
     void deleteTask(Long id);
 }
