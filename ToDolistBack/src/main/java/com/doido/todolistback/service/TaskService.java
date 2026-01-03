@@ -1,25 +1,13 @@
 package com.doido.todolistback.service;
 
-import com.doido.todolistback.dtos.TaskDto;
-import com.doido.todolistback.entity.Task;
-import com.doido.todolistback.mapper.TaskMapper;
-import com.doido.todolistback.repository.TaskRepository;
-import org.springframework.stereotype.Service;
+import java.util.List;
 
-@Service
-public class TaskService {
+import com.doido.todolistback.entity.dtos.post.PostTaskDto;
+import com.doido.todolistback.entity.dtos.request.RequestTaskDto;
 
-    private final TaskRepository taskRepository;
-
-    private final TaskMapper taskMapper;
-
-    public TaskService(TaskRepository taskRepository, TaskMapper taskMapper) {
-        this.taskRepository = taskRepository;
-        this.taskMapper = taskMapper;
-    }
-
-    public TaskDto addTask(Task task){
-        taskRepository.save(task);
-        return taskMapper.toTaskDto(task);
-    }
+public interface TaskService {
+    PostTaskDto addTask(PostTaskDto task);
+    List<RequestTaskDto> findAll();
+    PostTaskDto updateTask(Long id, PostTaskDto task);
+    void deleteTask(Long id);
 }
