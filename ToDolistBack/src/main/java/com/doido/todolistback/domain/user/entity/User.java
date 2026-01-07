@@ -36,6 +36,7 @@ public class User implements UserDetails {
 
     private String password;
 
+    @Enumerated(EnumType.STRING)
     private RolesUser role;
 
     @Override
