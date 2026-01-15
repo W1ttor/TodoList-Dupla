@@ -1,5 +1,6 @@
 package com.doido.todolistback.domain.user.entity;
 
+import com.doido.todolistback.domain.task.entity.Task;
 import com.doido.todolistback.domain.user.shared.enums.RolesUser;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -35,6 +36,9 @@ public class User implements UserDetails {
     private String email;
 
     private String password;
+
+    @OneToMany(mappedBy = "user")
+    private List<Task> tasks;
 
     @Enumerated(EnumType.STRING)
     private RolesUser role;
