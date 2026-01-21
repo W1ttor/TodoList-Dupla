@@ -7,56 +7,132 @@ import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [isRegistering, setIsRegistering] = useState(false);
-
-  const [name, setName] = useState(""); 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
-  // estado para mensagem de erro
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const handleRegisterClick = () => {
     setIsRegistering(!isRegistering);
-    setError(""); // limpa erros ao alternar tela
+    setError("");
   };
 
   const showError = (msg) => {
     setError(msg);
-
-    // remove o erro em 3 segundos
     setTimeout(() => setError(""), 3000);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // =========================
+    // CADASTRO
+    // =========================
     if (isRegistering) {
-      // Validações do cadastro
-      if (!name.trim()) return showError("Por favor, insira seu nome completo.");
+      if (!name.trim()) return showError("Por favor, insira seu nome.");
       if (!email.trim()) return showError("Informe um e-mail válido.");
       if (!password.trim()) return showError("A senha não pode ser vazia.");
-      if (password !== confirmPassword) return showError("As senhas não coincidem.");
-    } else {
-      // Validações do login
-      if (!email.trim()) return showError("Informe seu e-mail.");
-      if (!password.trim()) return showError("Digite sua senha.");
+      if (password !== confirmPassword)
+        return showError("As senhas não coincidem.");
+
+      try {
+        setLoading(true);
+
+        const response = await fetch(
+          "http://26.51.220.173:2020/v1/auth/register",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              username: name,
+              email,
+              password
+            })
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Erro no cadastro");
+        }
+
+        alert("Cadastro realizado com sucesso!");
+        setIsRegistering(false);
+        setName("");
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+
+      } catch (err) {
+        showError("Erro ao cadastrar. Verifique os dados.");
+      } finally {
+        setLoading(false);
+      }
+
+      return;
     }
 
-    // como ainda não tem backend → redireciona direto
-    navigate("/home");
+    // =========================
+    // LOGIN
+    // =========================
+    try {
+      setLoading(true);
+
+      const response = await fetch(
+        "http://26.51.220.173:2020/v1/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email,
+            password
+          })
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Login inválido");
+      }
+
+      const data = await response.json();
+      console.log("Login realizado:", data);
+
+      // redireciona após login
+      navigate("/home");
+
+    } catch (err) {
+      showError("E-mail ou senha incorretos.");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // =========================
+  // JSX
+  // =========================
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="flex w-full max-w-2xl bg-white shadow-xl rounded-2xl overflow-hidden">
 
         {/* LADO ESQUERDO */}
-        <div className="w-1/2 bg-black text-white p-0 relative overflow-hidden">
-          <img src={abstrato} alt="abstrato" className="w-full h-full object-cover" />
-          <img src={logo} alt="logo" className="w-32 absolute top-4 left-4 z-10" />
+        <div className="w-1/2 bg-black relative overflow-hidden">
+          <img
+            src={abstrato}
+            alt="abstrato"
+            className="w-full h-full object-cover"
+          />
+          <img
+            src={logo}
+            alt="logo"
+            className="w-32 absolute top-4 left-4 z-10"
+          />
         </div>
 
         {/* LADO DIREITO */}
@@ -65,87 +141,63 @@ export default function Login() {
             {isRegistering ? "Cadastrar" : "Entrar"}
           </h2>
 
-          {/* MENSAGEM DE ERRO */}
           {error && (
             <div className="bg-red-200 text-red-800 p-3 rounded-md mb-4 text-sm">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-4">
-
-              {isRegistering && (
-                <Input
-                  label="Nome"
-                  type="text"
-                  placeholder="Seu nome completo"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              )}
-
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            {isRegistering && (
               <Input
-                label="E-mail"
-                type="email"
-                placeholder="email@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                label="Nome"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
+            )}
 
+            <Input
+              label="E-mail"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <Input
+              label="Senha"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            {isRegistering && (
               <Input
-                label="Senha"
+                label="Confirmar Senha"
                 type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
+            )}
 
-              {isRegistering && (
-                <Input
-                  label="Confirmar Senha"
-                  type="password"
-                  placeholder="••••••••"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-              )}
-            </div>
-
-            <Button 
+            <Button
               type="submit"
-              className="w-full mt-6 bg-gray-400 hover:bg-gray-500 text-black font-semibold"
+              disabled={loading}
+              className="mt-4"
             >
-              {isRegistering ? "Cadastrar" : "Entrar"}
+              {loading
+                ? "Processando..."
+                : isRegistering
+                ? "Cadastrar"
+                : "Entrar"}
             </Button>
 
-            <div className="flex items-center gap-2 mt-6">
-              <div className="flex-1 h-px bg-gray-300" />
-              <span className="text-gray-500 text-sm">ou</span>
-              <div className="flex-1 h-px bg-gray-300" />
-            </div>
-
-            <div className="flex gap-4 mt-4">
-              <button className="flex-1 py-2 border rounded-md">Google</button>
-              <button className="flex-1 py-2 border rounded-md">Facebook</button>
-            </div>
-
-            <p className="text-sm mt-6 text-center">
-              {isRegistering ? (
-                <span
-                  onClick={handleRegisterClick}
-                  className="text-gray-600 cursor-pointer font-semibold"
-                >
-                  Já tem uma conta? Faça login
-                </span>
-              ) : (
-                <span
-                  onClick={handleRegisterClick}
-                  className="text-gray-600 cursor-pointer font-semibold"
-                >
-                  Cadastre-se
-                </span>
-              )}
+            <p
+              className="text-sm mt-4 text-center text-gray-600 cursor-pointer font-semibold"
+              onClick={handleRegisterClick}
+            >
+              {isRegistering
+                ? "Já tem uma conta? Faça login"
+                : "Cadastre-se"}
             </p>
           </form>
         </div>
