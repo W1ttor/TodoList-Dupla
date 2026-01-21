@@ -1,6 +1,5 @@
 package com.doido.todolistback.shared.validations;
 
-import com.doido.todolistback.shared.utils.Regex;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

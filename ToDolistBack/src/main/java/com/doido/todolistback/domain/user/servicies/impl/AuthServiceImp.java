@@ -2,6 +2,7 @@ package com.doido.todolistback.domain.user.servicies.impl;
 
 import com.doido.todolistback.domain.user.dtos.post.LoginDto;
 import com.doido.todolistback.domain.user.dtos.post.PostUserDto;
+import com.doido.todolistback.domain.user.dtos.post.UpdatePasswordUser;
 import com.doido.todolistback.domain.user.dtos.request.RequestUserDto;
 import com.doido.todolistback.domain.user.entity.User;
 import com.doido.todolistback.domain.user.servicies.AuthService;
@@ -11,6 +12,8 @@ import com.doido.todolistback.domain.user.shared.mappers.UserMapper;
 import com.doido.todolistback.infra.repositories.UserRepository;
 import com.doido.todolistback.shared.exception.CustomsExceptions.InvalidCredentialsException;
 import com.doido.todolistback.shared.exception.CustomsExceptions.UserAlreadyExistsException;
+import com.doido.todolistback.shared.exception.CustomsExceptions.UserNotFoundException;
+import com.doido.todolistback.shared.utils.SecurityUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -54,5 +57,28 @@ public class AuthServiceImp implements AuthService {
         userRepository.save(user);
 
         return userMapper.toRequestUserDto(user);
+    }
+
+    @Override
+    public RequestUserDto UpdatePassword(UpdatePasswordUser userDto) {
+        var user =  getUser();
+        if (!passwordEncoder.matches(userDto.getOldPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException();
+        }
+
+        user.setPassword(passwordEncoder.encode(userDto.getNewPassword()));
+        userRepository.save(user);
+        return userMapper.toRequestUserDto(user);
+
+    }
+
+
+    //Private Methods
+    private User getUser(){
+        var user =  (User) SecurityUtils.getUser();
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return user;
     }
 }

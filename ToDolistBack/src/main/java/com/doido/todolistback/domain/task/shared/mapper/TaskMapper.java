@@ -1,17 +1,28 @@
 package com.doido.todolistback.domain.task.shared.mapper;
 
-import com.doido.todolistback.domain.task.entity.Task;
+
+import com.doido.todolistback.domain.task.dtos.post.PostSubTaskDto;
 import com.doido.todolistback.domain.task.dtos.post.PostTaskDto;
+import com.doido.todolistback.domain.task.dtos.request.RequestSubTaskDto;
 import com.doido.todolistback.domain.task.dtos.request.RequestTaskDto;
+import com.doido.todolistback.domain.task.entity.SubTask;
+import com.doido.todolistback.domain.task.entity.Task;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface TaskMapper {
 
-    PostTaskDto toPostTaskDto(Task task);
-    Task toTaskPost(PostTaskDto taskDto);
+    PostTaskDto taskToPostTaskDto(Task task);
+    Task postTaskDtoToTask(PostTaskDto taskDto);
 
-    RequestTaskDto toRequestTaskDto(Task task);
-    Task toTaskRequest(RequestTaskDto taskDto);
+    RequestTaskDto taskToRequestTaskDto(Task task);
+    Task requestTaskDtoToTask(RequestTaskDto taskDto);
+
+    PostSubTaskDto subTaskToPostSubTaskDto(SubTask subTask);
+    SubTask  postDtotoSubTask(PostSubTaskDto postSubTaskDto);
+
+    RequestSubTaskDto subTaskToRequestDto(SubTask subTask);
+    SubTask requestSubTaskDtoToSubTasK(RequestTaskDto requestTaskDto);
+
 }
 

@@ -1,18 +1,18 @@
 package com.doido.todolistback.shared.exception;
 
-import com.doido.todolistback.shared.exception.CustomsExceptions.InvalidCredentialsException;
-import com.doido.todolistback.shared.exception.CustomsExceptions.UserAlreadyExistsException;
+import com.doido.todolistback.shared.exception.CustomsExceptions.*;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.doido.todolistback.shared.exception.CustomsExceptions.TaskNotFound;
-import com.doido.todolistback.shared.exception.CustomsExceptions.UserNotFoundException;
-
 @ControllerAdvice
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler{
+
+    private MessageSource messageSource;
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ApiErrorMenssage> userNotFoundHandler(UserNotFoundException exception){
@@ -37,6 +37,21 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler{
         ApiErrorMenssage apiErrorMenssage = new ApiErrorMenssage(HttpStatus.BAD_REQUEST, exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiErrorMenssage);
     }
-    
-    
+
+    @ExceptionHandler(ResourceNotFound.class)
+    public ResponseEntity<ApiErrorMenssage> userAlreadyExistsHandler(ResourceNotFound exception){
+        ApiErrorMenssage apiErrorMenssage = new ApiErrorMenssage(HttpStatus.BAD_REQUEST, getMessage(exception.getMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiErrorMenssage);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ApiErrorMenssage> userAlreadyExistsHandler(BusinessException exception){
+        ApiErrorMenssage apiErrorMenssage = new ApiErrorMenssage(HttpStatus.INTERNAL_SERVER_ERROR, getMessage(exception.getMessage()));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiErrorMenssage);
+    }
+
+
+    private String getMessage(String messageKey, Object... args) {
+        return messageSource.getMessage(messageKey, args, LocaleContextHolder.getLocale());
+    }
 }

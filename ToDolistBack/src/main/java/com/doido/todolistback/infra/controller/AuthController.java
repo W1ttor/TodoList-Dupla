@@ -2,6 +2,8 @@ package com.doido.todolistback.infra.controller;
 
 import com.doido.todolistback.domain.user.dtos.post.LoginDto;
 import com.doido.todolistback.domain.user.dtos.post.PostUserDto;
+import com.doido.todolistback.domain.user.dtos.post.UpdatePasswordUser;
+import com.doido.todolistback.domain.user.dtos.request.RequestUserDto;
 import com.doido.todolistback.domain.user.servicies.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,11 @@ public class AuthController {
     public ResponseEntity<?> loginUser(@Valid @RequestBody LoginDto loginDto) {
         return ResponseEntity
                 .ok(authService.loginUser(loginDto));
+    }
+
+    @PostMapping("/updatepassword")
+    public  ResponseEntity<RequestUserDto> updatePassword(@Valid @RequestBody UpdatePasswordUser userDto) {
+        return ResponseEntity.ok(authService.UpdatePassword(userDto));
     }
 
 }
