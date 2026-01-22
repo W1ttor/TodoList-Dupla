@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Input from "../components/Input";
 import Button from "../components/Button";
-import logo from "../assets/imgs/gemini.png";
-import abstrato from "../assets/imgs/abstrato.jpg";
+import eleve from "../assets/imgs/elevate.png";
+
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -119,35 +119,35 @@ export default function Login() {
   // =========================
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="flex w-full max-w-2xl bg-white shadow-xl rounded-2xl overflow-hidden">
+      <div className="flex w-full max-w-2xl h-[520px] bg-gray shadow-xl rounded-2xl overflow-hidden">
 
         {/* LADO ESQUERDO */}
         <div className="w-1/2 bg-black relative overflow-hidden">
           <img
-            src={abstrato}
-            alt="abstrato"
-            className="w-full h-full object-cover"
+            src={eleve}
+            alt="eleve"
+            className="w-full h-full object-cover object-left"
           />
-          <img
-            src={logo}
-            alt="logo"
-            className="w-32 absolute top-4 left-4 z-10"
-          />
+          
         </div>
 
         {/* LADO DIREITO */}
-        <div className="w-1/2 p-12 flex flex-col justify-center">
+        <div className="w-1/2 p-9 flex flex-col justify-center">
           <h2 className="text-3xl font-bold mb-6">
             {isRegistering ? "Cadastrar" : "Entrar"}
           </h2>
 
-          {error && (
-            <div className="bg-red-200 text-red-800 p-3 rounded-md mb-4 text-sm">
-              {error}
-            </div>
-          )}
+          <div className="min-h-[2px] mb-4">
+            {error && (
+              <div className="bg-red-200 text-red-800 p-3 rounded-md text-sm">
+                {error}
+              </div>
+            )}
+          </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className={`flex flex-col gap-2 ${
+              isRegistering ? "mt-6" : "mt-0"
+            }`}>
             {isRegistering && (
               <Input
                 label="Nome"
