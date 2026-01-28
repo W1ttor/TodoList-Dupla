@@ -3,6 +3,7 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import eleve from "../assets/imgs/elevate.png";
 
+
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -13,6 +14,7 @@ export default function Login() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const isPasswordStrong = password.length >= 6;
 
   const navigate = useNavigate();
 
@@ -118,7 +120,8 @@ export default function Login() {
   // JSX
   // =========================
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+    <div className="min-h-screen flex items-center justify-center
+  bg-gradient-to-br from-slate-900 via-gray-900 to-black p-4">
       <div className="flex w-full max-w-2xl h-[520px] bg-gray shadow-xl rounded-2xl overflow-hidden">
 
         {/* LADO ESQUERDO */}
@@ -128,12 +131,19 @@ export default function Login() {
             alt="eleve"
             className="w-full h-full object-cover object-left"
           />
+        <div className="absolute bottom-4 right-6 text-right">
+        <p className="text-xl font-semibold text-gray-400 leading-tight">
+          Menos caos.<br />
+          Mais foco.
+        </p>
+      </div>
+          
           
         </div>
 
         {/* LADO DIREITO */}
         <div className="w-1/2 p-9 flex flex-col justify-center">
-          <h2 className="text-3xl font-bold mb-6">
+          <h2 className="text-3xl font-semibold text-gray-100 mb-6">
             {isRegistering ? "Cadastrar" : "Entrar"}
           </h2>
 
@@ -160,6 +170,7 @@ export default function Login() {
               label="E-mail"
               type="email"
               value={email}
+              disabled={loading}
               onChange={(e) => setEmail(e.target.value)}
             />
 
@@ -167,22 +178,37 @@ export default function Login() {
               label="Senha"
               type="password"
               value={password}
+              disabled={loading}
               onChange={(e) => setPassword(e.target.value)}
             />
 
             {isRegistering && (
               <Input
-                label="Confirmar Senha"
+                className="text-gray-400 font-bold "
+                label="Confirmar Senha "
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
             )}
 
+            {isRegistering && password && (
+              <p className={`text-xs ${
+                isPasswordStrong ? "text-green-600" : "text-red-500"
+              }`}>
+                {isPasswordStrong
+                  ? "Senha forte"
+                  : "Senha fraca (mín. 6 caracteres)"}
+              </p>
+            )}
+
+
+
+
             <Button
               type="submit"
               disabled={loading}
-              className="mt-4"
+              className="text-gray-400 font-bold mt-4"
             >
               {loading
                 ? "Processando..."
