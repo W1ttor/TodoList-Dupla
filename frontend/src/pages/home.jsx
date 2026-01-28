@@ -2,22 +2,22 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Home() {
-  // controla exibição do modal de logout (já existente)
+  // controla exibição do modal de logout 
   const [showModal, setShowModal] = useState(false);
 
-  // controla se a sidebar está aberta ou não
+  // controla a sidebar 
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const navigate = useNavigate();
 
-  // handlers de logout (mantidos como você tinha)
+  // handlers de logout 
   const handleSignOutClick = () => {
     setShowModal(true);
   };
 
   const confirmSignOut = () => {
     setShowModal(false);
-    navigate("/"); // volta para login
+    navigate("/"); // retorna pro login
   };
 
   const cancelSignOut = () => {
@@ -28,18 +28,17 @@ export default function Home() {
   return (
     <div className="flex min-h-screen bg-gray-100 text-gray-800">
 
-      {/* ===== SIDEBAR =====
-          - quando aberto: w-64 + p-5 + border-r
-          - quando fechado: w-0 p-0 border-none overflow-hidden
-          Isso garante que NADA fique visível quando fechado (sem borda)
-      */}
+    
       <aside
-        className={`bg-white transition-all duration-300 flex flex-col
-          ${sidebarOpen ? "w-64 p-5 border-r" : "w-0 p-0 border-none overflow-hidden"}`}
+        className={`transition-all duration-300 flex flex-col
+  ${sidebarOpen 
+    ? "w-64 p-5 border-r border-slate-700 bg-gradient-to-br from-slate-700 via-gray-700 to-black" 
+    : "w-0 p-0 border-none overflow-hidden"
+  }`}
       >
         {/* ===== Top bar do menu (com título "Menu", hamburger e three-dots) ===== */}
         <div className="flex items-center justify-between mb-4">
-          {/* esquerda: título "Menu" (apenas mostra se sidebar aberta) */}
+          {/* esquerda: título "Menu"  */}
           <div className={`${sidebarOpen ? "flex items-center gap-3" : "hidden"}`}>
             <button
               aria-label="Abrir/fechar menu"
@@ -152,12 +151,13 @@ export default function Home() {
       </aside>
 
       {/* ===== MAIN CONTENT ===== */}
-      <main className="flex-1 p-10">
-        {/* quando sidebar está fechada, exibimos um botão pequeno para reabrir */}
+      <main className="flex-1 p-10 bg-gradient-to-br from-slate-700 via-gray-700 to-black min-h-screen text-slate-100">
+      
+        {/* Botão de abrir menu ajustado para Dark Mode */}
         {!sidebarOpen && (
           <button
             onClick={() => setSidebarOpen(true)}
-            className="mb-4 p-2 rounded hover:bg-gray-200"
+            className="mb-4 p-2 rounded hover:bg-slate-600 transition-colors"
             aria-label="Abrir menu"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -169,23 +169,26 @@ export default function Home() {
         {/* Top title (Today + badge) */}
         <div className="flex items-center gap-3 mb-8">
           <h1 className="text-4xl font-bold">Today</h1>
-          <span className="text-xl bg-gray-200 px-3 py-1 rounded">5</span>
+          {/* Badge com fundo mais suave para não "estourar" o branco */}
+          <span className="text-xl bg-slate-600/50 px-3 py-1 rounded border border-slate-500">5</span>
         </div>
 
-        {/* New Task Input */}
-        <div className="bg-white border rounded p-3 mb-6 cursor-pointer hover:bg-gray-50">+ Add New Task</div>
+        {/* New Task Input - Agora escuro com borda sutil */}
+        <div className="bg-slate-800/40 border border-slate-600 rounded p-3 mb-6 cursor-pointer hover:bg-slate-700/50 transition-all text-slate-400">
+          + Add New Task
+        </div>
 
-        {/* Task List */}
+        {/* Task List - Cards translúcidos e elegantes */}
         <ul className="flex flex-col gap-3">
-          <li className="bg-white border rounded p-3">Research content ideas</li>
-          <li className="bg-white border rounded p-3">Create a database of guest authors</li>
-          <li className="bg-white border rounded p-3">Renew driver's license</li>
-          <li className="bg-white border rounded p-3">Consult accountant</li>
-          <li className="bg-white border rounded p-3">Print business card</li>
+          <li className="bg-slate-800/40 border border-slate-600 rounded p-3 hover:border-slate-400 transition-colors">Research content ideas</li>
+          <li className="bg-slate-800/40 border border-slate-600 rounded p-3 hover:border-slate-400 transition-colors">Create a database of guest authors</li>
+          <li className="bg-slate-800/40 border border-slate-600 rounded p-3 hover:border-slate-400 transition-colors">Renew driver's license</li>
+          <li className="bg-slate-800/40 border border-slate-600 rounded p-3 hover:border-slate-400 transition-colors">Consult accountant</li>
+          <li className="bg-slate-800/40 border border-slate-600 rounded p-3 hover:border-slate-400 transition-colors">Print business card</li>
         </ul>
       </main>
 
-      {/* ===== MODAL SIGN OUT (sair da página inicial) ===== */}
+      {/* sair da página inicial */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-center">

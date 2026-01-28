@@ -121,7 +121,7 @@ export default function Login() {
   // =========================
   return (
     <div className="min-h-screen flex items-center justify-center
-  bg-gradient-to-br from-slate-900 via-gray-900 to-black p-4">
+  bg-gradient-to-br from-slate-800 via-gray-800 to-black p-4">
       <div className="flex w-full max-w-2xl h-[520px] bg-gray shadow-xl rounded-2xl overflow-hidden">
 
         {/* LADO ESQUERDO */}
