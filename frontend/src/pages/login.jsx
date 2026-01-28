@@ -132,7 +132,7 @@ export default function Login() {
             className="w-full h-full object-cover object-left"
           />
         <div className="absolute bottom-4 right-6 text-right">
-        <p className="text-xl font-semibold text-gray-400 leading-tight">
+        <p className="text-sm font-semibold text-gray-400 leading-tight">
           Menos caos.<br />
           Mais foco.
         </p>
