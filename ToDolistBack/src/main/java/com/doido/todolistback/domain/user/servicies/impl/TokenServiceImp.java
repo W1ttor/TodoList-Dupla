@@ -48,7 +48,7 @@ public class TokenServiceImp implements TokenService {
                     .verify(token)
                     .getSubject();
         } catch (JWTVerificationException exception) {
-            return "Erro ao validar JWT";
+            return null;
         }
     }
 
