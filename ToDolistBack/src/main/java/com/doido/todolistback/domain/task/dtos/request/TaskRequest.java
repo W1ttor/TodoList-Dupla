@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class PostTaskDto {
+public class TaskRequest {
 
     @NotBlank(message = "O titulo nao pode ser vazio")
     private String title;

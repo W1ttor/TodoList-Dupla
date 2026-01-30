@@ -1,20 +1,20 @@
 package com.doido.todolistback.domain.task.dtos.request;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-public class RequestTaskDto {
+public class SubTaskRequest {
 
     private UUID id;
-    private String title;
-    private String description;
+    private String nameSubTask;
     private Boolean completed;
 
 }
-
-

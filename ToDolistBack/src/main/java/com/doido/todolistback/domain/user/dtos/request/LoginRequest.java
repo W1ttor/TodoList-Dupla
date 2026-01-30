@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class LoginDto {
+public class RequestLogin {
 
     @NotBlank(message = "Email não pode ser vazio")
     private String email;

@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostSubTaskDto {
+public class SubTaskRequest {
 
     @NotBlank
     private String nameSubTask;
