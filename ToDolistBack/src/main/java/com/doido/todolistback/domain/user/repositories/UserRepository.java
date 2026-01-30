@@ -1,4 +1,4 @@
-package com.doido.todolistback.infra.repositories;
+package com.doido.todolistback.domain.user.repositories;
 
 import com.doido.todolistback.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;

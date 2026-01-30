@@ -9,7 +9,7 @@ import com.doido.todolistback.domain.task.entity.Task;
 import com.doido.todolistback.domain.task.servicies.TaskService;
 import com.doido.todolistback.domain.task.shared.mapper.TaskMapper;
 import com.doido.todolistback.domain.user.entity.User;
-import com.doido.todolistback.infra.repositories.TaskRepository;
+import com.doido.todolistback.domain.task.repositories.TaskRepository;
 import com.doido.todolistback.shared.exception.CustomsExceptions.TaskNotFound;
 import com.doido.todolistback.shared.exception.CustomsExceptions.UserNotFoundException;
 import com.doido.todolistback.shared.utils.SecurityUtils;

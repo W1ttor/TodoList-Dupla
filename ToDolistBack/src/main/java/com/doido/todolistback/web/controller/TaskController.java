@@ -1,4 +1,4 @@
-package com.doido.todolistback.infra.controller;
+package com.doido.todolistback.web.controller;
 
 import com.doido.todolistback.domain.task.dtos.post.PostSubTaskDto;
 import com.doido.todolistback.domain.task.dtos.post.PostTaskDto;

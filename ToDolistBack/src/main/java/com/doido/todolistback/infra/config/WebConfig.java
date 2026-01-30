@@ -1,4 +1,4 @@
-package com.doido.todolistback.config;
+package com.doido.todolistback.infra.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

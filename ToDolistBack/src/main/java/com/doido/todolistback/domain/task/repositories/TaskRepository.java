@@ -1,4 +1,4 @@
-package com.doido.todolistback.infra.repositories;
+package com.doido.todolistback.domain.task.repositories;
 
 
 import com.doido.todolistback.domain.task.entity.Task;

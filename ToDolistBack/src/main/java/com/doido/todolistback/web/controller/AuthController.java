@@ -1,4 +1,4 @@
-package com.doido.todolistback.infra.controller;
+package com.doido.todolistback.web.controller;
 
 import com.doido.todolistback.domain.user.dtos.post.LoginDto;
 import com.doido.todolistback.domain.user.dtos.post.PostUserDto;

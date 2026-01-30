@@ -9,7 +9,7 @@ import com.doido.todolistback.domain.user.servicies.AuthService;
 import com.doido.todolistback.domain.user.servicies.TokenService;
 import com.doido.todolistback.domain.user.shared.enums.RolesUser;
 import com.doido.todolistback.domain.user.shared.mappers.UserMapper;
-import com.doido.todolistback.infra.repositories.UserRepository;
+import com.doido.todolistback.domain.user.repositories.UserRepository;
 import com.doido.todolistback.shared.exception.CustomsExceptions.InvalidCredentialsException;
 import com.doido.todolistback.shared.exception.CustomsExceptions.UserAlreadyExistsException;
 import com.doido.todolistback.shared.exception.CustomsExceptions.UserNotFoundException;

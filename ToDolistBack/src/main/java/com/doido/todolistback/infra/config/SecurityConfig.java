@@ -1,4 +1,4 @@
-package com.doido.todolistback.config;
+package com.doido.todolistback.infra.config;
 
 import com.doido.todolistback.domain.user.security.SecurityFilter;
 import org.springframework.beans.factory.annotation.Autowired;
