@@ -1,9 +1,7 @@
 package com.doido.todolistback.web.controller;
 
-import com.doido.todolistback.domain.task.dtos.post.PostSubTaskDto;
-import com.doido.todolistback.domain.task.dtos.post.PostTaskDto;
-import com.doido.todolistback.domain.task.dtos.request.RequestSubTaskDto;
-import com.doido.todolistback.domain.task.dtos.request.RequestTaskDto;
+import com.doido.todolistback.domain.task.dtos.response.SubTaskResponse;
+import com.doido.todolistback.domain.task.dtos.response.TaskResponse;
 import com.doido.todolistback.domain.task.servicies.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,23 +24,20 @@ public class TaskController {
     private final TaskService taskService;
 
     @PostMapping
-    public ResponseEntity<PostTaskDto> addTask(@Valid @RequestBody PostTaskDto task){
+    public ResponseEntity<com.doido.todolistback.domain.task.dtos.request.TaskRequest> addTask(@Valid @RequestBody com.doido.todolistback.domain.task.dtos.request.TaskRequest task){
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(taskService.addTask(task));
+        return new ResponseEntity<>(taskService.addTask(task), HttpStatus.CREATED);
 
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostTaskDto> updateTask(@PathVariable UUID id, @Valid @RequestBody PostTaskDto task){
-        return  ResponseEntity
-                .ok(taskService.updateTask(id , task));
+    public ResponseEntity<com.doido.todolistback.domain.task.dtos.request.TaskRequest> updateTask(@PathVariable UUID id, @Valid @RequestBody com.doido.todolistback.domain.task.dtos.request.TaskRequest task){
+        return  new ResponseEntity<>(taskService.updateTask(id, task), HttpStatus.OK);
     }
 
 
     @PutMapping("/{id}/completed")
-    public ResponseEntity<RequestTaskDto> completed(boolean status, @PathVariable UUID id){
+    public ResponseEntity<TaskResponse> completed(boolean status, @PathVariable UUID id){
         return new ResponseEntity<>(taskService.statusTask(status, id), HttpStatus.OK);
     }
 
@@ -50,29 +45,23 @@ public class TaskController {
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteTask(@PathVariable UUID id){
         taskService.deleteTask(id);
-        return ResponseEntity
-                .noContent()
-                .build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping()
-    public ResponseEntity<List<RequestTaskDto>> findUserTask(){
-
-        if (taskService.findUserTask().isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(taskService.findUserTask());
+    public ResponseEntity<List<TaskResponse>> findUserTask(){
+        return new ResponseEntity<>(taskService.findUserTask(), HttpStatus.OK);
     }
 
     //SubTask
 
     @PostMapping("/subtask")
-    public ResponseEntity<RequestSubTaskDto> addSubtask(@Valid @RequestBody PostSubTaskDto subTaskDto, UUID idTarefa){
+    public ResponseEntity<SubTaskResponse> addSubtask(@Valid @RequestBody com.doido.todolistback.domain.task.dtos.request.SubTaskRequest subTaskDto, UUID idTarefa){
         return new ResponseEntity<>(taskService.addSubTask(subTaskDto, idTarefa), HttpStatus.CREATED);
     }
 
     @GetMapping("/subtask")
-    public ResponseEntity<List<RequestSubTaskDto>> findSubtask(UUID idTarefa){
+    public ResponseEntity<List<SubTaskResponse>> findSubtask(UUID idTarefa){
         return new ResponseEntity<>(taskService.findSubTarefa(idTarefa), HttpStatus.OK);
     }
 

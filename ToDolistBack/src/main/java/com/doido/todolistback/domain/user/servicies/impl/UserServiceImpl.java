@@ -1,7 +1,7 @@
 package com.doido.todolistback.domain.user.servicies.impl;
 
-import com.doido.todolistback.domain.user.dtos.post.UserUpdateDto;
-import com.doido.todolistback.domain.user.dtos.request.RequestUserDto;
+import com.doido.todolistback.domain.user.dtos.request.UserUpdateRequest;
+import com.doido.todolistback.domain.user.dtos.response.UserResponse;
 import com.doido.todolistback.domain.user.entity.User;
 import com.doido.todolistback.domain.user.servicies.UserService;
 import com.doido.todolistback.domain.user.shared.mappers.UserMapper;
@@ -23,16 +23,14 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    private final PasswordEncoder encoder;
-
     @Override
-    public RequestUserDto getInfoUser() {
+    public UserResponse getInfoUser() {
         User user = getUser();
-        return userMapper.toRequestUserDto(user);
+        return userMapper.userResponse(user);
     }
 
     @Override
-    public RequestUserDto updateUserInfo(UserUpdateDto userUpdateDto) {
+    public UserResponse updateUserInfo(UserUpdateRequest userUpdateDto) {
         User user = getUser();
 
         if (userUpdateDto.getUsername() != null) {
@@ -40,7 +38,7 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(user);
-        return userMapper.toRequestUserDto(user);
+        return userMapper.userResponse(user);
     }
 
 

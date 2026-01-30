@@ -1,6 +1,7 @@
-package com.doido.todolistback.domain.user.dtos.post;
+package com.doido.todolistback.domain.user.dtos.request;
 
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserUpdateDto {
+public class UserUpdateRequest {
+
+    @NotBlank(message = "Username não pode ser vazio")
     private String username;
 }

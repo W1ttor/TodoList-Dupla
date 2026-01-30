@@ -1,5 +1,5 @@
 
-package com.doido.todolistback.domain.task.dtos.post;
+package com.doido.todolistback.domain.task.dtos.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

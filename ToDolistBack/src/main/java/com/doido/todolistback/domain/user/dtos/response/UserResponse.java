@@ -1,4 +1,4 @@
-package com.doido.todolistback.domain.user.dtos.request;
+package com.doido.todolistback.domain.user.dtos.response;
 
 
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
-public class RequestUserDto {
+public class UserResponse {
 
     private UUID id;
     private String username;

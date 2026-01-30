@@ -1,9 +1,9 @@
 package com.doido.todolistback.domain.user.servicies.impl;
 
-import com.doido.todolistback.domain.user.dtos.post.LoginDto;
-import com.doido.todolistback.domain.user.dtos.post.PostUserDto;
-import com.doido.todolistback.domain.user.dtos.post.UpdatePasswordUser;
-import com.doido.todolistback.domain.user.dtos.request.RequestUserDto;
+import com.doido.todolistback.domain.user.dtos.request.LoginRequest;
+import com.doido.todolistback.domain.user.dtos.request.RegisterRequest;
+import com.doido.todolistback.domain.user.dtos.request.PasswordUpdateRequest;
+import com.doido.todolistback.domain.user.dtos.response.UserResponse;
 import com.doido.todolistback.domain.user.entity.User;
 import com.doido.todolistback.domain.user.servicies.AuthService;
 import com.doido.todolistback.domain.user.servicies.TokenService;
@@ -30,7 +30,7 @@ public class AuthServiceImp implements AuthService {
     private final TokenService tokenService;
 
     @Override
-    public String loginUser(LoginDto loginDto) {
+    public String loginUser(LoginRequest loginDto) {
 
         User user = (User) userRepository.findByEmail(loginDto.getEmail());
 
@@ -42,9 +42,9 @@ public class AuthServiceImp implements AuthService {
     }
 
     @Override
-    public RequestUserDto registerUser(PostUserDto userDto) {
+    public UserResponse registerUser(RegisterRequest userDto) {
 
-        var user = userMapper.toUserPost(userDto);
+        var user = userMapper.registerRequest(userDto);
 
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new UserAlreadyExistsException(user.getEmail());
@@ -56,11 +56,11 @@ public class AuthServiceImp implements AuthService {
         user.setPassword(SenhaCriptografada);
         userRepository.save(user);
 
-        return userMapper.toRequestUserDto(user);
+        return userMapper.userResponse(user);
     }
 
     @Override
-    public RequestUserDto UpdatePassword(UpdatePasswordUser userDto) {
+    public UserResponse UpdatePassword(PasswordUpdateRequest userDto) {
         var user =  getUser();
         if (!passwordEncoder.matches(userDto.getOldPassword(), user.getPassword())) {
             throw new InvalidCredentialsException();
@@ -68,7 +68,7 @@ public class AuthServiceImp implements AuthService {
 
         user.setPassword(passwordEncoder.encode(userDto.getNewPassword()));
         userRepository.save(user);
-        return userMapper.toRequestUserDto(user);
+        return userMapper.userResponse(user);
 
     }
 

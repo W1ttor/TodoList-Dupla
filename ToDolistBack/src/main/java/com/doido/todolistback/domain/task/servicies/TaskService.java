@@ -1,9 +1,7 @@
 package com.doido.todolistback.domain.task.servicies;
 
-import com.doido.todolistback.domain.task.dtos.post.PostSubTaskDto;
-import com.doido.todolistback.domain.task.dtos.post.PostTaskDto;
-import com.doido.todolistback.domain.task.dtos.request.RequestSubTaskDto;
-import com.doido.todolistback.domain.task.dtos.request.RequestTaskDto;
+import com.doido.todolistback.domain.task.dtos.response.SubTaskResponse;
+import com.doido.todolistback.domain.task.dtos.response.TaskResponse;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,17 +10,17 @@ public interface TaskService {
 
     //TASK
 
-    PostTaskDto addTask(PostTaskDto task);
-    RequestTaskDto statusTask(boolean status, UUID TaskId);
-    PostTaskDto updateTask(UUID id, PostTaskDto task);
-    List<RequestTaskDto> findUserTask();
+    com.doido.todolistback.domain.task.dtos.request.TaskRequest addTask(com.doido.todolistback.domain.task.dtos.request.TaskRequest task);
+    TaskResponse statusTask(boolean status, UUID TaskId);
+    com.doido.todolistback.domain.task.dtos.request.TaskRequest updateTask(UUID id, com.doido.todolistback.domain.task.dtos.request.TaskRequest task);
+    List<TaskResponse> findUserTask();
 
 
     void deleteTask(UUID id);
 
     //SUBTASK
-    RequestSubTaskDto addSubTask(PostSubTaskDto subTask, UUID idTarefa);
-    List<RequestSubTaskDto> findSubTarefa(UUID id);
+    SubTaskResponse addSubTask(com.doido.todolistback.domain.task.dtos.request.SubTaskRequest subTask, UUID idTarefa);
+    List<SubTaskResponse> findSubTarefa(UUID id);
 
 
 

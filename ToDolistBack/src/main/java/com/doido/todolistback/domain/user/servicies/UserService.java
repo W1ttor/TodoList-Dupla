@@ -1,11 +1,11 @@
 package com.doido.todolistback.domain.user.servicies;
 
-import com.doido.todolistback.domain.user.dtos.post.UserUpdateDto;
-import com.doido.todolistback.domain.user.dtos.request.RequestUserDto;
+import com.doido.todolistback.domain.user.dtos.request.UserUpdateRequest;
+import com.doido.todolistback.domain.user.dtos.response.UserResponse;
 
 public interface UserService {
 
-    RequestUserDto getInfoUser();
+    UserResponse getInfoUser();
 
-    RequestUserDto updateUserInfo(UserUpdateDto userUpdateDto);
+    UserResponse updateUserInfo(UserUpdateRequest userUpdateDto);
 }

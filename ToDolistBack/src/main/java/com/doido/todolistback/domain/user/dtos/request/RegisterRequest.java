@@ -1,4 +1,4 @@
-package com.doido.todolistback.domain.user.dtos.post;
+package com.doido.todolistback.domain.user.dtos.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class PostUserDto {
+public class RegisterRequest {
 
     @NotBlank(message = "Campo Username não pode ser vazio" )
     private String username;

@@ -1,9 +1,7 @@
 package com.doido.todolistback.domain.task.servicies.impl;
 
-import com.doido.todolistback.domain.task.dtos.post.PostSubTaskDto;
-import com.doido.todolistback.domain.task.dtos.post.PostTaskDto;
-import com.doido.todolistback.domain.task.dtos.request.RequestSubTaskDto;
-import com.doido.todolistback.domain.task.dtos.request.RequestTaskDto;
+import com.doido.todolistback.domain.task.dtos.response.SubTaskResponse;
+import com.doido.todolistback.domain.task.dtos.response.TaskResponse;
 import com.doido.todolistback.domain.task.entity.SubTask;
 import com.doido.todolistback.domain.task.entity.Task;
 import com.doido.todolistback.domain.task.servicies.TaskService;
@@ -32,7 +30,7 @@ public class TaskServiceImple implements TaskService {
 
 
     @Override
-    public PostTaskDto addTask(PostTaskDto task){
+    public com.doido.todolistback.domain.task.dtos.request.TaskRequest addTask(com.doido.todolistback.domain.task.dtos.request.TaskRequest task){
         Task taskEntity = taskMapper.postTaskDtoToTask(task);
 
         taskEntity.setUser((User) SecurityUtils.getUser());
@@ -43,7 +41,7 @@ public class TaskServiceImple implements TaskService {
     }
 
     @Override
-    public PostTaskDto updateTask(UUID id, PostTaskDto task){
+    public com.doido.todolistback.domain.task.dtos.request.TaskRequest updateTask(UUID id, com.doido.todolistback.domain.task.dtos.request.TaskRequest task){
 
         User user = (User) SecurityUtils.getUser();
 
@@ -74,7 +72,7 @@ public class TaskServiceImple implements TaskService {
     }
 
     @Override
-    public RequestTaskDto statusTask(boolean status, UUID TaskId){
+    public TaskResponse statusTask(boolean status, UUID TaskId){
         Task task = isOwner(TaskId);
         task.setCompleted(status);
         taskRepository.save(task);
@@ -99,23 +97,23 @@ public class TaskServiceImple implements TaskService {
     }
 
     @Override
-    public List<RequestTaskDto> findUserTask(){
+    public List<TaskResponse> findUserTask(){
 
         User user = (User) SecurityUtils.getUser();
 
         List<Task> task = taskRepository.findByUserId(user.getId());
 
-        List<RequestTaskDto> requestTaskDto = task.stream()
+        List<TaskResponse> taskResponse = task.stream()
             .map(taskMapper::taskToRequestTaskDto)
             .toList();
 
-        return requestTaskDto;
+        return taskResponse;
     }
 
     //SubTask
 
     @Override
-    public RequestSubTaskDto addSubTask(PostSubTaskDto subTask, UUID idTarefa) {
+    public SubTaskResponse addSubTask(com.doido.todolistback.domain.task.dtos.request.SubTaskRequest subTask, UUID idTarefa) {
 
             Task task = isOwner(idTarefa);
 
@@ -132,7 +130,7 @@ public class TaskServiceImple implements TaskService {
 
     @Override
     @Transactional
-    public List<RequestSubTaskDto> findSubTarefa(UUID id) {
+    public List<SubTaskResponse> findSubTarefa(UUID id) {
 
         Task task = isOwner(id);
 

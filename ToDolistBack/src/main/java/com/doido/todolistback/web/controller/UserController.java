@@ -1,7 +1,7 @@
 package com.doido.todolistback.web.controller;
 
-import com.doido.todolistback.domain.user.dtos.post.UserUpdateDto;
-import com.doido.todolistback.domain.user.dtos.request.RequestUserDto;
+import com.doido.todolistback.domain.user.dtos.request.UserUpdateRequest;
+import com.doido.todolistback.domain.user.dtos.response.UserResponse;
 import com.doido.todolistback.domain.user.servicies.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,12 +18,12 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping()
-    public ResponseEntity<RequestUserDto> getInfoUser() {
+    public ResponseEntity<UserResponse> getInfoUser() {
         return new ResponseEntity<>(userService.getInfoUser(), HttpStatus.OK);
     }
 
     @PostMapping("/update")
-    public ResponseEntity<RequestUserDto> userUpdate(@RequestBody UserUpdateDto userUpdateDto) {
+    public ResponseEntity<UserResponse> userUpdate(@RequestBody UserUpdateRequest userUpdateDto) {
         return new ResponseEntity<>(userService.updateUserInfo(userUpdateDto), HttpStatus.OK);
     }
 

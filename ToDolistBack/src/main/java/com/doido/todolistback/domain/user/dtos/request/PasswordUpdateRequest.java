@@ -1,4 +1,4 @@
-package com.doido.todolistback.domain.user.dtos.post;
+package com.doido.todolistback.domain.user.dtos.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UpdatePasswordUser {
+public class PasswordUpdateRequest {
 
     @NotBlank(message = "old password not entered")
     private String oldPassword;
