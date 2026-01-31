@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "TABLE_TASK",
+@Table(name = "TASK",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"user_id", "list"})
         })

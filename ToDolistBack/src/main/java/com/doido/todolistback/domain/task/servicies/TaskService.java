@@ -1,7 +1,11 @@
 package com.doido.todolistback.domain.task.servicies;
 
+import com.doido.todolistback.domain.task.dtos.request.SubTaskRequest;
+import com.doido.todolistback.domain.task.dtos.request.TaskRequest;
 import com.doido.todolistback.domain.task.dtos.response.SubTaskResponse;
 import com.doido.todolistback.domain.task.dtos.response.TaskResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
@@ -10,16 +14,17 @@ public interface TaskService {
 
     //TASK
 
-    com.doido.todolistback.domain.task.dtos.request.TaskRequest addTask(com.doido.todolistback.domain.task.dtos.request.TaskRequest task);
+    TaskRequest addTask(TaskRequest task);
     TaskResponse statusTask(boolean status, UUID TaskId);
-    com.doido.todolistback.domain.task.dtos.request.TaskRequest updateTask(UUID id, com.doido.todolistback.domain.task.dtos.request.TaskRequest task);
+    TaskRequest updateTask(UUID id, TaskRequest task);
     List<TaskResponse> findUserTask();
+    Page<TaskResponse> filter(Boolean completed ,Pageable pageable);
 
 
     void deleteTask(UUID id);
 
     //SUBTASK
-    SubTaskResponse addSubTask(com.doido.todolistback.domain.task.dtos.request.SubTaskRequest subTask, UUID idTarefa);
+    SubTaskResponse addSubTask(SubTaskRequest subTask, UUID idTarefa);
     List<SubTaskResponse> findSubTarefa(UUID id);
 
 

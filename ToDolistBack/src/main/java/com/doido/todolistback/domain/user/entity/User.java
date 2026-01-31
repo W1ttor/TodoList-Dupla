@@ -23,10 +23,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "TABLE_USER",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"id", "list"})
-        })
+@Table(name = "USER")
 
 public class User implements UserDetails {
 
@@ -48,8 +45,6 @@ public class User implements UserDetails {
 
     @UpdateTimestamp
     private LocalDate updateDate;
-
-    private List<String> list;
 
     @OneToMany(mappedBy = "user",  cascade = CascadeType.ALL,  orphanRemoval = true)
     private List<Task> tasks;

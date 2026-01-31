@@ -1,19 +1,26 @@
 package com.doido.todolistback.domain.task.servicies.impl;
 
+import com.doido.todolistback.domain.task.dtos.request.SubTaskRequest;
 import com.doido.todolistback.domain.task.dtos.response.SubTaskResponse;
 import com.doido.todolistback.domain.task.dtos.response.TaskResponse;
 import com.doido.todolistback.domain.task.entity.SubTask;
 import com.doido.todolistback.domain.task.entity.Task;
 import com.doido.todolistback.domain.task.servicies.TaskService;
 import com.doido.todolistback.domain.task.shared.mapper.TaskMapper;
+import com.doido.todolistback.domain.task.specification.TaskSpecification;
 import com.doido.todolistback.domain.user.entity.User;
 import com.doido.todolistback.domain.task.repositories.TaskRepository;
 import com.doido.todolistback.shared.exception.CustomsExceptions.TaskNotFound;
 import com.doido.todolistback.shared.exception.CustomsExceptions.UserNotFoundException;
 import com.doido.todolistback.shared.utils.SecurityUtils;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -77,7 +84,7 @@ public class TaskServiceImple implements TaskService {
         task.setCompleted(status);
         taskRepository.save(task);
 
-        return taskMapper.taskToRequestTaskDto(task);
+        return taskMapper.taskResponse(task);
     }
 
     @Override
@@ -104,16 +111,29 @@ public class TaskServiceImple implements TaskService {
         List<Task> task = taskRepository.findByUserId(user.getId());
 
         List<TaskResponse> taskResponse = task.stream()
-            .map(taskMapper::taskToRequestTaskDto)
+            .map(taskMapper::taskResponse)
             .toList();
 
         return taskResponse;
     }
 
+    @Override
+    public Page<TaskResponse> filter(Boolean completed, Pageable pageable) {
+
+        User user = (User) SecurityUtils.getUser();
+
+        Specification spec = Specification
+                .where(TaskSpecification.completed(completed));
+
+
+        return taskRepository.findAllByUserId(user.getId(), pageable, spec)
+                .map(taskMapper::taskResponse);
+    }
+
     //SubTask
 
     @Override
-    public SubTaskResponse addSubTask(com.doido.todolistback.domain.task.dtos.request.SubTaskRequest subTask, UUID idTarefa) {
+    public SubTaskResponse addSubTask(SubTaskRequest subTask, UUID idTarefa) {
 
             Task task = isOwner(idTarefa);
 
@@ -139,6 +159,7 @@ public class TaskServiceImple implements TaskService {
                 .map(taskMapper::subTaskToRequestDto)
                 .toList();
     }
+
 
 
     //Private Method
