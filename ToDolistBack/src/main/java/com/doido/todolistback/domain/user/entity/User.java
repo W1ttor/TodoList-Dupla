@@ -3,14 +3,17 @@ package com.doido.todolistback.domain.user.entity;
 import com.doido.todolistback.domain.task.entity.Task;
 import com.doido.todolistback.domain.user.shared.enums.RolesUser;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -20,7 +23,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "TABLE_USER")
+@Table(name = "USER")
 
 public class User implements UserDetails {
 
@@ -37,7 +40,13 @@ public class User implements UserDetails {
 
     private String password;
 
-    @OneToMany(mappedBy = "user")
+    @CreationTimestamp
+    private LocalDate createDate;
+
+    @UpdateTimestamp
+    private LocalDate updateDate;
+
+    @OneToMany(mappedBy = "user",  cascade = CascadeType.ALL,  orphanRemoval = true)
     private List<Task> tasks;
 
     @Enumerated(EnumType.STRING)

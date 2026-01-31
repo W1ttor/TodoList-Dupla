@@ -1,7 +1,7 @@
 package com.doido.todolistback.domain.user.security;
 
 import com.doido.todolistback.domain.user.servicies.TokenService;
-import com.doido.todolistback.infra.repositories.UserRepository;
+import com.doido.todolistback.domain.user.repositories.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
