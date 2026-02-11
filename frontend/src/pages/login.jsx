@@ -82,39 +82,46 @@ export default function Login() {
     // =========================
     // LOGIN
     // =========================
+    
     try {
-      setLoading(true);
+  setLoading(true);
 
-      const response = await fetch(
-        "http://26.51.220.173:2020/v1/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            email,
-            password
-          })
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Login inválido");
-      }
-
-      const data = await response.json();
-      console.log("Login realizado:", data);
-
-      // redireciona após login
-      navigate("/home");
-
-    } catch (err) {
-      showError("E-mail ou senha incorretos.");
-    } finally {
-      setLoading(false);
+  const response = await fetch(
+    "http://26.51.220.173:2020/v1/auth/login",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email,
+        password
+      })
     }
-  };
+  );
+
+  if (!response.ok) {
+    throw new Error("Login inválido");
+  }
+
+  //COLOQUEI RESPONSE EM VEZ DE JSON
+  const token = await response.text();
+
+  if (!token) {
+    throw new Error("JWT não retornado pelo backend");
+  }
+
+  console.log("Token recebido:", token);
+
+  localStorage.setItem("token", token);
+
+  navigate("/home");
+
+} catch (err) {
+  showError("E-mail ou senha incorretos.");
+} finally {
+  setLoading(false);
+};
 
   // =========================
   // JSX
@@ -230,5 +237,5 @@ export default function Login() {
 
       </div>
     </div>
-  );
-}
+      );
+    }}; 
