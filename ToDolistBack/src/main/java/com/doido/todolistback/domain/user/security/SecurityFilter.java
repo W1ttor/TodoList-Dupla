@@ -1,7 +1,7 @@
 package com.doido.todolistback.domain.user.security;
 
 import com.doido.todolistback.domain.user.servicies.TokenService;
-import com.doido.todolistback.infra.repositories.UserRepository;
+import com.doido.todolistback.domain.user.repositories.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,14 +28,14 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         var token = this.recoverToken(request);
 
-        if (token != null) {
+        if (token != null ) {
 
             var login = tokenService.ValidationToken(token);
 
-            if (!login.isEmpty()) {
+            if (!login.isEmpty() && login != null) {
                 UserDetails user = userRepository.findByEmail(login);
 
-                var authentication = new UsernamePasswordAuthenticationToken(login, null, user.getAuthorities());
+                var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

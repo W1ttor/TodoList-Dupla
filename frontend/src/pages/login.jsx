@@ -103,14 +103,29 @@ export default function Login() {
         throw new Error("Login inválido");
       }
 
+      
       const data = await response.json();
       console.log("Login realizado:", data);
+
+      const token =
+        data?.token ||
+        data?.accessToken ||
+        data?.access_token ||
+        (typeof data === "string" ? data : null);
+
+      if (!token) {
+        throw new Error("JWT não retornado pelo backend");
+      }
+
+      localStorage.setItem("token", token);
+
+
 
       // redireciona após login
       navigate("/home");
 
     } catch (err) {
-      showError("E-mail ou senha incorretos.");
+      showError("Erro ao realizar o login.");
     } finally {
       setLoading(false);
     }

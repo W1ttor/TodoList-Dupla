@@ -1,13 +1,19 @@
 package com.doido.todolistback.domain.user.servicies.impl;
 
-import com.doido.todolistback.domain.user.dtos.post.LoginDto;
-import com.doido.todolistback.domain.user.dtos.post.PostUserDto;
+import com.doido.todolistback.domain.user.dtos.request.LoginRequest;
+import com.doido.todolistback.domain.user.dtos.request.RegisterRequest;
+import com.doido.todolistback.domain.user.dtos.request.PasswordUpdateRequest;
+import com.doido.todolistback.domain.user.dtos.response.UserResponse;
 import com.doido.todolistback.domain.user.entity.User;
 import com.doido.todolistback.domain.user.servicies.AuthService;
 import com.doido.todolistback.domain.user.servicies.TokenService;
 import com.doido.todolistback.domain.user.shared.enums.RolesUser;
 import com.doido.todolistback.domain.user.shared.mappers.UserMapper;
-import com.doido.todolistback.infra.repositories.UserRepository;
+import com.doido.todolistback.domain.user.repositories.UserRepository;
+import com.doido.todolistback.shared.exception.CustomsExceptions.InvalidCredentialsException;
+import com.doido.todolistback.shared.exception.CustomsExceptions.UserAlreadyExistsException;
+import com.doido.todolistback.shared.exception.CustomsExceptions.UserNotFoundException;
+import com.doido.todolistback.shared.utils.SecurityUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,21 +30,25 @@ public class AuthServiceImp implements AuthService {
     private final TokenService tokenService;
 
     @Override
-    public String loginUser(LoginDto loginDto) {
+    public String loginUser(LoginRequest loginDto) {
 
         User user = (User) userRepository.findByEmail(loginDto.getEmail());
 
         if (user == null || !passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid username or password");
+            throw new InvalidCredentialsException();
         }
 
         return tokenService.generateToken(user);
     }
 
     @Override
-    public String registerUser(PostUserDto userDto) {
+    public UserResponse registerUser(RegisterRequest userDto) {
 
-        var user = userMapper.toUserPost(userDto);
+        var user = userMapper.registerRequest(userDto);
+
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new UserAlreadyExistsException(user.getEmail());
+        }
 
         user.setRole(RolesUser.USER);
 
@@ -46,6 +56,29 @@ public class AuthServiceImp implements AuthService {
         user.setPassword(SenhaCriptografada);
         userRepository.save(user);
 
-        return "Usuário cadastrado com sucesso!";
+        return userMapper.userResponse(user);
+    }
+
+    @Override
+    public UserResponse UpdatePassword(PasswordUpdateRequest userDto) {
+        var user =  getUser();
+        if (!passwordEncoder.matches(userDto.getOldPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException();
+        }
+
+        user.setPassword(passwordEncoder.encode(userDto.getNewPassword()));
+        userRepository.save(user);
+        return userMapper.userResponse(user);
+
+    }
+
+
+    //Private Methods
+    private User getUser(){
+        var user =  (User) SecurityUtils.getUser();
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return user;
     }
 }

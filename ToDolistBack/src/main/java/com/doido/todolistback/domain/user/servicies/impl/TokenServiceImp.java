@@ -43,12 +43,12 @@ public class TokenServiceImp implements TokenService {
         try {
             Algorithm algorithm = Algorithm.HMAC256(tokenSecret);
             return JWT.require(algorithm)
-                    .withIssuer("auth-api")
+                    .withIssuer(issuer)
                     .build()
                     .verify(token)
                     .getSubject();
         } catch (JWTVerificationException exception) {
-            return "Erro ao validar JWT";
+            return null;
         }
     }
 
