@@ -121,7 +121,7 @@ export default function Login() {
 
 
 
-      // redireciona após login
+      // redireciona para home após login
       navigate("/home");
 
     } catch (err) {
