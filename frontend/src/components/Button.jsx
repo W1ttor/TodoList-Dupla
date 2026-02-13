@@ -7,4 +7,4 @@ export default function Button({ children, className = "", ...rest }) {
       {children}
     </button>
   );
-}
+}  
