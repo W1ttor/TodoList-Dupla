@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-/* =========================
+/* ==========================
    SIDEBAR
 ========================= */
 function Sidebar({
