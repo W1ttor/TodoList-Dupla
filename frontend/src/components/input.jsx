@@ -7,7 +7,7 @@ export default function Input({
         <label className="text-sm font-semibold text-gray-300">
           {label}
         </label>
-      )}
+      )} 
 
       <input
         type={type}
