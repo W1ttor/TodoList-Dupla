@@ -6,3 +6,4 @@ O sistema tem como objetivo permitir o gerenciamento de tarefas, servindo como p
 O projeto está sendo desenvolvido de forma incremental, com foco em aprendizado, organização do código e aplicação de conceitos do ecossistema Java.
 
 Este projeto está sendo desenvolvido em dupla, por mim e por David.
+
