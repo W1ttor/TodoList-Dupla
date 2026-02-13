@@ -31,9 +31,9 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // =========================
+    // ==========================
     // CADASTRO
-    // =========================
+    // ==========================
     if (isRegistering) {
       if (!name.trim()) return showError("Por favor, insira seu nome.");
       if (!email.trim()) return showError("Informe um e-mail válido.");
