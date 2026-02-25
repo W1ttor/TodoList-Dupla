@@ -1,12 +1,11 @@
 package com.doido.todolistback.domain.user.entity;
 
+import com.doido.todolistback.domain.group.entity.Group;
+import com.doido.todolistback.domain.group.entity.Members;
 import com.doido.todolistback.domain.task.entity.Task;
 import com.doido.todolistback.domain.user.shared.enums.RolesUser;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,17 +15,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
+@Getter @Setter
 @Table(name = "USER")
 
 public class User implements UserDetails {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -48,6 +45,14 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user",  cascade = CascadeType.ALL,  orphanRemoval = true)
     private List<Task> tasks;
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
+    )
+    private Set<Members> members;
 
     @Enumerated(EnumType.STRING)
     private RolesUser role;

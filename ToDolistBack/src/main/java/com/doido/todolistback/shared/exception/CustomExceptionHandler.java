@@ -50,6 +50,12 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler{
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiErrorMenssage);
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ApiErrorMenssage> userAlreadyExistsHandler(ForbiddenException exception){
+        ApiErrorMenssage apiErrorMenssage = new ApiErrorMenssage(HttpStatus.UNAUTHORIZED, getMessage(exception.getMessage()));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiErrorMenssage);
+    }
+
 
     private String getMessage(String messageKey, Object... args) {
         return messageSource.getMessage(messageKey, args, LocaleContextHolder.getLocale());

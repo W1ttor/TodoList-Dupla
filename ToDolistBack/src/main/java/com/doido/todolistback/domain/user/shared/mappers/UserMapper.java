@@ -1,6 +1,5 @@
 package com.doido.todolistback.domain.user.shared.mappers;
 
-import com.doido.todolistback.domain.user.dtos.request.LoginRequest;
 import com.doido.todolistback.domain.user.dtos.request.RegisterRequest;
 import com.doido.todolistback.domain.user.dtos.response.UserResponse;
 import com.doido.todolistback.domain.user.entity.User;
