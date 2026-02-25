@@ -83,53 +83,49 @@ export default function Login() {
     // LOGIN
     // =========================
     try {
-      setLoading(true);
+  setLoading(true);
 
-      const response = await fetch(
-        "http://26.51.220.173:2020/v1/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            email,
-            password
-          })
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Login inválido");
-      }
-
-      
-      const data = await response.json();
-      console.log("Login realizado:", data);
-
-      const token =
-        data?.token ||
-        data?.accessToken ||
-        data?.access_token ||
-        (typeof data === "string" ? data : null);
-
-      if (!token) {
-        throw new Error("JWT não retornado pelo backend");
-      }
-
-      localStorage.setItem("token", token);
-
-
-
-      // redireciona para home após login
-      navigate("/home");
-
-    } catch (err) {
-      showError("Erro ao realizar o login.");
-    } finally {
-      setLoading(false);
+  const response = await fetch(
+    "http://26.51.220.173:2020/v1/auth/login",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email,
+        password
+      })
     }
-  };
+  );
+
+  if (!response.ok) {
+    throw new Error("Login inválido");
+  }
+
+  
+  const token = await response.text();
+
+  console.log("Token recebido:", token);
+
+  if (!token) {
+    throw new Error("Token não retornado pelo backend");
+  }
+
+  // salva token
+  localStorage.setItem("token", token);
+
+  console.log("Redirecionando para /home...");
+
+  // redireciona pra pagina principal
+  navigate("/home");
+
+} catch (err) {
+  console.error("Erro no login:", err);
+  showError("Erro ao realizar o login.");
+} finally {
+  setLoading(false);
+}}
 
   // =========================
   // JSX
