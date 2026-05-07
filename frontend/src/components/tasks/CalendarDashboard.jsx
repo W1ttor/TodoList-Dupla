@@ -1,184 +1,236 @@
 import { useState } from "react";
+import calendarEvents from "../../data/calendarEvents";
 
 export default function CalendarDashboard() {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [viewMode, setViewMode] = useState("month");
+  const [viewMode, setViewMode] = useState("week");
 
-  const monthNames = [
-    "January", "February", "March", "April",
-    "May", "June", "July", "August",
-    "September", "October", "November", "December"
+  const hours = [
+    "09:00",
+    "10:00",
+    "11:00",
+    "12:00",
+    "13:00",
+    "14:00"
   ];
 
-  const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const weekDays = [
+    "Mon",
+    "Tue",
+    "Wed",
+    "Thu",
+    "Fri",
+    "Sat",
+    "Sun"
+  ];
 
-  const year = currentDate.getFullYear();
-  const month = currentDate.getMonth();
-  const today = new Date();
-
-  const prev = () => {
-    if (viewMode === "month") {
-      setCurrentDate(new Date(year, month - 1, 1));
-    } else if (viewMode === "week") {
-      setCurrentDate(new Date(year, month, currentDate.getDate() - 7));
-    } else {
-      setCurrentDate(new Date(year, month, currentDate.getDate() - 1));
-    }
-  };
-
-  const next = () => {
-    if (viewMode === "month") {
-      setCurrentDate(new Date(year, month + 1, 1));
-    } else if (viewMode === "week") {
-      setCurrentDate(new Date(year, month, currentDate.getDate() + 7));
-    } else {
-      setCurrentDate(new Date(year, month, currentDate.getDate() + 1));
-    }
-  };
-
-  const renderMonthView = () => {
-    const firstDayOfMonth = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    const days = [];
-
-    for (let i = 0; i < firstDayOfMonth; i++) {
-      days.push(null);
-    }
-
-    for (let day = 1; day <= daysInMonth; day++) {
-      days.push(day);
-    }
-
-    return (
-      <>
-        <div className="grid grid-cols-7 gap-2 mb-3">
-          {weekDays.map(day => (
-            <div key={day} className="text-center font-semibold text-slate-300">
-              {day}
-            </div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-7 gap-2">
-          {days.map((day, index) => {
-            const isToday =
-              day &&
-              today.getDate() === day &&
-              today.getMonth() === month &&
-              today.getFullYear() === year;
-
-            return (
-              <div
-                key={index}
-                className={`
-                  h-16 rounded flex items-center justify-center border
-                  ${day ? "border-slate-600" : "border-transparent"}
-                  ${isToday ? "bg-blue-500 text-white font-bold" : "bg-slate-700/30 text-slate-200"}
-                `}
-              >
-                {day || ""}
-              </div>
-            );
-          })}
-        </div>
-      </>
-    );
-  };
-
-  const renderWeekView = () => {
-    const start = new Date(currentDate);
-    start.setDate(currentDate.getDate() - currentDate.getDay());
-
-    const days = Array.from({ length: 7 }, (_, i) => {
-      const d = new Date(start);
-      d.setDate(start.getDate() + i);
-      return d;
-    });
-
-    return (
-      <div className="grid grid-cols-7 gap-2">
-        {days.map((date, index) => {
-          const isToday =
-            date.getDate() === today.getDate() &&
-            date.getMonth() === today.getMonth() &&
-            date.getFullYear() === today.getFullYear();
-
-          return (
-            <div
-              key={index}
-              className={`
-                h-24 rounded border flex flex-col items-center justify-center
-                ${isToday ? "bg-blue-500 text-white" : "bg-slate-700/30 border-slate-600"}
-              `}
-            >
-              <span className="text-sm">{weekDays[index]}</span>
-              <span className="text-xl font-bold">{date.getDate()}</span>
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
-
-  const renderDayView = () => {
-    return (
-      <div className="h-32 rounded border border-slate-600 bg-slate-700/30 flex flex-col items-center justify-center">
-        <span className="text-lg text-slate-300">
-          {weekDays[currentDate.getDay()]}
-        </span>
-        <span className="text-4xl font-bold">
-          {currentDate.getDate()}
-        </span>
-      </div>
-    );
-  };
+  const monthDays = Array.from({ length: 31 }, (_, i) => i + 1);
 
   return (
-    <div className="bg-slate-800/40 border border-slate-600 rounded p-6">
+    <div className="bg-slate-800/40 border border-slate-600 rounded-xl p-6">
 
       {/* HEADER */}
       <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={prev}
-          className="px-4 py-2 bg-slate-700 rounded hover:bg-slate-600 transition"
-        >
-          ◀
-        </button>
 
-        <h2 className="text-2xl font-bold">
-          {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+        <h2 className="text-4xl font-bold">
+          May 2026
         </h2>
 
-        <button
-          onClick={next}
-          className="px-4 py-2 bg-slate-700 rounded hover:bg-slate-600 transition"
-        >
-          ▶
+        <button className="px-4 py-2 rounded bg-slate-700 hover:bg-slate-600 transition">
+          Add Event
         </button>
       </div>
 
-      {/* MODE BUTTONS */}
-      <div className="flex gap-3 mb-6">
-        {["day", "week", "month"].map(mode => (
-          <button
-            key={mode}
-            onClick={() => setViewMode(mode)}
-            className={`px-4 py-2 rounded transition ${
-              viewMode === mode
-                ? "bg-blue-500 text-white"
-                : "bg-slate-700 text-slate-300 hover:bg-slate-600"
-            }`}
-          >
-            {mode.charAt(0).toUpperCase() + mode.slice(1)}
+      {/* TOP BAR */}
+      <div className="flex items-center justify-between mb-8">
+
+        <div className="flex gap-3">
+          {["day", "week", "month"].map(mode => (
+            <button
+              key={mode}
+              onClick={() => setViewMode(mode)}
+              className={`
+                px-4 py-2 rounded transition capitalize
+                ${
+                  viewMode === mode
+                    ? "bg-blue-500 text-white"
+                    : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                }
+              `}
+            >
+              {mode}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex gap-3">
+          <button className="px-3 py-2 bg-slate-700 rounded hover:bg-slate-600">
+            ◀
           </button>
-        ))}
+
+          <button className="px-3 py-2 bg-slate-700 rounded hover:bg-slate-600">
+            ▶
+          </button>
+        </div>
       </div>
 
-      {/* VIEWS */}
-      {viewMode === "day" && renderDayView()}
-      {viewMode === "week" && renderWeekView()}
-      {viewMode === "month" && renderMonthView()}
+      {/* DAY VIEW */}
+      {viewMode === "day" && (
+        <div className="border border-slate-600 rounded-lg overflow-hidden">
+
+          {hours.map(hour => (
+            <div
+              key={hour}
+              className="grid grid-cols-[100px_1fr] border-b border-slate-700 min-h-[90px]"
+            >
+
+              <div className="border-r border-slate-700 flex items-start justify-center pt-4 text-slate-400 text-sm">
+                {hour}
+              </div>
+
+              <div className="p-3">
+                {calendarEvents
+                  .filter(event => event.hour === hour)
+                  .map(event => (
+                    <div
+                      key={event.id}
+                      className={`
+                        ${event.color}
+                        border border-slate-500
+                        rounded-lg
+                        p-3
+                        mb-2
+                      `}
+                    >
+                      <p className="font-semibold">
+                        {event.title}
+                      </p>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* WEEK VIEW */}
+      {viewMode === "week" && (
+        <div className="overflow-hidden border border-slate-600 rounded-lg">
+
+          <div className="grid grid-cols-8 border-b border-slate-700">
+
+            <div></div>
+
+            {weekDays.map(day => (
+              <div
+                key={day}
+                className="p-4 text-center font-semibold border-l border-slate-700"
+              >
+                {day}
+              </div>
+            ))}
+          </div>
+
+          {hours.map(hour => (
+            <div
+              key={hour}
+              className="grid grid-cols-8 min-h-[100px] border-b border-slate-700"
+            >
+
+              <div className="flex items-start justify-center pt-4 text-sm text-slate-400 border-r border-slate-700">
+                {hour}
+              </div>
+
+              {weekDays.map(day => {
+                const events = calendarEvents.filter(
+                  event =>
+                    event.weekDay === day &&
+                    event.hour === hour
+                );
+
+                return (
+                  <div
+                    key={day}
+                    className="border-l border-slate-700 p-2"
+                  >
+                    {events.map(event => (
+                      <div
+                        key={event.id}
+                        className={`
+                          ${event.color}
+                          rounded-lg
+                          p-2
+                          text-sm
+                          mb-2
+                          border border-slate-500
+                        `}
+                      >
+                        {event.title}
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* MONTH VIEW */}
+      {viewMode === "month" && (
+        <div>
+
+          <div className="grid grid-cols-7 mb-3">
+            {weekDays.map(day => (
+              <div
+                key={day}
+                className="text-center font-semibold text-slate-300"
+              >
+                {day}
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-7 gap-3">
+
+            {monthDays.map(day => {
+              const events = calendarEvents.filter(
+                event => event.day === day
+              );
+
+              return (
+                <div
+                  key={day}
+                  className="min-h-[120px] rounded-lg border border-slate-600 bg-slate-700/20 p-2"
+                >
+
+                  <p className="font-semibold mb-2">
+                    {day}
+                  </p>
+
+                  <div className="flex flex-col gap-1">
+
+                    {events.map(event => (
+                      <div
+                        key={event.id}
+                        className={`
+                          ${event.color}
+                          rounded
+                          px-2
+                          py-1
+                          text-xs
+                          truncate
+                        `}
+                      >
+                        {event.title}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
