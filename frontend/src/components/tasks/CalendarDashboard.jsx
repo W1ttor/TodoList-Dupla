@@ -3,6 +3,7 @@ import calendarEvents from "../../data/calendarEvents";
 
 export default function CalendarDashboard() {
   const [viewMode, setViewMode] = useState("week");
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   const hours = [
     "09:00",
@@ -23,51 +24,169 @@ export default function CalendarDashboard() {
     "Sun"
   ];
 
-  const monthDays = Array.from({ length: 31 }, (_, i) => i + 1);
+  /* ---------------- DATE INFO ---------------- */
+
+  const currentDay = currentDate.toLocaleDateString("en-US", {
+    weekday: "long"
+  });
+
+  const currentMonth = currentDate.toLocaleDateString("en-US", {
+    month: "long"
+  });
+
+  const currentYear = currentDate.getFullYear();
+
+  const month = currentDate.getMonth();
+  const year = currentDate.getFullYear();
+
+  /* ---------------- NAVIGATION ---------------- */
+
+  const handlePrev = () => {
+    if (viewMode === "month") {
+      setCurrentDate(new Date(year, month - 1, 1));
+    }
+
+    if (viewMode === "week") {
+      const prevWeek = new Date(currentDate);
+      prevWeek.setDate(currentDate.getDate() - 7);
+      setCurrentDate(prevWeek);
+    }
+
+    if (viewMode === "day") {
+      const prevDay = new Date(currentDate);
+      prevDay.setDate(currentDate.getDate() - 1);
+      setCurrentDate(prevDay);
+    }
+  };
+
+  const handleNext = () => {
+    if (viewMode === "month") {
+      setCurrentDate(new Date(year, month + 1, 1));
+    }
+
+    if (viewMode === "week") {
+      const nextWeek = new Date(currentDate);
+      nextWeek.setDate(currentDate.getDate() + 7);
+      setCurrentDate(nextWeek);
+    }
+
+    if (viewMode === "day") {
+      const nextDay = new Date(currentDate);
+      nextDay.setDate(currentDate.getDate() + 1);
+      setCurrentDate(nextDay);
+    }
+  };
+
+  /* ---------------- MONTH LOGIC ---------------- */
+
+  const firstDayOfMonth = new Date(year, month, 1).getDay();
+
+  const adjustedFirstDay = firstDayOfMonth === 0
+    ? 6
+    : firstDayOfMonth - 1;
+
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const monthCells = [];
+
+  for (let i = 0; i < adjustedFirstDay; i++) {
+    monthCells.push(null);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    monthCells.push(day);
+  }
+
+  /* ---------------- WEEK LOGIC ---------------- */
+
+  const startOfWeek = new Date(currentDate);
+
+  const dayIndex = currentDate.getDay();
+
+  const adjustedDayIndex = dayIndex === 0
+    ? 6
+    : dayIndex - 1;
+
+  startOfWeek.setDate(currentDate.getDate() - adjustedDayIndex);
+
+  const weekDates = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(startOfWeek);
+    date.setDate(startOfWeek.getDate() + i);
+
+    return date;
+  });
 
   return (
-    <div className="bg-slate-800/40 border border-slate-600 rounded-xl p-6">
+    <div className="bg-slate-800/40 border border-slate-600 rounded-2xl p-6">
 
       {/* HEADER */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-8">
 
-        <h2 className="text-4xl font-bold">
-          May 2026
-        </h2>
+        <div>
+          <h2 className="text-4xl font-bold text-slate-100">
+            {currentMonth} {currentYear}
+          </h2>
+        </div>
 
-        <button className="px-4 py-2 rounded bg-slate-700 hover:bg-slate-600 transition">
+        <button className="px-4 py-2 rounded-xl bg-slate-700/60 border border-slate-600 hover:bg-slate-600/60 transition">
           Add Event
         </button>
       </div>
 
       {/* TOP BAR */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-start justify-between mb-10">
 
-        <div className="flex gap-3">
-          {["day", "week", "month"].map(mode => (
-            <button
-              key={mode}
-              onClick={() => setViewMode(mode)}
-              className={`
-                px-4 py-2 rounded transition capitalize
-                ${
-                  viewMode === mode
-                    ? "bg-blue-500 text-white"
-                    : "bg-slate-700 text-slate-300 hover:bg-slate-600"
-                }
-              `}
-            >
-              {mode}
-            </button>
-          ))}
+        <div className="flex flex-col gap-5">
+
+          {/* TABS */}
+          <div className="flex items-center bg-slate-700/30 border border-slate-600 rounded-xl p-1 w-fit">
+
+            {["day", "week", "month"].map(mode => (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode)}
+                className={`
+                  px-5 py-2
+                  rounded-lg
+                  text-sm
+                  font-medium
+                  capitalize
+                  transition-all
+                  duration-200
+                  ${
+                    viewMode === mode
+                      ? "bg-slate-200 text-slate-900"
+                      : "text-slate-300 hover:bg-slate-600/40"
+                  }
+                `}
+              >
+                {mode}
+              </button>
+            ))}
+          </div>
+
+          {/* CURRENT DAY */}
+          <div>
+            <p className="text-xs tracking-[0.35em] uppercase text-slate-400 font-semibold">
+              {currentDay}
+            </p>
+          </div>
         </div>
 
-        <div className="flex gap-3">
-          <button className="px-3 py-2 bg-slate-700 rounded hover:bg-slate-600">
+        {/* ARROWS */}
+        <div className="flex gap-2">
+
+          <button
+            onClick={handlePrev}
+            className="w-11 h-11 rounded-xl bg-slate-700/40 border border-slate-600 hover:bg-slate-600/50 transition"
+          >
             ◀
           </button>
 
-          <button className="px-3 py-2 bg-slate-700 rounded hover:bg-slate-600">
+          <button
+            onClick={handleNext}
+            className="w-11 h-11 rounded-xl bg-slate-700/40 border border-slate-600 hover:bg-slate-600/50 transition"
+          >
             ▶
           </button>
         </div>
@@ -75,12 +194,12 @@ export default function CalendarDashboard() {
 
       {/* DAY VIEW */}
       {viewMode === "day" && (
-        <div className="border border-slate-600 rounded-lg overflow-hidden">
+        <div className="border border-slate-600 rounded-2xl overflow-hidden">
 
           {hours.map(hour => (
             <div
               key={hour}
-              className="grid grid-cols-[100px_1fr] border-b border-slate-700 min-h-[90px]"
+              className="grid grid-cols-[100px_1fr] border-b border-slate-700 min-h-[100px]"
             >
 
               <div className="border-r border-slate-700 flex items-start justify-center pt-4 text-slate-400 text-sm">
@@ -95,10 +214,10 @@ export default function CalendarDashboard() {
                       key={event.id}
                       className={`
                         ${event.color}
-                        border border-slate-500
-                        rounded-lg
+                        rounded-xl
                         p-3
                         mb-2
+                        border border-slate-500
                       `}
                     >
                       <p className="font-semibold">
@@ -114,22 +233,30 @@ export default function CalendarDashboard() {
 
       {/* WEEK VIEW */}
       {viewMode === "week" && (
-        <div className="overflow-hidden border border-slate-600 rounded-lg">
+        <div className="overflow-hidden border border-slate-600 rounded-2xl">
 
+          {/* WEEK HEADER */}
           <div className="grid grid-cols-8 border-b border-slate-700">
 
             <div></div>
 
-            {weekDays.map(day => (
+            {weekDates.map((date, index) => (
               <div
-                key={day}
-                className="p-4 text-center font-semibold border-l border-slate-700"
+                key={index}
+                className="p-4 text-center border-l border-slate-700"
               >
-                {day}
+                <p className="text-xs uppercase tracking-widest text-slate-400 mb-1">
+                  {weekDays[index]}
+                </p>
+
+                <p className="text-lg font-semibold text-slate-100">
+                  {date.getDate()}
+                </p>
               </div>
             ))}
           </div>
 
+          {/* WEEK BODY */}
           {hours.map(hour => (
             <div
               key={hour}
@@ -157,7 +284,7 @@ export default function CalendarDashboard() {
                         key={event.id}
                         className={`
                           ${event.color}
-                          rounded-lg
+                          rounded-xl
                           p-2
                           text-sm
                           mb-2
@@ -179,52 +306,69 @@ export default function CalendarDashboard() {
       {viewMode === "month" && (
         <div>
 
-          <div className="grid grid-cols-7 mb-3">
+          {/* DAYS HEADER */}
+          <div className="grid grid-cols-7 mb-4">
             {weekDays.map(day => (
               <div
                 key={day}
-                className="text-center font-semibold text-slate-300"
+                className="text-center text-slate-300 font-semibold"
               >
                 {day}
               </div>
             ))}
           </div>
 
+          {/* MONTH GRID */}
           <div className="grid grid-cols-7 gap-3">
 
-            {monthDays.map(day => {
+            {monthCells.map((day, index) => {
+
               const events = calendarEvents.filter(
                 event => event.day === day
               );
 
               return (
                 <div
-                  key={day}
-                  className="min-h-[120px] rounded-lg border border-slate-600 bg-slate-700/20 p-2"
+                  key={index}
+                  className={`
+                    min-h-[140px]
+                    rounded-2xl
+                    border
+                    p-3
+                    ${
+                      day
+                        ? "border-slate-600 bg-slate-700/20"
+                        : "border-transparent bg-transparent"
+                    }
+                  `}
                 >
 
-                  <p className="font-semibold mb-2">
-                    {day}
-                  </p>
+                  {day && (
+                    <>
+                      <p className="font-semibold text-slate-100 mb-3">
+                        {day}
+                      </p>
 
-                  <div className="flex flex-col gap-1">
+                      <div className="flex flex-col gap-2">
 
-                    {events.map(event => (
-                      <div
-                        key={event.id}
-                        className={`
-                          ${event.color}
-                          rounded
-                          px-2
-                          py-1
-                          text-xs
-                          truncate
-                        `}
-                      >
-                        {event.title}
+                        {events.map(event => (
+                          <div
+                            key={event.id}
+                            className={`
+                              ${event.color}
+                              rounded-lg
+                              px-2
+                              py-1
+                              text-xs
+                              truncate
+                            `}
+                          >
+                            {event.title}
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </>
+                  )}
                 </div>
               );
             })}
