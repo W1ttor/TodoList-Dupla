@@ -36,8 +36,12 @@ export default function Home() {
 
       {showModal && (
         <Modal
-          onConfirm={confirmSignOut}
-          onCancel={() => setShowModal(false)}
+           title="Sair da conta"
+  message="Deseja realmente encerrar sua sessão?"
+  confirmText="Sair"
+  cancelText="Cancelar"
+  onConfirm={confirmSignOut}
+  onCancel={() => setShowModal(false)}
         />
       )}
     </div>

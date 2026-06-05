@@ -1,27 +1,44 @@
-export default function Modal({ onConfirm, onCancel }) {
+export default function Modal({
+  title,
+  message,
+  confirmText = "Confirmar",
+  cancelText = "Cancelar",
+  onConfirm,
+  onCancel
+}) {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
-        <h2 className="text-lg font-semibold mb-4">
-          Deseja realmente sair?
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+
+      <div className="bg-slate-800 border border-slate-600 rounded-xl p-6 w-96">
+
+        <h2 className="text-xl font-semibold text-white mb-3">
+          {title}
         </h2>
 
-        <div className="flex gap-3 justify-center">
-          <button
-            onClick={onConfirm}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
-          >
-            Sair
-          </button>
+        <p className="text-slate-300 mb-6">
+          {message}
+        </p>
+
+        <div className="flex justify-end gap-3">
 
           <button
             onClick={onCancel}
-            className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded-lg"
+            className="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 transition"
           >
-            Cancelar
+            {cancelText}
           </button>
+
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 transition"
+          >
+            {confirmText}
+          </button>
+
         </div>
+
       </div>
+
     </div>
   );
 }
