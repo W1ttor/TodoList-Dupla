@@ -1,27 +1,38 @@
 /* ==========================
    SIDEBAR
 ========================= */
+
+import { useState } from "react";
+import { useTasks } from "../../context/TaskContext";
+import ListModal from "../tasks/ListsModal";
+
 export default function Sidebar({
   activeMenu,
   setActiveMenu,
   sidebarOpen,
   setSidebarOpen,
   handleSignOutClick
-})
-
-{
+}) {
   const tasksMenu = [
-    { id: "upcoming", label: "➤ Upcoming", count: 0 },
-    { id: "today", label: "📄 Today", count: 0 },
-    { id: "calendar", label: "📅 Calendar", count: 0 },
-    { id: "sticky", label: "🧱 Sticky Wall", count: 0 }
+    { id: "upcoming", label: "➤ Upcoming" },
+    { id: "today", label: "📄 Today" },
+    { id: "calendar", label: "📅 Calendar" },
+    { id: "sticky", label: "🧱 Sticky Wall" }
   ];
 
-  const listsMenu = [
-    { id: "personal", label: "Personal", color: "bg-red-400", count: 0 },
-    { id: "work", label: "Work", color: "bg-blue-400", count: 0 },
-    { id: "list1", label: "List 1", color: "bg-yellow-400", count: 0 }
-  ];
+  const {
+    lists,
+    counts,
+    setLists
+  } = useTasks();
+
+  const [showListModal, setShowListModal] = useState(false);
+
+  function handleCreateList(newList) {
+    setLists(prev => [...prev, newList]);
+
+    setShowListModal(false);
+  }
 
   return (
     <aside
@@ -37,15 +48,18 @@ export default function Sidebar({
           {/* HEADER */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
+
               <button
                 onClick={() => setSidebarOpen(false)}
                 className="p-1 rounded hover:bg-slate-600 transition text-slate-200"
               >
                 ☰
               </button>
+
               <span className="text-lg font-semibold text-slate-100">
                 Menu
               </span>
+
             </div>
           </div>
 
@@ -62,26 +76,34 @@ export default function Sidebar({
           </h2>
 
           <ul className="flex flex-col gap-2">
-            {tasksMenu.map((item) => (
+
+            {tasksMenu.map(item => (
               <li
                 key={item.id}
                 onClick={() => setActiveMenu(item.id)}
-                className={`flex justify-between items-center cursor-pointer px-2 py-1 rounded transition-all duration-200
-                ${
-                  activeMenu === item.id
-                    ? "bg-gray-100 text-black font-semibold"
-                    : "hover:bg-gray-100 hover:text-black text-slate-200"
-                }`}
+                className={`
+                  flex justify-between items-center
+                  cursor-pointer
+                  px-2 py-1
+                  rounded
+                  transition-all duration-200
+                  ${
+                    activeMenu === item.id
+                      ? "bg-gray-100 text-black font-semibold"
+                      : "hover:bg-gray-100 hover:text-black text-slate-200"
+                  }
+                `}
               >
                 <span>{item.label}</span>
 
-                {item.count > 0 && (
-                  <span className="text-xs bg-gray-200 px-2 rounded">
-                    {item.count}
+                {counts[item.id] > 0 && (
+                  <span className="text-xs bg-gray-200 text-black px-2 rounded">
+                    {counts[item.id]}
                   </span>
                 )}
               </li>
             ))}
+
           </ul>
 
           {/* LISTS */}
@@ -90,57 +112,89 @@ export default function Sidebar({
           </h2>
 
           <ul className="flex flex-col gap-2">
-            {listsMenu.map((item) => (
+
+            {lists.map(item => (
               <li
                 key={item.id}
                 onClick={() => setActiveMenu(item.id)}
-                className={`flex justify-between items-center cursor-pointer px-2 py-1 rounded transition-all duration-200
-                ${
-                  activeMenu === item.id
-                    ? "bg-gray-100 text-black font-semibold"
-                    : "hover:bg-gray-100 hover:text-black text-slate-200"
-                }`}
+                className={`
+                  flex justify-between items-center
+                  cursor-pointer
+                  px-2 py-1
+                  rounded
+                  transition-all duration-200
+                  ${
+                    activeMenu === item.id
+                      ? "bg-gray-100 text-black font-semibold"
+                      : "hover:bg-gray-100 hover:text-black text-slate-200"
+                  }
+                `}
               >
                 <div className="flex items-center gap-2">
-                  <span className={`w-3 h-3 rounded-full ${item.color}`} />
+
+                  <span
+                    className={`w-3 h-3 rounded-full ${item.color}`}
+                  />
+
                   {item.label}
+
                 </div>
 
-                {item.count > 0 && (
-                  <span className="text-xs bg-gray-200 px-2 rounded">
-                    {item.count}
+                {counts[item.id] > 0 && (
+                  <span className="text-xs bg-gray-200 text-black px-2 rounded">
+                    {counts[item.id]}
                   </span>
                 )}
               </li>
             ))}
 
             {/* ADD NEW LIST */}
-            <li className="text-blue-400 cursor-pointer px-2 py-1 hover:bg-gray-100 hover:text-black rounded transition">
+            <li
+              onClick={() => setShowListModal(true)}
+              className="
+                text-blue-400
+                cursor-pointer
+                px-2
+                py-1
+                hover:bg-gray-100
+                hover:text-black
+                rounded
+                transition
+              "
+            >
               + Add New List
             </li>
+
           </ul>
 
           {/* TAGS */}
           <div className="mt-6">
+
             <h2 className="text-xs font-semibold text-gray-400 uppercase mb-2">
               Tags
             </h2>
 
             <div className="flex flex-wrap gap-2">
+
               <span className="bg-teal-100 text-teal-800 px-3 py-1 rounded text-xs">
                 Tag 1
               </span>
+
               <span className="bg-red-100 text-red-800 px-3 py-1 rounded text-xs">
                 Tag 2
               </span>
+
               <span className="bg-gray-200 text-gray-600 px-3 py-1 rounded text-xs cursor-pointer">
                 + Add Tag
               </span>
+
             </div>
+
           </div>
 
           {/* FOOTER */}
           <div className="mt-auto flex flex-col gap-2 pt-6">
+
             <span className="cursor-pointer text-slate-300 hover:text-white transition">
               ⚙ Settings
             </span>
@@ -151,7 +205,16 @@ export default function Sidebar({
             >
               ↩ Sign out
             </span>
+
           </div>
+
+          {showListModal && (
+            <ListModal
+              onClose={() => setShowListModal(false)}
+              onSave={handleCreateList}
+            />
+          )}
+
         </>
       )}
     </aside>

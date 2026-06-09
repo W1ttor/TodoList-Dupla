@@ -1,5 +1,6 @@
 import { useState } from "react";
 import calendarEvents from "../../data/calendarEvents";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function CalendarDashboard() {
   const [viewMode, setViewMode] = useState("week");
@@ -178,17 +179,42 @@ export default function CalendarDashboard() {
 
           <button
             onClick={handlePrev}
-            className="w-11 h-11 rounded-xl bg-slate-700/40 border border-slate-600 hover:bg-slate-600/50 transition"
+            className="
+              w-11
+              h-11
+              flex
+              items-center
+              justify-center
+              rounded-xl
+              bg-slate-700/40
+              border
+              border-slate-600
+              hover:bg-slate-600/50
+              transition
+            "
           >
-            ◀
+            <ChevronLeft size={18} />
           </button>
 
           <button
             onClick={handleNext}
-            className="w-11 h-11 rounded-xl bg-slate-700/40 border border-slate-600 hover:bg-slate-600/50 transition"
+            className="
+              w-11
+              h-11
+              flex
+              items-center
+              justify-center
+              rounded-xl
+              bg-slate-700/40
+              border
+              border-slate-600
+              hover:bg-slate-600/50
+              transition
+            "
           >
-            ▶
+            <ChevronRight size={18} />
           </button>
+
         </div>
       </div>
 

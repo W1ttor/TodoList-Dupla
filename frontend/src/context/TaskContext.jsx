@@ -5,17 +5,38 @@ const TaskContext = createContext();
 
 export function TaskProvider({ children }) {
   const [tasks, setTasks] = useState([]);
+
+const [lists, setLists] = useState([
+  {
+    id: "personal",
+    label: "Personal",
+    color: "bg-red-400"
+  },
+  {
+    id: "work",
+    label: "Work",
+    color: "bg-blue-400"
+  },
+  {
+    id: "list1",
+    label: "List 1",
+    color: "bg-yellow-400"
+  }
+]);
+
+
   const [activeMenu, setActiveMenu] = useState("today");
 
   const titles = {
-    today: "Today",
-    upcoming: "Upcoming",
-    calendar: "Calendar",
-    sticky: "Sticky Wall",
-    personal: "Personal",
-    work: "Work",
-    list1: "List 1"
-  };
+  today: "Today",
+  upcoming: "Upcoming",
+  calendar: "Calendar",
+  sticky: "Sticky Wall"
+};
+
+lists.forEach(list => {
+  titles[list.id] = list.label;
+});
 
   // buscar tarefas backend
   useEffect(() => {
@@ -45,26 +66,43 @@ export function TaskProvider({ children }) {
   }
 
   const counts = {
-    today: tasks.filter(task => task.type === "today").length,
-    upcoming: tasks.filter(task => task.type === "upcoming").length,
-    calendar: tasks.filter(task => task.type === "calendar").length,
-    sticky: tasks.filter(task => task.type === "sticky").length,
-    personal: tasks.filter(task => task.type === "personal").length,
-    work: tasks.filter(task => task.type === "work").length,
-    list1: tasks.filter(task => task.type === "list1").length,
-  };
+  today: tasks.filter(
+    task => task.section === "today"
+  ).length,
+
+  upcoming: tasks.filter(
+    task =>
+      task.section === "tomorrow" ||
+      task.section === "week"
+  ).length,
+
+  calendar: 0,
+  sticky: 0
+};
+
+lists.forEach(list => {
+  counts[list.id] = tasks.filter(
+    task => task.list === list.id
+  ).length;
+});
 
   return (
     <TaskContext.Provider
       value={{
-        tasks,
-        setTasks,
-        activeMenu,
-        setActiveMenu,
-        titles,
-        counts,
-        fetchTasks
-      }}
+  tasks,
+  setTasks,
+
+  lists,
+  setLists,
+
+  activeMenu,
+  setActiveMenu,
+
+  titles,
+  counts,
+
+  fetchTasks
+}}
     >
       {children}
     </TaskContext.Provider>

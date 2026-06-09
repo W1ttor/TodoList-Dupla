@@ -1,14 +1,20 @@
 import { useTasks } from "../../context/TaskContext";
+
 import UpcomingDashboard from "./UpcomingDashboard";
 import TodayDashboard from "./TodayDashboard";
 import StickyWallDashboard from "./StickyWallDashboard";
 import CalendarDashboard from "./CalendarDashboard";
+import ListsDashboard from "./ListsDashboard";
 
 export default function TaskSection({
   sidebarOpen,
   setSidebarOpen
 }) {
-  const { activeMenu, counts, titles } = useTasks();
+  const {
+    activeMenu,
+    counts,
+    titles
+  } = useTasks();
 
   return (
     <main className="flex-1 p-10 bg-gradient-to-br from-slate-700 via-gray-700 to-black min-h-screen text-slate-100">
@@ -23,7 +29,9 @@ export default function TaskSection({
       )}
 
       <div className="flex items-center gap-3 mb-8">
-        <h1 className="text-4xl font-bold">{titles[activeMenu]}</h1>
+        <h1 className="text-4xl font-bold">
+          {titles[activeMenu]}
+        </h1>
 
         {counts[activeMenu] > 0 && (
           <span className="text-xl bg-slate-600/50 px-3 py-1 rounded border border-slate-500">
@@ -32,21 +40,34 @@ export default function TaskSection({
         )}
       </div>
 
-      {activeMenu === "upcoming" && <UpcomingDashboard />}
-      {activeMenu === "today" && <TodayDashboard />}
-      {activeMenu === "sticky" && <StickyWallDashboard />}
-      {activeMenu === "calendar" && <CalendarDashboard />}
+      {/* DASHBOARDS PRINCIPAIS */}
 
-      {activeMenu !== "upcoming" &&
-        activeMenu !== "today" &&
-        activeMenu !== "sticky" &&
-        activeMenu !== "calendar" && (
-          <div className="bg-slate-800/40 border border-slate-600 rounded p-6">
-            <p className="text-slate-300">
-              Conteúdo de <strong>{titles[activeMenu]}</strong> em construção.
-            </p>
-          </div>
-        )}
+      {activeMenu === "upcoming" && (
+        <UpcomingDashboard />
+      )}
+
+      {activeMenu === "today" && (
+        <TodayDashboard />
+      )}
+
+      {activeMenu === "sticky" && (
+        <StickyWallDashboard />
+      )}
+
+      {activeMenu === "calendar" && (
+        <CalendarDashboard />
+      )}
+
+      {/* LISTAS */}
+
+      {[
+        "personal",
+        "work",
+        "list1"
+      ].includes(activeMenu) && (
+        <ListsDashboard />
+      )}
+
     </main>
   );
 }
