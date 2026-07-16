@@ -1,10 +1,11 @@
 import { useTasks } from "../../context/TaskContext";
-
+import { useState } from "react";
 import UpcomingDashboard from "./UpcomingDashboard";
 import TodayDashboard from "./TodayDashboard";
 import StickyWallDashboard from "./StickyWallDashboard";
 import CalendarDashboard from "./CalendarDashboard";
 import ListsDashboard from "./ListsDashboard";
+import TaskDetailsPanel from "./TaskDetailsPanel";
 
 export default function TaskSection({
   sidebarOpen,
@@ -15,6 +16,11 @@ export default function TaskSection({
     counts,
     titles
   } = useTasks();
+
+
+const [selectedTask, setSelectedTask] = useState(null);
+
+const [isCreatingTask, setIsCreatingTask] = useState(false);
 
   return (
     <main className="flex-1 p-10 bg-gradient-to-br from-slate-700 via-gray-700 to-black min-h-screen text-slate-100">
@@ -47,7 +53,30 @@ export default function TaskSection({
       )}
 
       {activeMenu === "today" && (
-        <TodayDashboard />
+        <div
+  className={
+  (selectedTask || isCreatingTask)
+    ? "grid grid-cols-[2fr_380px] gap-8"
+    : ""
+}
+>
+
+  <TodayDashboard
+    selectedTask={selectedTask}
+    setSelectedTask={setSelectedTask}
+    isCreatingTask={isCreatingTask}
+    setIsCreatingTask={setIsCreatingTask}
+  />
+
+  {(selectedTask || isCreatingTask) && (
+    <TaskDetailsPanel
+        task={selectedTask}
+        isCreatingTask={isCreatingTask}
+        setSelectedTask={setSelectedTask}
+        setIsCreatingTask={setIsCreatingTask}
+    />
+)}
+</div>
       )}
 
       {activeMenu === "sticky" && (
