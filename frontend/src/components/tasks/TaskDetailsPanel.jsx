@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 export default function TaskDetailsPanel({
   task,
   isCreatingTask,
@@ -5,7 +7,91 @@ export default function TaskDetailsPanel({
   setIsCreatingTask
 }) {
 
-  if (!task && !isCreatingTask) {
+const [title, setTitle] = useState(
+      task?.title || ""
+    );
+
+    const [description, setDescription] = useState(
+      task?.description || ""
+    );
+
+    const [list, setList] = useState(
+      task?.list || "Personal"
+    );
+
+    const [dueDate, setDueDate] = useState(
+      task?.dueDate || ""
+    );
+
+    const [tags, setTags] = useState(
+      task?.tags?.join(", ") || ""
+    );  
+
+useEffect(() => {
+
+  if (task) {
+
+    setTitle(task.title || "");
+
+    setDescription(
+      task.description || ""
+    );
+
+    setList(
+      task.list || "Personal"
+    );
+
+    setDueDate(
+      task.dueDate || ""
+    );
+
+    setTags(
+      task.tags?.join(", ") || ""
+    );
+
+  } else if (isCreatingTask) {
+
+    setTitle("");
+
+    setDescription("");
+
+    setList("Personal");
+
+    setDueDate("");
+
+    setTags("");
+
+  }
+
+}, [task, isCreatingTask]);
+
+
+
+function handleSave() {
+
+  const taskData = {
+
+    title,
+
+    description,
+
+    list,
+
+    dueDate,
+
+    tags: tags
+      .split(",")
+      .map(tag => tag.trim())
+      .filter(Boolean)
+
+  };
+
+  console.log(taskData);
+
+}
+
+
+    if (!task && !isCreatingTask)  {
     return (
       <div className="bg-slate-800/40 border border-slate-600 rounded p-6">
         <p className="text-slate-400">
@@ -14,7 +100,7 @@ export default function TaskDetailsPanel({
       </div>
     );
   }
-
+ 
   return (
     <div className="bg-slate-800/40 border border-slate-600 rounded p-6 h-full">
 
@@ -43,57 +129,108 @@ export default function TaskDetailsPanel({
 
       </div>
 
-      <div className="space-y-5">
+  <div className="space-y-6">
 
-        <div>
-          <p className="text-slate-400 text-sm mb-1">
-            Description
-          </p>
+    <div>
+      <label className="text-sm text-slate-400">
+        Title
+      </label>
 
-          <p>
-            {isCreatingTask
-              ? "-"
-              : task?.description || "-"}
-          </p>
-        </div>
+      <input
+        value={title}
+        onChange={(e) =>
+          setTitle(e.target.value)
+        }
+        className="w-full mt-2 bg-slate-700 border border-slate-600 rounded-lg p-3 outline-none focus:border-blue-500"
+        placeholder="Task title"
+      />
+    </div>
 
-        <div>
-          <p className="text-slate-400 text-sm mb-1">
-            List
-          </p>
+    <div>
+      <label className="text-sm text-slate-400">
+        Description
+      </label>
 
-          <p>
-            {isCreatingTask
-              ? "-"
-              : task?.list || "-"}
-          </p>
-        </div>
+      <textarea
+        rows={5}
+        value={description}
+        onChange={(e) =>
+          setDescription(e.target.value)
+        }
+        className="w-full mt-2 bg-slate-700 border border-slate-600 rounded-lg p-3 resize-none outline-none focus:border-blue-500"
+        placeholder="Task description"
+      />
+    </div>
 
-        <div>
-          <p className="text-slate-400 text-sm mb-1">
-            Due Date
-          </p>
+    <div>
+      <label className="text-sm text-slate-400">
+        List
+      </label>
 
-          <p>
-            {isCreatingTask
-              ? "-"
-              : task?.dueDate || "-"}
-          </p>
-        </div>
+      <select
+        value={list}
+        onChange={(e) =>
+          setList(e.target.value)
+        }
+        className="w-full mt-2 bg-slate-700 border border-slate-600 rounded-lg p-3"
+      >
+        <option>Personal</option>
+        <option>Work</option>
+        <option>List 1</option>
+      </select>
+    </div>
 
-        <div>
-          <p className="text-slate-400 text-sm mb-1">
-            Tags
-          </p>
+    <div>
+      <label className="text-sm text-slate-400">
+        Due Date
+      </label>
 
-          <p>
-            {isCreatingTask
-              ? "-"
-              : task?.tags?.join(", ") || "-"}
-          </p>
-        </div>
+      <input
+        type="date"
+        value={dueDate}
+        onChange={(e) =>
+          setDueDate(e.target.value)
+        }
+        className="w-full mt-2 bg-slate-700 border border-slate-600 rounded-lg p-3"
+      />
+    </div>
 
-      </div>
+    <div>
+      <label className="text-sm text-slate-400">
+        Tags
+      </label>
+
+      <input
+        value={tags}
+        onChange={(e) =>
+          setTags(e.target.value)
+        }
+        placeholder="Work, Study..."
+        className="w-full mt-2 bg-slate-700 border border-slate-600 rounded-lg p-3"
+      />
+    </div>
+
+    <div className="flex justify-end gap-3 pt-4">
+
+      <button
+        onClick={() => {
+          setSelectedTask(null);
+          setIsCreatingTask(false);
+        }}
+        className="px-5 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 transition"
+      >
+        Cancel
+      </button>
+
+      <button
+        onClick={handleSave} className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition"
+      >
+        Save
+      </button>
+
+    </div>
+
+  </div>
 
     </div>
   );
