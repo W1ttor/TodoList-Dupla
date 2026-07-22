@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTasks } from "../../context/TaskContext";
 
 export default function TaskDetailsPanel({
   task,
@@ -6,6 +7,12 @@ export default function TaskDetailsPanel({
   setSelectedTask,
   setIsCreatingTask
 }) {
+
+const {
+  createTask,
+  updateTask
+} = useTasks();
+
 
 const [title, setTitle] = useState(
       task?.title || ""
@@ -26,6 +33,15 @@ const [title, setTitle] = useState(
     const [tags, setTags] = useState(
       task?.tags?.join(", ") || ""
     );  
+
+    const [priority, setPriority] = useState(
+        task?.priority || "Medium"
+      );
+
+      const [completed, setCompleted] = useState(
+        task?.completed || false
+      );
+  
 
 useEffect(() => {
 
@@ -49,6 +65,14 @@ useEffect(() => {
       task.tags?.join(", ") || ""
     );
 
+    setPriority(
+      task.priority || "Medium"
+    );
+
+    setCompleted(
+      task.completed || false
+    );
+
   } else if (isCreatingTask) {
 
     setTitle("");
@@ -61,6 +85,10 @@ useEffect(() => {
 
     setTags("");
 
+    setPriority("Medium");
+
+    setCompleted(false);
+
   }
 
 }, [task, isCreatingTask]);
@@ -71,6 +99,8 @@ function handleSave() {
 
   const taskData = {
 
+    ...(task || {}),
+
     title,
 
     description,
@@ -79,6 +109,12 @@ function handleSave() {
 
     dueDate,
 
+    priority,
+
+    completed,
+
+    section: task?.section || "today",
+
     tags: tags
       .split(",")
       .map(tag => tag.trim())
@@ -86,10 +122,21 @@ function handleSave() {
 
   };
 
-  console.log(taskData);
+  if (isCreatingTask) {
+
+    createTask(taskData);
+
+  } else {
+
+    updateTask(taskData);
+
+  }
+
+  setSelectedTask(null);
+
+  setIsCreatingTask(false);
 
 }
-
 
     if (!task && !isCreatingTask)  {
     return (
@@ -196,6 +243,30 @@ function handleSave() {
     </div>
 
     <div>
+
+      <label className="text-sm text-slate-400">
+        Priority
+      </label>
+
+      <select
+        value={priority}
+        onChange={(e) =>
+          setPriority(e.target.value)
+        }
+        className="w-full mt-2 bg-slate-700 border border-slate-600 rounded-lg p-3"
+      >
+        <option>Low</option>
+        <option>Medium</option>
+        <option>High</option>
+      </select>
+
+    </div>
+
+
+
+
+
+    <div>
       <label className="text-sm text-slate-400">
         Tags
       </label>
@@ -209,6 +280,25 @@ function handleSave() {
         className="w-full mt-2 bg-slate-700 border border-slate-600 rounded-lg p-3"
       />
     </div>
+
+    <div className="flex items-center gap-3">
+
+      <input
+        type="checkbox"
+        checked={completed}
+        onChange={(e) =>
+          setCompleted(e.target.checked)
+        }
+      />
+
+      <label>
+        Completed
+      </label>
+
+    </div>
+
+
+
 
     <div className="flex justify-end gap-3 pt-4">
 

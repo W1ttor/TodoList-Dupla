@@ -65,6 +65,38 @@ lists.forEach(list => {
     }
   }
 
+function createTask(taskData) {
+
+  const newTask = {
+    id: Date.now(),
+    section: "today",
+    ...taskData
+  };
+
+  setTasks(prev => [
+    ...prev,
+    newTask
+  ]);
+
+}
+
+function updateTask(taskData) {
+
+  setTasks(prev =>
+    prev.map(task =>
+      task.id === taskData.id
+        ? taskData
+        : task
+    )
+  );
+
+}
+
+
+
+
+
+
   const counts = {
   today: tasks.filter(
     task => task.section === "today"
@@ -101,7 +133,10 @@ lists.forEach(list => {
   titles,
   counts,
 
-  fetchTasks
+  fetchTasks,
+
+  createTask,
+  updateTask
 }}
     >
       {children}

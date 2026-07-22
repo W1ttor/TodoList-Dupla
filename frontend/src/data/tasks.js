@@ -3,25 +3,43 @@ const mockTasks = [
     id: 1,
     title: "Research content ideas",
     section: "today",
-    list: "personal"
+    list: "personal",
+
+      priority: "Medium",
+
+    completed: false
+
   },
   {
     id: 2,
     title: "Create a database of guest authors",
     section: "today",
-    list: "work"
+    list: "work",
+
+      priority: "Medium",
+
+    completed: false
   },
   {
     id: 3,
     title: "Create job posting for SEO specialist",
     section: "tomorrow",
-    list: "work"
+    list: "work",
+
+      priority: "Medium",
+
+    completed: false
+
   },
   {
     id: 4,
     title: "Renew driver's license",
     section: "week",
-    list: "personal"
+    list: "personal",
+
+      priority: "Medium",
+
+    completed: false
   }
 ];
 
