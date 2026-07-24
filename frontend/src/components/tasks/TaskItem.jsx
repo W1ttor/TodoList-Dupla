@@ -1,8 +1,19 @@
+import { useTasks } from "../../context/TaskContext";
+
 export default function TaskItem({
   task,
   onSelectTask,
   setIsCreatingTask
 }) {
+
+const { lists } = useTasks();
+
+const currentList = lists.find(
+  listItem => listItem.id === task.list
+);
+
+
+
   return (
     <div
       onClick={() => {
@@ -39,7 +50,7 @@ export default function TaskItem({
 
           <span className="text-slate-400">
 
-            {task.list}
+            {currentList?.label || task.list}
 
           </span>
 

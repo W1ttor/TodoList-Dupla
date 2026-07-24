@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTasks } from "../../context/TaskContext";
+import toast from "react-hot-toast";
+import Modal from "../layout/Modal";
 
 export default function TaskDetailsPanel({
   task,
@@ -10,7 +12,9 @@ export default function TaskDetailsPanel({
 
 const {
   createTask,
-  updateTask
+  updateTask,
+  deleteTask,
+  lists
 } = useTasks();
 
 
@@ -41,6 +45,8 @@ const [title, setTitle] = useState(
       const [completed, setCompleted] = useState(
         task?.completed || false
       );
+
+      const [showDeleteModal, setShowDeleteModal] = useState(false);
   
 
 useEffect(() => {
@@ -138,6 +144,19 @@ function handleSave() {
 
 }
 
+function handleDelete() {
+
+  deleteTask(task.id);
+
+  toast.success("Task deleted.");
+
+  setSelectedTask(null);
+
+  setIsCreatingTask(false);
+
+}
+
+
     if (!task && !isCreatingTask)  {
     return (
       <div className="bg-slate-800/40 border border-slate-600 rounded p-6">
@@ -147,17 +166,29 @@ function handleSave() {
       </div>
     );
   }
+
+
+const priorityColor = {
+  Low: "text-green-400",
+  Medium: "text-yellow-400",
+  High: "text-red-400"
+};
+
  
   return (
+<>
+    
     <div className="bg-slate-800/40 border border-slate-600 rounded p-6 h-full">
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-start justify-between border-b border-slate-700 pb-5 mb-7">
 
-        <h2 className="text-2xl font-bold">
+         <h2 className="text-2xl font-bold text-white">
+
           {isCreatingTask
-            ? "Nova Task"
-            : "Editar Task"}
-        </h2>
+           ? "New Task"
+           : "Edit Task"}
+
+          </h2>
 
         <button
           onClick={() => {
@@ -165,11 +196,17 @@ function handleSave() {
             setIsCreatingTask(false);
           }}
           className="
+            w-9
+            h-9
+            rounded-lg
+            flex
+            items-center
+            justify-center
+            hover:bg-slate-700
             text-slate-400
             hover:text-white
             transition
-            text-xl
-          "
+            "
         >
           ✕
         </button>
@@ -179,7 +216,7 @@ function handleSave() {
   <div className="space-y-6">
 
     <div>
-      <label className="text-sm text-slate-400">
+      <label className="block text-xs uppercase tracking-wider text-slate-400 mb-2 font-semibold">
         Title
       </label>
 
@@ -188,13 +225,13 @@ function handleSave() {
         onChange={(e) =>
           setTitle(e.target.value)
         }
-        className="w-full mt-2 bg-slate-700 border border-slate-600 rounded-lg p-3 outline-none focus:border-blue-500"
+        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
         placeholder="Task title"
       />
     </div>
 
     <div>
-      <label className="text-sm text-slate-400">
+      <label className="block text-xs uppercase tracking-wider text-slate-400 mb-2 font-semibold">
         Description
       </label>
 
@@ -210,7 +247,7 @@ function handleSave() {
     </div>
 
     <div>
-      <label className="text-sm text-slate-400">
+      <label className="block text-xs uppercase tracking-wider text-slate-400 mb-2 font-semibold">
         List
       </label>
 
@@ -219,16 +256,23 @@ function handleSave() {
         onChange={(e) =>
           setList(e.target.value)
         }
-        className="w-full mt-2 bg-slate-700 border border-slate-600 rounded-lg p-3"
+        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
       >
-        <option>Personal</option>
-        <option>Work</option>
-        <option>List 1</option>
+          {lists.map(listItem => (
+
+            <option
+              key={listItem.id}
+              value={listItem.id}
+            >
+              {listItem.label}
+            </option>
+
+          ))}
       </select>
     </div>
 
     <div>
-      <label className="text-sm text-slate-400">
+      <label className="block text-xs uppercase tracking-wider text-slate-400 mb-2 font-semibold">
         Due Date
       </label>
 
@@ -238,27 +282,25 @@ function handleSave() {
         onChange={(e) =>
           setDueDate(e.target.value)
         }
-        className="w-full mt-2 bg-slate-700 border border-slate-600 rounded-lg p-3"
+        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
       />
     </div>
 
     <div>
 
-      <label className="text-sm text-slate-400">
+      <label className="block text-xs uppercase tracking-wider text-slate-400 mb-2 font-semibold">
         Priority
       </label>
 
-      <select
-        value={priority}
-        onChange={(e) =>
-          setPriority(e.target.value)
-        }
-        className="w-full mt-2 bg-slate-700 border border-slate-600 rounded-lg p-3"
-      >
-        <option>Low</option>
-        <option>Medium</option>
-        <option>High</option>
-      </select>
+<select
+  value={priority}
+  onChange={(e) => setPriority(e.target.value)}
+  className={`w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 ${priorityColor[priority]}`}
+>
+  <option value="Low">Low</option>
+  <option value="Medium">Medium</option>
+  <option value="High">High</option>
+</select>
 
     </div>
 
@@ -267,61 +309,151 @@ function handleSave() {
 
 
     <div>
-      <label className="text-sm text-slate-400">
+      <label className="block text-xs uppercase tracking-wider text-slate-400 mb-2 font-semibold">
         Tags
       </label>
 
-      <input
-        value={tags}
-        onChange={(e) =>
-          setTags(e.target.value)
-        }
-        placeholder="Work, Study..."
-        className="w-full mt-2 bg-slate-700 border border-slate-600 rounded-lg p-3"
-      />
-    </div>
+      <div className="flex flex-wrap gap-2 mt-2">
 
-    <div className="flex items-center gap-3">
+  {tags
+    .split(",")
+    .filter(Boolean)
+    .map(tag => (
 
-      <input
-        type="checkbox"
-        checked={completed}
-        onChange={(e) =>
-          setCompleted(e.target.checked)
-        }
-      />
-
-      <label>
-        Completed
-      </label>
-
-    </div>
-
-
-
-
-    <div className="flex justify-end gap-3 pt-4">
-
-      <button
-        onClick={() => {
-          setSelectedTask(null);
-          setIsCreatingTask(false);
-        }}
-        className="px-5 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 transition"
+      <span
+        key={tag}
+        className="px-3 py-1 rounded-full bg-blue-500/20 border border-blue-500/30 text-sm"
       >
-        Cancel
-      </button>
+        {tag.trim()}
+      </span>
 
-      <button
-        onClick={handleSave} className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition"
-      >
-        Save
-      </button>
+    ))}
 
+</div>
+
+<input
+  value={tags}
+  onChange={(e) => setTags(e.target.value)}
+  placeholder="Work, React, Study..."
+  className="w-full mt-3 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-blue-500"
+/>
     </div>
+
+<div className="flex items-center justify-between">
+
+  <label className="text-xs uppercase tracking-wider text-slate-400 font-semibold">
+    Completed
+  </label>
+
+  <button
+    type="button"
+    onClick={() => setCompleted(!completed)}
+    className={`
+      w-11
+      h-6
+      rounded-full
+      transition
+      relative
+      ${
+        completed
+          ? "bg-blue-600"
+          : "bg-slate-600"
+      }
+    `}
+  >
+    <span
+      className={`
+        absolute
+        top-0.5
+        left-0.5
+        w-5
+        h-5
+        rounded-full
+        bg-white
+        transition
+        ${
+          completed
+            ? "translate-x-5"
+            : ""
+        }
+      `}
+    />
+  </button>
+
+</div>
+
+
+
+<div className="flex justify-between items-center pt-8 border-t border-slate-700">
+
+  <button 
+    onClick={() => setShowDeleteModal(true)}
+    className="
+      text-red-400
+      hover:text-red-300
+      transition
+      font-medium
+    "
+  >
+    Delete
+  </button>
+
+  <div className="flex gap-3">
+
+    <button
+      onClick={()=>{
+        setSelectedTask(null);
+        setIsCreatingTask(false);
+      }}
+      className="
+        px-5
+        py-3
+        rounded-xl
+        bg-slate-700
+        hover:bg-slate-600
+        transition
+      "
+    >
+      Cancel
+    </button>
+
+    <button
+      onClick={handleSave}
+      className="
+        px-6
+        py-3
+        rounded-xl
+        bg-blue-600
+        hover:bg-blue-700
+        transition
+        font-medium
+      "
+    >
+      Save
+    </button>
+
+  </div>
+
+</div>
 
   </div>
 
     </div>
+
+ {showDeleteModal && (
+      <Modal
+        title="Delete task"
+        message="This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        onCancel={() => setShowDeleteModal(false)}
+        onConfirm={() => {
+          handleDelete();
+          setShowDeleteModal(false);
+        }}
+      />
+    )}
+
+    </>
   );
 }

@@ -40,8 +40,30 @@ lists.forEach(list => {
 
   // buscar tarefas backend
   useEffect(() => {
+    const savedTasks = localStorage.getItem("tasks");
+
+  if (savedTasks) {
+
+    setTasks(
+      JSON.parse(savedTasks)
+    );
+
+  } else {
+
     setTasks(mockTasks);
-  }, []);
+
+  }
+
+}, []);
+
+useEffect(() => {
+
+  localStorage.setItem(
+    "tasks",
+    JSON.stringify(tasks)
+  );
+
+}, [tasks]);
 
   async function fetchTasks() {
     try {
@@ -92,8 +114,13 @@ function updateTask(taskData) {
 
 }
 
+function deleteTask(id) {
 
+  setTasks(prev =>
+    prev.filter(task => task.id !== id)
+  );
 
+}
 
 
 
@@ -136,7 +163,8 @@ lists.forEach(list => {
   fetchTasks,
 
   createTask,
-  updateTask
+  updateTask,
+  deleteTask
 }}
     >
       {children}
