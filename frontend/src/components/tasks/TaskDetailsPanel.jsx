@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTasks } from "../../context/TaskContext";
 import toast from "react-hot-toast";
 import Modal from "../layout/Modal";
+import TagModal from "./TagModal";
 
 export default function TaskDetailsPanel({
   task,
@@ -11,10 +12,12 @@ export default function TaskDetailsPanel({
 }) {
 
 const {
-  createTask,
+    createTask,
   updateTask,
   deleteTask,
-  lists
+  lists,
+  tags: availableTags,
+  setTags: setAvailableTags
 } = useTasks();
 
 
@@ -35,18 +38,20 @@ const [title, setTitle] = useState(
     );
 
     const [tags, setTags] = useState(
-      task?.tags?.join(", ") || ""
-    );  
+      task?.tags || []
+    );
 
     const [priority, setPriority] = useState(
         task?.priority || "Medium"
       );
 
-      const [completed, setCompleted] = useState(
-        task?.completed || false
-      );
+    const [completed, setCompleted] = useState(
+        task?.completed || false      );
 
-      const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showTagModal, setShowTagModal] = useState(false);    
+
+
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
   
 
 useEffect(() => {
@@ -67,9 +72,7 @@ useEffect(() => {
       task.dueDate || ""
     );
 
-    setTags(
-      task.tags?.join(", ") || ""
-    );
+    setTags(task?.tags || []);  
 
     setPriority(
       task.priority || "Medium"
@@ -89,7 +92,7 @@ useEffect(() => {
 
     setDueDate("");
 
-    setTags("");
+    setTags([]);
 
     setPriority("Medium");
 
@@ -119,12 +122,7 @@ function handleSave() {
 
     completed,
 
-    section: task?.section || "today",
-
-    tags: tags
-      .split(",")
-      .map(tag => tag.trim())
-      .filter(Boolean)
+    tags
 
   };
 
@@ -157,9 +155,26 @@ function handleDelete() {
 }
 
 
+function handleCreateTag(newTag) {
+
+  setAvailableTags(prev => [
+    ...prev,
+    newTag
+  ]);
+
+  setTags(prev => [
+    ...prev,
+    newTag.label
+  ]);
+
+  setShowTagModal(false);
+
+}
+
+
     if (!task && !isCreatingTask)  {
     return (
-      <div className="bg-slate-800/40 border border-slate-600 rounded p-6">
+      <div className="bg-slate-800/40 border border-slate-600 rounded-xl p-6 sticky top-8">
         <p className="text-slate-400">
           Selecione uma tarefa.
         </p>
@@ -313,30 +328,54 @@ const priorityColor = {
         Tags
       </label>
 
-      <div className="flex flex-wrap gap-2 mt-2">
 
-  {tags
-    .split(",")
-    .filter(Boolean)
-    .map(tag => (
 
-      <span
-        key={tag}
-        className="px-3 py-1 rounded-full bg-blue-500/20 border border-blue-500/30 text-sm"
+<div className="flex flex-wrap gap-2 mt-3">
+
+  {tags.map(tag => (
+
+    <div
+      key={tag}
+      className="
+        px-3
+        py-1
+        rounded-lg
+        bg-sky-300
+        text-slate-900
+        text-sm
+        flex
+        items-center
+        gap-2
+      "
+    >
+      {tag}
+
+      <button
+        onClick={() =>
+          setTags(
+            tags.filter(t => t !== tag)
+          )
+        }
       >
-        {tag.trim()}
-      </span>
+        ×
+      </button>
 
-    ))}
+    </div>
+
+  ))}
+
+<button
+  onClick={() => setShowTagModal(true)}
+  className="
+    text-blue-400
+    text-sm
+    hover:text-blue-300
+  "
+>
+  + Add Tag
+</button>
 
 </div>
-
-<input
-  value={tags}
-  onChange={(e) => setTags(e.target.value)}
-  placeholder="Work, React, Study..."
-  className="w-full mt-3 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-blue-500"
-/>
     </div>
 
 <div className="flex items-center justify-between">
@@ -453,6 +492,16 @@ const priorityColor = {
         }}
       />
     )}
+
+
+    {showTagModal && (
+
+  <TagModal
+    onClose={() => setShowTagModal(false)}
+    onSave={handleCreateTag}
+  />
+
+)}
 
     </>
   );

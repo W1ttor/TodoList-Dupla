@@ -5,6 +5,7 @@
 import { useState } from "react";
 import { useTasks } from "../../context/TaskContext";
 import ListModal from "../tasks/ListsModal";
+import TagModal from "../tasks/TagModal";
 
 export default function Sidebar({
   activeMenu,
@@ -21,18 +22,33 @@ export default function Sidebar({
   ];
 
   const {
-    lists,
-    counts,
-    setLists
+  counts,
+  lists,
+  tags,
+  setLists
   } = useTasks();
 
   const [showListModal, setShowListModal] = useState(false);
+
+  const [showTagModal, setShowTagModal] = useState(false);
 
   function handleCreateList(newList) {
     setLists(prev => [...prev, newList]);
 
     setShowListModal(false);
   }
+
+  function handleCreateTag(newTag) {
+
+  setTags(prev => [
+    ...prev,
+    newTag
+  ]);
+
+  setShowTagModal(false);
+
+}
+
 
   return (
     <aside
@@ -176,17 +192,31 @@ export default function Sidebar({
 
             <div className="flex flex-wrap gap-2">
 
-              <span className="bg-teal-100 text-teal-800 px-3 py-1 rounded text-xs">
-                Tag 1
-              </span>
+              {tags.map(tag => (
 
-              <span className="bg-red-100 text-red-800 px-3 py-1 rounded text-xs">
-                Tag 2
-              </span>
+                <span
+                  key={tag.id}
+                  className={`${tag.color} px-3 py-1 rounded text-xs`}
+                >
+                  {tag.label}
+                </span>
 
-              <span className="bg-gray-200 text-gray-600 px-3 py-1 rounded text-xs cursor-pointer">
-                + Add Tag
-              </span>
+              ))}
+
+            <span
+              onClick={() => setShowTagModal(true)}
+              className="
+                bg-gray-200
+                text-gray-600
+                px-3
+                py-1
+                rounded
+                text-xs
+                cursor-pointer
+              "
+            >
+              + Add Tag
+            </span>
 
             </div>
 
@@ -214,6 +244,16 @@ export default function Sidebar({
               onSave={handleCreateList}
             />
           )}
+
+            {showTagModal && (
+
+            <TagModal
+              onClose={() => setShowTagModal(false)}
+              onSave={handleCreateTag}
+            />
+
+          )}
+
 
         </>
       )}

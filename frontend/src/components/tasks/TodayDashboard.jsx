@@ -1,6 +1,7 @@
 import { useTasks } from "../../context/TaskContext";
 import TaskItem from "./TaskItem";
 import { useState } from "react";
+import { getTaskSection } from "../../utils/taskUtils";
 
 export default function TodayDashboard({
     selectedTask,
@@ -11,7 +12,7 @@ export default function TodayDashboard({
   const { tasks } = useTasks();
 
  
-  const todayTasks = tasks.filter(task => task.section === "today");
+  const todayTasks = tasks.filter(task => getTaskSection(task) === "today");
 
   function handleSelectTask(task) {
     setIsCreatingTask(false);

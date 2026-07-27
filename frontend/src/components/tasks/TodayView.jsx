@@ -2,8 +2,13 @@ import TaskItem from "./TaskItem";
 
 export default function TodayView({
   title,
-  tasks
+  tasks,
+  onSelectTask,
+  isCreatingTask,
+  setIsCreatingTask,
+  setSelectedTask
 }) {
+
   return (
     <div className="bg-slate-800/40 border border-slate-600 rounded p-6">
 
@@ -12,6 +17,10 @@ export default function TodayView({
       </h2>
 
       <button
+        onClick={() => {
+          setSelectedTask(null);
+          setIsCreatingTask(true);
+        }}
         className="
           w-full
           text-left
@@ -29,18 +38,28 @@ export default function TodayView({
       </button>
 
       <div className="flex flex-col gap-3">
+
         {tasks.length > 0 ? (
+
           tasks.map(task => (
+
             <TaskItem
               key={task.id}
               task={task}
+              onSelectTask={onSelectTask}
+              setIsCreatingTask={setIsCreatingTask}
             />
+
           ))
+
         ) : (
+
           <p className="text-slate-400">
             Nenhuma tarefa.
           </p>
+
         )}
+
       </div>
 
     </div>

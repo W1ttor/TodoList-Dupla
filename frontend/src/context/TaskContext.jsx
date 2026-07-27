@@ -25,6 +25,22 @@ const [lists, setLists] = useState([
 ]);
 
 
+const [tags, setTags] = useState([
+  {
+    id: 1,
+    label: "Tag 1",
+    color: "bg-cyan-300"
+  },
+  {
+    id: 2,
+    label: "Tag 2",
+    color: "bg-red-300"
+  }
+]);
+
+
+
+
   const [activeMenu, setActiveMenu] = useState("today");
 
   const titles = {
@@ -91,7 +107,6 @@ function createTask(taskData) {
 
   const newTask = {
     id: Date.now(),
-    section: "today",
     ...taskData
   };
 
@@ -99,6 +114,29 @@ function createTask(taskData) {
     ...prev,
     newTask
   ]);
+
+  taskData.tags.forEach(tag => {
+
+    const exists = tags.some(
+      item =>
+        item.label.toLowerCase() ===
+        tag.toLowerCase()
+    );
+
+    if (!exists) {
+
+      setTags(prev => [
+        ...prev,
+        {
+          id: Date.now() + Math.random(),
+          label: tag,
+          color: "bg-cyan-300"
+        }
+      ]);
+
+    }
+
+  });
 
 }
 
@@ -111,6 +149,29 @@ function updateTask(taskData) {
         : task
     )
   );
+
+  taskData.tags.forEach(tag => {
+
+    const exists = tags.some(
+      item =>
+        item.label.toLowerCase() ===
+        tag.toLowerCase()
+    );
+
+    if (!exists) {
+
+      setTags(prev => [
+        ...prev,
+        {
+          id: Date.now() + Math.random(),
+          label: tag,
+          color: "bg-cyan-300"
+        }
+      ]);
+
+    }
+
+  });
 
 }
 
@@ -153,6 +214,9 @@ lists.forEach(list => {
 
   lists,
   setLists,
+
+  tags,
+  setTags,
 
   activeMenu,
   setActiveMenu,

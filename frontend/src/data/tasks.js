@@ -2,7 +2,6 @@ const mockTasks = [
   {
     id: 1,
     title: "Research content ideas",
-    section: "today",
     list: "personal",
 
       priority: "Medium",

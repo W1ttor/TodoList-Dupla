@@ -12,7 +12,11 @@ const currentList = lists.find(
   listItem => listItem.id === task.list
 );
 
-
+const priorityColor = {
+  Low: "bg-green-500",
+  Medium: "bg-yellow-500",
+  High: "bg-red-500"
+};
 
   return (
     <div
@@ -21,14 +25,18 @@ const currentList = lists.find(
         onSelectTask?.(task);
       }}
       className="
-        bg-slate-700/40
-        rounded
-        p-3
+        bg-slate-800
+        rounded-xl
+        p-5
         border
         border-slate-600
         flex
         items-center
         justify-between
+        hover:border-blue-500
+        hover:-translate-y-1
+        duration-200
+        shadow-lg
         hover:bg-slate-700/60
         transition
         cursor-pointer
@@ -36,7 +44,7 @@ const currentList = lists.find(
     >
       <div>
 
-        <h3 className="font-medium">
+        <h3 className="font-semibold text-white">
           {task.title}
         </h3>
 

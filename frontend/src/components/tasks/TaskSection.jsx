@@ -48,9 +48,35 @@ const [isCreatingTask, setIsCreatingTask] = useState(false);
 
       {/* DASHBOARDS PRINCIPAIS */}
 
-      {activeMenu === "upcoming" && (
-        <UpcomingDashboard />
-      )}
+    {activeMenu === "upcoming" && (
+
+  <div
+    className={
+      (selectedTask || isCreatingTask)
+        ? "grid grid-cols-[2fr_380px] gap-8"
+        : ""
+    }
+  >
+
+    <UpcomingDashboard
+      selectedTask={selectedTask}
+      setSelectedTask={setSelectedTask}
+      isCreatingTask={isCreatingTask}
+      setIsCreatingTask={setIsCreatingTask}
+    />
+
+    {(selectedTask || isCreatingTask) && (
+      <TaskDetailsPanel
+        task={selectedTask}
+        isCreatingTask={isCreatingTask}
+        setSelectedTask={setSelectedTask}
+        setIsCreatingTask={setIsCreatingTask}
+      />
+    )}
+
+  </div>
+
+)}
 
       {activeMenu === "today" && (
         <div
@@ -94,7 +120,29 @@ const [isCreatingTask, setIsCreatingTask] = useState(false);
         "work",
         "list1"
       ].includes(activeMenu) && (
-        <ListsDashboard />
+        <div
+  className={
+    (selectedTask || isCreatingTask)
+      ? "grid grid-cols-[2fr_380px] gap-8"
+      : ""
+  }
+>
+
+  <ListsDashboard
+    setSelectedTask={setSelectedTask}
+    setIsCreatingTask={setIsCreatingTask}
+  />
+
+  {(selectedTask || isCreatingTask) && (
+    <TaskDetailsPanel
+      task={selectedTask}
+      isCreatingTask={isCreatingTask}
+      setSelectedTask={setSelectedTask}
+      setIsCreatingTask={setIsCreatingTask}
+    />
+  )}
+
+</div>
       )}
 
     </main>

@@ -1,7 +1,11 @@
 import { useTasks } from "../../context/TaskContext";
+import TaskItem from "./TaskItem";
 
-export default function ListsDashboard() {
 
+export default function ListsDashboard({
+  setSelectedTask,
+  setIsCreatingTask
+}) {
   const {
     tasks,
     activeMenu
@@ -15,6 +19,10 @@ export default function ListsDashboard() {
     <div className="bg-slate-800/40 border border-slate-600 rounded-xl overflow-hidden">
 
       <button
+        onClick={() => {
+          setSelectedTask(null);
+          setIsCreatingTask(true);
+        }}
         className="
           w-full
           p-4
@@ -28,26 +36,20 @@ export default function ListsDashboard() {
         + Add New Task
       </button>
 
-      {filteredTasks.map(task => (
-        <div
-          key={task.id}
-          className="
-            flex
-            items-center
-            gap-4
-            p-4
-            border-b
-            border-slate-700
-            hover:bg-slate-700/20
-          "
-        >
-          <input type="checkbox" />
+  <div className="flex flex-col gap-3 p-4">
 
-          <span>
-            {task.title}
-          </span>
-        </div>
-      ))}
+    {filteredTasks.map(task => (
+
+      <TaskItem
+        key={task.id}
+        task={task}
+        setIsCreatingTask={setIsCreatingTask}
+        onSelectTask={setSelectedTask}
+      />
+
+    ))}
+
+  </div>
     </div>
   );
 }
