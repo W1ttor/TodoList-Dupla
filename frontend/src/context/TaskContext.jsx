@@ -103,12 +103,51 @@ useEffect(() => {
     }
   }
 
+
+function getTaskSection(dueDate) {
+
+  if (!dueDate) {
+    return "today";
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+const [year, month, day] = dueDate.split("-");
+
+const taskDate = new Date(
+  Number(year),
+  Number(month) - 1,
+  Number(day)
+);
+
+taskDate.setHours(0, 0, 0, 0);
+
+  const diffDays = Math.floor(
+    (taskDate - today) / (1000 * 60 * 60 * 24)
+  );
+
+  if (diffDays <= 0) {
+    return "today";
+  }
+
+  if (diffDays === 1) {
+    return "tomorrow";
+  }
+
+  return "week";
+
+}
+
+
+
 function createTask(taskData) {
 
   const newTask = {
-    id: Date.now(),
-    ...taskData
-  };
+  id: Date.now(),
+  ...taskData,
+  section: getTaskSection(taskData.dueDate)
+};
 
   setTasks(prev => [
     ...prev,
@@ -145,7 +184,10 @@ function updateTask(taskData) {
   setTasks(prev =>
     prev.map(task =>
       task.id === taskData.id
-        ? taskData
+        ?  {
+    ...taskData,
+    section: getTaskSection(taskData.dueDate)
+  }
         : task
     )
   );

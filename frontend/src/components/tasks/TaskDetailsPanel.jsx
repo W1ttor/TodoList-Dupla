@@ -157,6 +157,9 @@ function handleDelete() {
 
 function handleCreateTag(newTag) {
 
+  
+
+
   setAvailableTags(prev => [
     ...prev,
     newTag
@@ -193,7 +196,7 @@ const priorityColor = {
   return (
 <>
     
-    <div className="bg-slate-800/40 border border-slate-600 rounded p-6 h-full">
+   <div className="bg-slate-800/40 border border-slate-600 rounded p-6 h-full -mt-16">
 
       <div className="flex items-start justify-between border-b border-slate-700 pb-5 mb-7">
 

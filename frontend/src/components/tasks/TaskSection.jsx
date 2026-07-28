@@ -53,7 +53,7 @@ const [isCreatingTask, setIsCreatingTask] = useState(false);
   <div
     className={
       (selectedTask || isCreatingTask)
-        ? "grid grid-cols-[2fr_380px] gap-8"
+        ? "grid grid-cols-[2fr_430px] gap-8"
         : ""
     }
   >
@@ -82,7 +82,7 @@ const [isCreatingTask, setIsCreatingTask] = useState(false);
         <div
   className={
   (selectedTask || isCreatingTask)
-    ? "grid grid-cols-[2fr_380px] gap-8"
+    ? "grid grid-cols-[2fr_430px] gap-8"
     : ""
 }
 >
@@ -123,7 +123,7 @@ const [isCreatingTask, setIsCreatingTask] = useState(false);
         <div
   className={
     (selectedTask || isCreatingTask)
-      ? "grid grid-cols-[2fr_380px] gap-8"
+      ? "grid grid-cols-[2fr_430px] gap-8"
       : ""
   }
 >
