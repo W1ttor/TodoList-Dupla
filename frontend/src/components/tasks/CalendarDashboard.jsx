@@ -1,10 +1,14 @@
 import { useState } from "react";
-import calendarEvents from "../../data/calendarEvents";
+import { useTasks } from "../../context/TaskContext";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function CalendarDashboard() {
   const [viewMode, setViewMode] = useState("week");
   const [currentDate, setCurrentDate] = useState(new Date());
+
+
+  const { tasks } = useTasks();
+
 
   const hours = [
     "09:00",
@@ -113,6 +117,32 @@ export default function CalendarDashboard() {
   const weekDates = Array.from({ length: 7 }, (_, i) => {
     const date = new Date(startOfWeek);
     date.setDate(startOfWeek.getDate() + i);
+
+
+
+  const calendarEvents = tasks
+  .filter(task => task.dueDate)
+  .map(task => {
+    const date = new Date(task.dueDate);
+
+    return {
+      id: task.id,
+      title: task.title,
+      day: date.getDate(),
+      month: date.getMonth(),
+      year: date.getFullYear(),
+      weekDay: date.toLocaleDateString("en-US", {
+        weekday: "short"
+      }),
+      hour: "09:00",
+      color:
+        task.priority === "High"
+          ? "bg-red-500/30"
+          : task.priority === "Medium"
+          ? "bg-yellow-500/30"
+          : "bg-green-500/30"
+    };
+  });
 
     return date;
   });
