@@ -114,27 +114,26 @@ export default function CalendarDashboard() {
 
   startOfWeek.setDate(currentDate.getDate() - adjustedDayIndex);
 
-  const weekDates = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(startOfWeek);
-    date.setDate(startOfWeek.getDate() + i);
-
-
-
-  const calendarEvents = tasks
+const calendarEvents = tasks
   .filter(task => task.dueDate)
   .map(task => {
-    const date = new Date(task.dueDate);
 
+    const [year, month, day] = task.dueDate.split("-");
+
+    const date = new Date(
+      Number(year),
+      Number(month) - 1,
+      Number(day)
+    );
+
+    date.setHours(0, 0, 0, 0);
+    
     return {
       id: task.id,
       title: task.title,
-      day: date.getDate(),
-      month: date.getMonth(),
-      year: date.getFullYear(),
-      weekDay: date.toLocaleDateString("en-US", {
-        weekday: "short"
-      }),
+      date,
       hour: "09:00",
+
       color:
         task.priority === "High"
           ? "bg-red-500/30"
@@ -144,8 +143,18 @@ export default function CalendarDashboard() {
     };
   });
 
-    return date;
-  });
+
+const weekDates = Array.from({ length: 7 }, (_, i) => {
+
+  const date = new Date(startOfWeek);
+
+  date.setDate(startOfWeek.getDate() + i);
+
+  return date;
+
+});
+
+
 
   return (
     <div className="bg-slate-800/40 border border-slate-600 rounded-2xl p-6">
@@ -159,9 +168,7 @@ export default function CalendarDashboard() {
           </h2>
         </div>
 
-        <button className="px-4 py-2 rounded-xl bg-slate-700/60 border border-slate-600 hover:bg-slate-600/60 transition">
-          Add Event
-        </button>
+    
       </div>
 
       {/* TOP BAR */}
@@ -264,23 +271,27 @@ export default function CalendarDashboard() {
 
               <div className="p-3">
                 {calendarEvents
-                  .filter(event => event.hour === hour)
-                  .map(event => (
-                    <div
-                      key={event.id}
-                      className={`
-                        ${event.color}
-                        rounded-xl
-                        p-3
-                        mb-2
-                        border border-slate-500
-                      `}
-                    >
-                      <p className="font-semibold">
-                        {event.title}
-                      </p>
-                    </div>
-                  ))}
+  .filter(event =>
+
+    event.hour === hour &&
+
+    event.date.getDate() === currentDate.getDate() &&
+
+    event.date.getMonth() === currentDate.getMonth() &&
+
+    event.date.getFullYear() === currentDate.getFullYear()
+
+  )
+  .map(event => (
+
+    <div
+      key={event.id}
+      className={`${event.color} rounded-lg px-2 py-1 text-xs mb-2`}
+    >
+      {event.title}
+    </div>
+
+))}
               </div>
             </div>
           ))}
@@ -296,20 +307,22 @@ export default function CalendarDashboard() {
 
             <div></div>
 
-            {weekDates.map((date, index) => (
-              <div
-                key={index}
-                className="p-4 text-center border-l border-slate-700"
-              >
-                <p className="text-xs uppercase tracking-widest text-slate-400 mb-1">
-                  {weekDays[index]}
-                </p>
+           {weekDates.map((date, index) => (
 
-                <p className="text-lg font-semibold text-slate-100">
-                  {date.getDate()}
-                </p>
-              </div>
-            ))}
+  <div
+    key={index}
+    className="p-4 text-center border-l border-slate-700"
+  >
+    <p className="text-xs uppercase tracking-widest text-slate-400 mb-1">
+      {weekDays[index]}
+    </p>
+
+    <p className="text-lg font-semibold text-slate-100">
+      {date.getDate()}
+    </p>
+  </div>
+
+))}
           </div>
 
           {/* WEEK BODY */}
@@ -323,40 +336,49 @@ export default function CalendarDashboard() {
                 {hour}
               </div>
 
-              {weekDays.map(day => {
-                const events = calendarEvents.filter(
-                  event =>
-                    event.weekDay === day &&
-                    event.hour === hour
-                );
+              {weekDates.map((date, index) => {
 
-                return (
-                  <div
-                    key={day}
-                    className="border-l border-slate-700 p-2"
-                  >
-                    {events.map(event => (
-                      <div
-                        key={event.id}
-                        className={`
-                          ${event.color}
-                          rounded-xl
-                          p-2
-                          text-sm
-                          mb-2
-                          border border-slate-500
-                        `}
-                      >
-                        {event.title}
-                      </div>
-                    ))}
-                  </div>
-                );
-              })}
-            </div>
+  const events = calendarEvents.filter(event =>
+
+    event.hour === hour &&
+
+    event.date.getDate() === date.getDate() &&
+
+    event.date.getMonth() === date.getMonth() &&
+
+    event.date.getFullYear() === date.getFullYear()
+
+  );
+
+  return (
+
+    <div
+      key={index}
+      className="border-l border-slate-700 p-2"
+    >
+
+      {events.map(event => (
+
+        <div
+          key={event.id}
+          className={`${event.color} rounded-lg px-2 py-1 text-xs mb-2`}
+        >
+          {event.title}
+        </div>
+
+      ))}
+
+    </div>
+
+  );
+
+})}
+
+   </div>
           ))}
         </div>
       )}
+
 
       {/* MONTH VIEW */}
       {viewMode === "month" && (
@@ -379,9 +401,15 @@ export default function CalendarDashboard() {
 
             {monthCells.map((day, index) => {
 
-              const events = calendarEvents.filter(
-                event => event.day === day
-              );
+              const events = calendarEvents.filter(event =>
+
+  event.date.getDate() === day &&
+
+  event.date.getMonth() === month &&
+
+  event.date.getFullYear() === year
+
+);
 
               return (
                 <div
