@@ -11,15 +11,17 @@ export default function UpcomingDashboard({
 
   const { tasks } = useTasks();
 
-  const todayTasks = tasks.filter(task => getTaskSection(task) === "today");
+const todayTasks = tasks.filter(
+  task => task.section === "today"
+);
 
-  const tomorrowTasks = tasks.filter(
-    task => getTaskSection(task) === "tomorrow"
-  );
+const tomorrowTasks = tasks.filter(
+  task => task.section === "tomorrow"
+);
 
-  const weekTasks = tasks.filter(
-    task => getTaskSection(task) === "week"
-  );
+const weekTasks = tasks.filter(
+  task => task.section === "week"
+);
 
   function handleSelectTask(task) {
     setIsCreatingTask(false);

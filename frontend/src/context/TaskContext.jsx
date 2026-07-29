@@ -127,6 +127,13 @@ taskDate.setHours(0, 0, 0, 0);
     (taskDate - today) / (1000 * 60 * 60 * 24)
   );
 
+console.log({
+  dueDate,
+  today,
+  taskDate,
+  diffDays
+});
+
   if (diffDays <= 0) {
     return "today";
   }
@@ -138,6 +145,8 @@ taskDate.setHours(0, 0, 0, 0);
   return "week";
 
 }
+
+
 
 
 
