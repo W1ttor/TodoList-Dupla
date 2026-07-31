@@ -22,6 +22,8 @@ const [selectedTask, setSelectedTask] = useState(null);
 
 const [isCreatingTask, setIsCreatingTask] = useState(false);
 
+const [creationMode, setCreationMode] = useState("default");
+
   return (
     <main className="flex-1 p-10 bg-gradient-to-br from-slate-700 via-gray-700 to-black min-h-screen text-slate-100">
 
@@ -59,11 +61,12 @@ const [isCreatingTask, setIsCreatingTask] = useState(false);
   >
 
     <UpcomingDashboard
-      selectedTask={selectedTask}
-      setSelectedTask={setSelectedTask}
-      isCreatingTask={isCreatingTask}
-      setIsCreatingTask={setIsCreatingTask}
-    />
+  selectedTask={selectedTask}
+  setSelectedTask={setSelectedTask}
+  isCreatingTask={isCreatingTask}
+  setIsCreatingTask={setIsCreatingTask}
+  setCreationMode={setCreationMode}
+/>
 
     {(selectedTask || isCreatingTask) && (
       <TaskDetailsPanel
@@ -88,11 +91,12 @@ const [isCreatingTask, setIsCreatingTask] = useState(false);
 >
 
   <TodayDashboard
-    selectedTask={selectedTask}
-    setSelectedTask={setSelectedTask}
-    isCreatingTask={isCreatingTask}
-    setIsCreatingTask={setIsCreatingTask}
-  />
+  selectedTask={selectedTask}
+  setSelectedTask={setSelectedTask}
+  isCreatingTask={isCreatingTask}
+  setIsCreatingTask={setIsCreatingTask}
+  setCreationMode={setCreationMode}
+/>
 
   {(selectedTask || isCreatingTask) && (
     <TaskDetailsPanel
