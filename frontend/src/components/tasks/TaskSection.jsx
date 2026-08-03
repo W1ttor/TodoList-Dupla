@@ -74,6 +74,7 @@ const [creationMode, setCreationMode] = useState("default");
         isCreatingTask={isCreatingTask}
         setSelectedTask={setSelectedTask}
         setIsCreatingTask={setIsCreatingTask}
+        creationMode={creationMode}
       />
     )}
 
@@ -99,12 +100,13 @@ const [creationMode, setCreationMode] = useState("default");
 />
 
   {(selectedTask || isCreatingTask) && (
-    <TaskDetailsPanel
-        task={selectedTask}
-        isCreatingTask={isCreatingTask}
-        setSelectedTask={setSelectedTask}
-        setIsCreatingTask={setIsCreatingTask}
-    />
+  <TaskDetailsPanel
+    task={selectedTask}
+    isCreatingTask={isCreatingTask}
+    creationMode={creationMode}
+    setSelectedTask={setSelectedTask}
+    setIsCreatingTask={setIsCreatingTask}
+  />
 )}
 </div>
       )}
@@ -114,7 +116,11 @@ const [creationMode, setCreationMode] = useState("default");
       )}
 
       {activeMenu === "calendar" && (
-        <CalendarDashboard />
+        <CalendarDashboard
+          setCreationMode={setCreationMode}
+          setSelectedTask={setSelectedTask}
+          setIsCreatingTask={setIsCreatingTask}
+        />
       )}
 
       {/* LISTAS */}
@@ -132,10 +138,11 @@ const [creationMode, setCreationMode] = useState("default");
   }
 >
 
-  <ListsDashboard
-    setSelectedTask={setSelectedTask}
-    setIsCreatingTask={setIsCreatingTask}
-  />
+    <ListsDashboard
+      setSelectedTask={setSelectedTask}
+      setIsCreatingTask={setIsCreatingTask}
+      setCreationMode={setCreationMode}
+    />
 
   {(selectedTask || isCreatingTask) && (
     <TaskDetailsPanel
@@ -143,6 +150,7 @@ const [creationMode, setCreationMode] = useState("default");
       isCreatingTask={isCreatingTask}
       setSelectedTask={setSelectedTask}
       setIsCreatingTask={setIsCreatingTask}
+      creationMode={creationMode}
     />
   )}
 

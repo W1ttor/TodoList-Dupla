@@ -6,7 +6,8 @@ export default function TodayView({
   onSelectTask,
   isCreatingTask,
   setIsCreatingTask,
-  setSelectedTask
+  setSelectedTask,
+  setCreationMode
 }) {
 
   return (
@@ -18,6 +19,7 @@ export default function TodayView({
 
       <button
         onClick={() => {
+          setCreationMode("today");
           setSelectedTask(null);
           setIsCreatingTask(true);
         }}

@@ -7,6 +7,7 @@ import TagModal from "./TagModal";
 export default function TaskDetailsPanel({
   task,
   isCreatingTask,
+  creationMode,
   setSelectedTask,
   setIsCreatingTask
 }) {
@@ -90,7 +91,20 @@ useEffect(() => {
 
     setList("Personal");
 
-    setDueDate("");
+      if (creationMode === "today") {
+
+        const today = new Date();
+
+        const formatted =
+          `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
+
+        setDueDate(formatted);
+
+      } else {
+
+        setDueDate("");
+
+      }
 
     setTags([]);
 
@@ -292,6 +306,7 @@ const priorityColor = {
       </label>
 
       <input
+        disabled={creationMode === "today"}
         type="date"
         value={dueDate}
         onChange={(e) =>

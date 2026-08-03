@@ -6,7 +6,8 @@ export default function UpcomingDashboard({
   selectedTask,
   setSelectedTask,
   isCreatingTask,
-  setIsCreatingTask
+  setIsCreatingTask,
+  setCreationMode
 }) {
 
   const { tasks } = useTasks();
@@ -37,6 +38,7 @@ const weekTasks = tasks.filter(
           onSelectTask={handleSelectTask}
           setSelectedTask={setSelectedTask}
           setIsCreatingTask={setIsCreatingTask}
+          setCreationMode={setCreationMode}
         />
 
          <div className="grid grid-cols-2 gap-6">
@@ -47,6 +49,7 @@ const weekTasks = tasks.filter(
           onSelectTask={handleSelectTask}
           setSelectedTask={setSelectedTask}
           setIsCreatingTask={setIsCreatingTask}
+          setCreationMode={setCreationMode}
         />
 
           <TodayView
@@ -55,6 +58,7 @@ const weekTasks = tasks.filter(
           onSelectTask={handleSelectTask}
           setSelectedTask={setSelectedTask}
           setIsCreatingTask={setIsCreatingTask}
+          setCreationMode={setCreationMode}
         />
       </div>
 

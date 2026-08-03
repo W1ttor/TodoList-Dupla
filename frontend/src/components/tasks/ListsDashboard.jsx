@@ -21,6 +21,7 @@ export default function ListsDashboard({
       <button
         onClick={() => {
           setSelectedTask(null);
+          setCreationMode("default");
           setIsCreatingTask(true);
         }}
         className="
