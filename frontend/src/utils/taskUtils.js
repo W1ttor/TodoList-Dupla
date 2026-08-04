@@ -6,20 +6,23 @@ export function getTaskSection(task) {
 
   today.setHours(0, 0, 0, 0);
 
-  const due = new Date(task.dueDate);
+  // Converte YYYY-MM-DD para uma data LOCAL,
+  // evitando o problema de timezone do JavaScript.
+  const [year, month, day] = task.dueDate.split("-").map(Number);
+
+  const due = new Date(year, month - 1, day);
 
   due.setHours(0, 0, 0, 0);
 
-  const diffDays = Math.floor(
+  const diffDays = Math.round(
     (due - today) / (1000 * 60 * 60 * 24)
   );
 
-  if (diffDays <= 0) return "today";
+  if (diffDays === 0) return "today";
 
   if (diffDays === 1) return "tomorrow";
 
-  if (diffDays <= 7) return "week";
+  if (diffDays >= 2 && diffDays <= 7) return "week";
 
   return "future";
-
 }

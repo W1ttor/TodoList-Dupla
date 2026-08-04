@@ -1,4 +1,7 @@
+import { useState } from "react";
+import { useTasks } from "../../context/TaskContext";
 import TaskItem from "./TaskItem";
+import { Check, Trash2, ListChecks } from "lucide-react";
 
 export default function TodayView({
   title,
@@ -10,19 +13,185 @@ export default function TodayView({
   setCreationMode
 }) {
 
+  const {
+    updateTask,
+    deleteTask
+  } = useTasks();
+
+  const [selectedIds, setSelectedIds] = useState([]);
+
+  function handleToggleSelect(id) {
+
+    setSelectedIds(prev =>
+      prev.includes(id)
+        ? prev.filter(taskId => taskId !== id)
+        : [...prev, id]
+    );
+
+  }
+
+  function handleSelectAll() {
+
+    if (selectedIds.length === tasks.length) {
+      setSelectedIds([]);
+      return;
+    }
+
+    setSelectedIds(tasks.map(task => task.id));
+
+  }
+
+  function handleCompleteSelected() {
+
+    tasks
+      .filter(task => selectedIds.includes(task.id))
+      .forEach(task => {
+
+        updateTask({
+          ...task,
+          completed: true
+        });
+
+      });
+
+    setSelectedIds([]);
+
+  }
+
+  function handleDeleteSelected() {
+
+    selectedIds.forEach(id => {
+      deleteTask(id);
+    });
+
+    setSelectedIds([]);
+
+  }
+
+  function handleCreateTask() {
+
+    let mode = "default";
+
+    if (title === "Today") {
+      mode = "today";
+    }
+
+    if (title === "Tomorrow") {
+      mode = "tomorrow";
+    }
+
+    if (title === "This Week") {
+      mode = "week";
+    }
+
+    setCreationMode(mode);
+    setSelectedTask(null);
+    setIsCreatingTask(true);
+
+  }
+
+  const hasSelection = selectedIds.length > 0;
+
+  const allSelected =
+    tasks.length > 0 &&
+    selectedIds.length === tasks.length;
+
   return (
     <div className="bg-slate-800/40 border border-slate-600 rounded p-6">
 
-      <h2 className="text-2xl font-semibold mb-4">
-        {title}
-      </h2>
+      {/* CABEÇALHO */}
+
+      <div className="flex items-center justify-between mb-4">
+
+        <h2 className="text-2xl font-semibold">
+          {title}
+        </h2>
+
+        {/* AÇÕES DAS TASKS SELECIONADAS */}
+
+        {hasSelection && (
+
+          <div className="flex items-center gap-2">
+
+            <button
+              onClick={handleSelectAll}
+              className="
+                flex
+                items-center
+                gap-2
+                px-3
+                py-2
+                rounded-lg
+                bg-slate-700
+                hover:bg-slate-600
+                transition
+                text-sm
+              "
+            >
+
+              <ListChecks size={16} />
+
+              {allSelected
+                ? "Desmarcar todas"
+                : "Selecionar todas"
+              }
+
+            </button>
+
+            <button
+              onClick={handleCompleteSelected}
+              className="
+                flex
+                items-center
+                gap-2
+                px-3
+                py-2
+                rounded-lg
+                bg-green-600
+                hover:bg-green-700
+                transition
+                text-sm
+              "
+            >
+
+              <Check size={16} />
+
+              Concluir
+
+            </button>
+
+            <button
+              onClick={handleDeleteSelected}
+              className="
+                flex
+                items-center
+                gap-2
+                px-3
+                py-2
+                rounded-lg
+                bg-red-600
+                hover:bg-red-700
+                transition
+                text-sm
+              "
+            >
+
+              <Trash2 size={16} />
+
+              Excluir
+
+            </button>
+
+          </div>
+
+        )}
+
+      </div>
+
+      {/* NOVA TASK */}
 
       <button
-        onClick={() => {
-          setCreationMode("today");
-          setSelectedTask(null);
-          setIsCreatingTask(true);
-        }}
+        onClick={handleCreateTask}
         className="
           w-full
           text-left
@@ -39,6 +208,8 @@ export default function TodayView({
         + Add New Task
       </button>
 
+      {/* TASKS */}
+
       <div className="flex flex-col gap-3">
 
         {tasks.length > 0 ? (
@@ -50,6 +221,10 @@ export default function TodayView({
               task={task}
               onSelectTask={onSelectTask}
               setIsCreatingTask={setIsCreatingTask}
+
+              selected={selectedIds.includes(task.id)}
+
+              onToggleSelect={handleToggleSelect}
             />
 
           ))

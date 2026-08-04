@@ -12,17 +12,17 @@ export default function UpcomingDashboard({
 
   const { tasks } = useTasks();
 
-const todayTasks = tasks.filter(
-  task => task.section === "today"
-);
+  const todayTasks = tasks.filter(
+    task => getTaskSection(task) === "today"
+  );
 
-const tomorrowTasks = tasks.filter(
-  task => task.section === "tomorrow"
-);
+  const tomorrowTasks = tasks.filter(
+    task => getTaskSection(task) === "tomorrow"
+  );
 
-const weekTasks = tasks.filter(
-  task => task.section === "week"
-);
+  const weekTasks = tasks.filter(
+    task => getTaskSection(task) === "week"
+  );
 
   function handleSelectTask(task) {
     setIsCreatingTask(false);
@@ -32,16 +32,16 @@ const weekTasks = tasks.filter(
   return (
     <div className="space-y-6">
 
-        <TodayView
-          title="Today"
-          tasks={todayTasks}
-          onSelectTask={handleSelectTask}
-          setSelectedTask={setSelectedTask}
-          setIsCreatingTask={setIsCreatingTask}
-          setCreationMode={setCreationMode}
-        />
+      <TodayView
+        title="Today"
+        tasks={todayTasks}
+        onSelectTask={handleSelectTask}
+        setSelectedTask={setSelectedTask}
+        setIsCreatingTask={setIsCreatingTask}
+        setCreationMode={setCreationMode}
+      />
 
-         <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-6">
 
         <TodayView
           title="Tomorrow"
@@ -52,7 +52,7 @@ const weekTasks = tasks.filter(
           setCreationMode={setCreationMode}
         />
 
-          <TodayView
+        <TodayView
           title="This Week"
           tasks={weekTasks}
           onSelectTask={handleSelectTask}
@@ -60,6 +60,7 @@ const weekTasks = tasks.filter(
           setIsCreatingTask={setIsCreatingTask}
           setCreationMode={setCreationMode}
         />
+
       </div>
 
     </div>

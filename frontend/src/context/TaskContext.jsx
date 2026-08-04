@@ -1,286 +1,317 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import mockTasks from "../data/tasks";
+import stickyNotes from "../data/stickyNotes";
 
 const TaskContext = createContext();
 
 export function TaskProvider({ children }) {
   const [tasks, setTasks] = useState([]);
 
-const [lists, setLists] = useState([
-  {
-    id: "personal",
-    label: "Personal",
-    color: "bg-red-400"
-  },
-  {
-    id: "work",
-    label: "Work",
-    color: "bg-blue-400"
-  },
-  {
-    id: "list1",
-    label: "List 1",
-    color: "bg-yellow-400"
-  }
-]);
+  const [lists, setLists] = useState([
+    {
+      id: "personal",
+      label: "Personal",
+      color: "bg-red-400"
+    },
+    {
+      id: "work",
+      label: "Work",
+      color: "bg-blue-400"
+    },
+    {
+      id: "list1",
+      label: "List 1",
+      color: "bg-yellow-400"
+    }
+  ]);
 
-
-const [tags, setTags] = useState([
-  {
-    id: 1,
-    label: "Tag 1",
-    color: "bg-cyan-300"
-  },
-  {
-    id: 2,
-    label: "Tag 2",
-    color: "bg-red-300"
-  }
-]);
-
-
-
+  const [tags, setTags] = useState([
+    {
+      id: 1,
+      label: "Tag 1",
+      color: "bg-cyan-300"
+    },
+    {
+      id: 2,
+      label: "Tag 2",
+      color: "bg-red-300"
+    }
+  ]);
 
   const [activeMenu, setActiveMenu] = useState("today");
 
+  /*
+   * Quantidade de notas do Sticky Wall
+   *
+   * Primeiro tenta recuperar as notas salvas no localStorage.
+   * Se ainda não existir nada salvo, utiliza as notas mock.
+   */
+  const [stickyNotesCount, setStickyNotesCount] = useState(() => {
+    const savedNotes = localStorage.getItem("stickyNotes");
+
+    if (savedNotes) {
+      try {
+        const parsedNotes = JSON.parse(savedNotes);
+
+        return Array.isArray(parsedNotes)
+          ? parsedNotes.length
+          : 0;
+      } catch {
+        return 0;
+      }
+    }
+
+    return stickyNotes.length;
+  });
+
   const titles = {
-  today: "Today",
-  upcoming: "Upcoming",
-  calendar: "Calendar",
-  sticky: "Sticky Wall"
-};
+    today: "Today",
+    upcoming: "Upcoming",
+    calendar: "Calendar",
+    sticky: "Sticky Wall"
+  };
 
-lists.forEach(list => {
-  titles[list.id] = list.label;
-});
+  lists.forEach(list => {
+    titles[list.id] = list.label;
+  });
 
-  // buscar tarefas backend
+  // Buscar tarefas do localStorage
   useEffect(() => {
     const savedTasks = localStorage.getItem("tasks");
 
-  if (savedTasks) {
+    if (savedTasks) {
+      setTasks(
+        JSON.parse(savedTasks)
+      );
+    } else {
+      setTasks(mockTasks);
+    }
+  }, []);
 
-    setTasks(
-      JSON.parse(savedTasks)
+  // Salvar tarefas no localStorage
+  useEffect(() => {
+    localStorage.setItem(
+      "tasks",
+      JSON.stringify(tasks)
     );
-
-  } else {
-
-    setTasks(mockTasks);
-
-  }
-
-}, []);
-
-useEffect(() => {
-
-  localStorage.setItem(
-    "tasks",
-    JSON.stringify(tasks)
-  );
-
-}, [tasks]);
+  }, [tasks]);
 
   async function fetchTasks() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch("http://26.51.220.173:2020/v1/tasks", {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const response = await fetch(
+        "http://26.51.220.173:2020/v1/tasks",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
-      });
+      );
 
       if (!response.ok) {
         throw new Error("Erro ao buscar tarefas");
       }
 
       const data = await response.json();
+
       setTasks(data);
 
     } catch (error) {
-      console.error("Erro ao carregar tarefas:", error);
+      console.error(
+        "Erro ao carregar tarefas:",
+        error
+      );
     }
   }
 
+  function getTaskSection(dueDate) {
 
-function getTaskSection(dueDate) {
+    if (!dueDate) {
+      return "today";
+    }
 
-  if (!dueDate) {
-    return "today";
-  }
+    const today = new Date();
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
 
-const [year, month, day] = dueDate.split("-");
+    const [year, month, day] =
+      dueDate.split("-");
 
-const taskDate = new Date(
-  Number(year),
-  Number(month) - 1,
-  Number(day)
-);
-
-taskDate.setHours(0, 0, 0, 0);
-
-  const diffDays = Math.floor(
-    (taskDate - today) / (1000 * 60 * 60 * 24)
-  );
-
-console.log({
-  dueDate,
-  today,
-  taskDate,
-  diffDays
-});
-
-  if (diffDays <= 0) {
-    return "today";
-  }
-
-  if (diffDays === 1) {
-    return "tomorrow";
-  }
-
-  return "week";
-
-}
-
-
-
-
-
-function createTask(taskData) {
-
-  const newTask = {
-  id: Date.now(),
-  ...taskData,
-  section: getTaskSection(taskData.dueDate)
-};
-
-  setTasks(prev => [
-    ...prev,
-    newTask
-  ]);
-
-  taskData.tags.forEach(tag => {
-
-    const exists = tags.some(
-      item =>
-        item.label.toLowerCase() ===
-        tag.toLowerCase()
+    const taskDate = new Date(
+      Number(year),
+      Number(month) - 1,
+      Number(day)
     );
 
-    if (!exists) {
+    taskDate.setHours(0, 0, 0, 0);
 
-      setTags(prev => [
-        ...prev,
-        {
-          id: Date.now() + Math.random(),
-          label: tag,
-          color: "bg-cyan-300"
-        }
-      ]);
-
-    }
-
-  });
-
-}
-
-function updateTask(taskData) {
-
-  setTasks(prev =>
-    prev.map(task =>
-      task.id === taskData.id
-        ?  {
-    ...taskData,
-    section: getTaskSection(taskData.dueDate)
-  }
-        : task
-    )
-  );
-
-  taskData.tags.forEach(tag => {
-
-    const exists = tags.some(
-      item =>
-        item.label.toLowerCase() ===
-        tag.toLowerCase()
+    const diffDays = Math.floor(
+      (taskDate - today) /
+      (1000 * 60 * 60 * 24)
     );
 
-    if (!exists) {
+    console.log({
+      dueDate,
+      today,
+      taskDate,
+      diffDays
+    });
 
-      setTags(prev => [
-        ...prev,
-        {
-          id: Date.now() + Math.random(),
-          label: tag,
-          color: "bg-cyan-300"
-        }
-      ]);
-
+    if (diffDays <= 0) {
+      return "today";
     }
 
-  });
+    if (diffDays === 1) {
+      return "tomorrow";
+    }
 
-}
+    return "week";
+  }
 
-function deleteTask(id) {
+  function createTask(taskData) {
 
-  setTasks(prev =>
-    prev.filter(task => task.id !== id)
-  );
+    const newTask = {
+      id: Date.now(),
+      ...taskData,
+      section: getTaskSection(
+        taskData.dueDate
+      )
+    };
 
-}
+    setTasks(prev => [
+      ...prev,
+      newTask
+    ]);
 
+    taskData.tags.forEach(tag => {
 
+      const exists = tags.some(
+        item =>
+          item.label.toLowerCase() ===
+          tag.toLowerCase()
+      );
+
+      if (!exists) {
+
+        setTags(prev => [
+          ...prev,
+          {
+            id: Date.now() + Math.random(),
+            label: tag,
+            color: "bg-cyan-300"
+          }
+        ]);
+
+      }
+
+    });
+
+  }
+
+  function updateTask(taskData) {
+
+    setTasks(prev =>
+      prev.map(task =>
+        task.id === taskData.id
+          ? {
+              ...taskData,
+              section: getTaskSection(
+                taskData.dueDate
+              )
+            }
+          : task
+      )
+    );
+
+    taskData.tags.forEach(tag => {
+
+      const exists = tags.some(
+        item =>
+          item.label.toLowerCase() ===
+          tag.toLowerCase()
+      );
+
+      if (!exists) {
+
+        setTags(prev => [
+          ...prev,
+          {
+            id: Date.now() + Math.random(),
+            label: tag,
+            color: "bg-cyan-300"
+          }
+        ]);
+
+      }
+
+    });
+
+  }
+
+  function deleteTask(id) {
+
+    setTasks(prev =>
+      prev.filter(
+        task => task.id !== id
+      )
+    );
+
+  }
 
   const counts = {
-  today: tasks.filter(
-    task => task.section === "today"
-  ).length,
+    today: tasks.filter(
+      task => task.section === "today"
+    ).length,
 
-  upcoming: tasks.filter(
-    task =>
-      task.section === "tomorrow" ||
-      task.section === "week"
-  ).length,
+    upcoming: tasks.filter(
+      task =>
+        task.section === "today" ||
+        task.section === "tomorrow" ||
+        task.section === "week"
+    ).length,
 
-  calendar: 0,
-  sticky: 0
-};
+    calendar: 0,
 
-lists.forEach(list => {
-  counts[list.id] = tasks.filter(
-    task => task.list === list.id
-  ).length;
-});
+    sticky: stickyNotesCount
+  };
+
+  lists.forEach(list => {
+
+    counts[list.id] =
+      tasks.filter(
+        task => task.list === list.id
+      ).length;
+
+  });
 
   return (
     <TaskContext.Provider
       value={{
-  tasks,
-  setTasks,
+        tasks,
+        setTasks,
 
-  lists,
-  setLists,
+        lists,
+        setLists,
 
-  tags,
-  setTags,
+        tags,
+        setTags,
 
-  activeMenu,
-  setActiveMenu,
+        activeMenu,
+        setActiveMenu,
 
-  titles,
-  counts,
+        titles,
+        counts,
 
-  fetchTasks,
+        stickyNotesCount,
+        setStickyNotesCount,
 
-  createTask,
-  updateTask,
-  deleteTask
-}}
+        fetchTasks,
+
+        createTask,
+        updateTask,
+        deleteTask
+      }}
     >
       {children}
     </TaskContext.Provider>

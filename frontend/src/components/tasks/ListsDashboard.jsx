@@ -1,10 +1,10 @@
 import { useTasks } from "../../context/TaskContext";
 import TaskItem from "./TaskItem";
 
-
 export default function ListsDashboard({
   setSelectedTask,
-  setIsCreatingTask
+  setIsCreatingTask,
+  setCreationMode
 }) {
   const {
     tasks,
@@ -37,20 +37,19 @@ export default function ListsDashboard({
         + Add New Task
       </button>
 
-  <div className="flex flex-col gap-3 p-4">
+      <div className="flex flex-col gap-3 p-4">
 
-    {filteredTasks.map(task => (
+        {filteredTasks.map(task => (
+          <TaskItem
+            key={task.id}
+            task={task}
+            setIsCreatingTask={setIsCreatingTask}
+            onSelectTask={setSelectedTask}
+          />
+        ))}
 
-      <TaskItem
-        key={task.id}
-        task={task}
-        setIsCreatingTask={setIsCreatingTask}
-        onSelectTask={setSelectedTask}
-      />
+      </div>
 
-    ))}
-
-  </div>
     </div>
   );
 }
