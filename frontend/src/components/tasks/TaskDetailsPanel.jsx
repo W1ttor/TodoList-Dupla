@@ -18,7 +18,8 @@ export default function TaskDetailsPanel({
     deleteTask,
     lists,
     tags: availableTags,
-    setTags: setAvailableTags
+    setTags: setAvailableTags,
+    activeMenu
   } = useTasks();
 
 
@@ -31,9 +32,8 @@ export default function TaskDetailsPanel({
   );
 
   const [list, setList] = useState(
-    task?.list || "Personal"
+    task?.list ?? "personal"
   );
-
   const [dueDate, setDueDate] = useState(
     task?.dueDate || ""
   );
@@ -56,8 +56,13 @@ export default function TaskDetailsPanel({
   const [showDeleteModal, setShowDeleteModal] =
     useState(false);
 
+  
+  const [dateError, setDateError] = useState("");
+
 
   useEffect(() => {
+
+    setDateError("");
 
     if (task) {
 
@@ -69,10 +74,8 @@ export default function TaskDetailsPanel({
         task.description || ""
       );
 
-      setList(
-        task.list || "Personal"
-      );
 
+      
       setDueDate(
         task.dueDate || ""
       );
@@ -95,7 +98,17 @@ export default function TaskDetailsPanel({
 
       setDescription("");
 
-      setList("Personal");
+      // Se a criação veio diretamente de uma List,
+      // já seleciona essa List.
+      const creatingFromList = lists.some(
+        listItem => listItem.id === activeMenu
+      );
+
+      if (creatingFromList) {
+        setList(activeMenu);
+      } else {
+        setList("personal");
+      }
 
 
       /*
@@ -187,27 +200,20 @@ export default function TaskDetailsPanel({
 
   function handleSave() {
 
-    /*
-     * REGRA EXCLUSIVA DA CRIAÇÃO
-     *
-     * This Week precisa obrigatoriamente
-     * possuir uma data.
-     *
-     * Essa validação NÃO acontece
-     * quando estamos editando uma task.
-     */
     if (
-      isCreatingTask &&
-      creationMode === "week" &&
-      !dueDate
-    ) {
+  isCreatingTask &&
+  creationMode === "week" &&
+  !dueDate
+) {
 
-      toast.error(
-        "Informe uma data para criar esta tarefa."
-      );
+  setDateError(
+    "Informe uma data para criar esta tarefa."
+  );
 
-      return;
-    }
+  return;
+}
+
+setDateError("");
 
 
     const taskData = {
@@ -249,19 +255,21 @@ export default function TaskDetailsPanel({
   }
 
 
-  function handleDelete() {
+function handleDelete() {
 
-    deleteTask(task.id);
-
-    toast.success(
-      "Task deleted."
-    );
-
-    setSelectedTask(null);
-
-    setIsCreatingTask(false);
-
+  if (!task) {
+    return;
   }
+
+  deleteTask(task.id);
+
+  toast.success("Task deleted.");
+
+  setShowDeleteModal(false);
+  setSelectedTask(null);
+  setIsCreatingTask(false);
+
+}
 
 
   function handleCreateTag(newTag) {
@@ -303,18 +311,18 @@ export default function TaskDetailsPanel({
   };
 
 
-  /*
-   * Data bloqueada somente durante
-   * a criação de Today ou Tomorrow.
-   *
-   * Ao editar uma task, o campo
-   * continua liberado.
-   */
+  
   const isDateLocked =
     isCreatingTask &&
     (
       creationMode === "today" ||
       creationMode === "tomorrow"
+    );
+
+    const isListLocked =
+    isCreatingTask &&
+    lists.some(
+      listItem => listItem.id === activeMenu
     );
 
 
@@ -411,12 +419,35 @@ export default function TaskDetailsPanel({
             </label>
 
             <select
+              disabled={isListLocked}
               value={list}
               onChange={(e) =>
                 setList(e.target.value)
               }
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+              className={`
+                w-full
+                bg-slate-800
+                border
+                border-slate-700
+                rounded-xl
+                px-4
+                py-3
+                outline-none
+                transition
+                focus:border-blue-500
+                focus:ring-2
+                focus:ring-blue-500/20
+                ${
+                  isListLocked
+                    ? "opacity-60 cursor-not-allowed"
+                    : ""
+                }
+              `}
             >
+
+                <option value="">
+                  No List
+                </option>
 
               {lists.map(listItem => (
 
@@ -443,33 +474,45 @@ export default function TaskDetailsPanel({
             </label>
 
 
-            <input
-              disabled={isDateLocked}
-              type="date"
-              value={dueDate}
-              onChange={(e) =>
-                setDueDate(e.target.value)
-              }
-              className={`
-                w-full
-                bg-slate-800
-                border
-                border-slate-700
-                rounded-xl
-                px-4
-                py-3
-                outline-none
-                transition
-                focus:border-blue-500
-                focus:ring-2
-                focus:ring-blue-500/20
-                ${
-                  isDateLocked
-                    ? "opacity-60 cursor-not-allowed"
-                    : ""
-                }
-              `}
-            />
+           <input
+  disabled={isDateLocked}
+  type="date"
+  value={dueDate}
+  onChange={(e) => {
+    setDueDate(e.target.value);
+    setDateError("");
+  }}
+  className={`
+    w-full
+    bg-slate-800
+    border
+    ${
+      dateError
+        ? "border-red-500"
+        : "border-slate-700"
+    }
+    rounded-xl
+    px-4
+    py-3
+    outline-none
+    transition
+    focus:border-blue-500
+    focus:ring-2
+    focus:ring-blue-500/20
+    ${
+      isDateLocked
+        ? "opacity-60 cursor-not-allowed"
+        : ""
+    }
+  `}
+/>
+
+{dateError && (
+  <p className="mt-2 text-sm text-red-400 flex items-center gap-2">
+    <span className="text-xs">●</span>
+    {dateError}
+  </p>
+)}
 
           </div>
 
@@ -627,22 +670,30 @@ export default function TaskDetailsPanel({
 
           <div className="flex justify-between items-center pt-8 border-t border-slate-700">
 
-            <button
-              onClick={() =>
-                setShowDeleteModal(true)
-              }
-              className="
-                text-red-400
-                hover:text-red-300
-                transition
-                font-medium
-              "
-            >
-              Delete
-            </button>
+        {!isCreatingTask && task && (
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="
+              px-4
+              py-2
+              rounded-lg
+              border
+              border-red-500/30
+              text-red-400
+              bg-red-500/5
+              hover:bg-red-500/15
+              hover:border-red-500/50
+              hover:text-red-300
+              transition
+              font-medium
+            "
+          >
+            Delete
+          </button>
+        )}
 
 
-            <div className="flex gap-3">
+            <div className="flex gap-3 ml-auto">
 
               <button
                 onClick={() => {
@@ -700,10 +751,7 @@ export default function TaskDetailsPanel({
             setShowDeleteModal(false)
           }
 
-          onConfirm={() => {
-            handleDelete();
-            setShowDeleteModal(false);
-          }}
+          onConfirm={handleDelete}
         />
 
       )}

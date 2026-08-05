@@ -1,4 +1,5 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function ListModal({
   onClose,
@@ -17,21 +18,30 @@ export default function ListModal({
   const [color, setColor] = useState(colors[0]);
 
   function handleSave() {
-    if (!name.trim()) return;
 
-    onSave({
-      id: name.toLowerCase().replace(/\s/g, ""),
-      label: name,
-      color
+  if (!name.trim()) {
+
+    toast.error("Informe um nome para a lista.", {
+      duration: 3000
     });
+
+    return;
   }
+
+  onSave({
+    id: name.toLowerCase().replace(/\s/g, ""),
+    label: name.trim(),
+    color
+  });
+
+}
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
 
       <div className="bg-slate-800 p-6 rounded-xl w-96">
 
-        <h2 className="text-xl font-semibold mb-4">
+        <h2 className="text-xl font-semibold mb-4 text-white">
           Nova Lista
         </h2>
 
@@ -63,7 +73,7 @@ export default function ListModal({
 
           <button
             onClick={handleSave}
-            className="px-4 py-2 bg-blue-500 rounded"
+            className="px-4 py-2 bg-blue-500 rounded" 
           >
             Criar
           </button>

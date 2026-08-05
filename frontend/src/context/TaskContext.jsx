@@ -259,6 +259,28 @@ export function TaskProvider({ children }) {
 
   }
 
+
+  function deleteList(listId) {
+
+
+    setLists(prev =>
+      prev.filter(list => list.id !== listId)
+    );
+
+    setTasks(prev =>
+      prev.map(task =>
+        task.list === listId
+          ? {
+              ...task,
+              list: null
+            }
+          : task
+      )
+    );
+
+  }
+
+
   const counts = {
     today: tasks.filter(
       task => task.section === "today"
@@ -310,7 +332,8 @@ export function TaskProvider({ children }) {
 
         createTask,
         updateTask,
-        deleteTask
+        deleteTask,
+        deleteList
       }}
     >
       {children}

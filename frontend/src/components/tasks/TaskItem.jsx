@@ -122,7 +122,7 @@ export default function TaskItem({
               `}
             />
 
-            {currentList?.label || task.list}
+            {currentList?.label || "No List"}
 
           </span>
 

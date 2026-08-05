@@ -6,6 +6,9 @@ import { useState } from "react";
 import { useTasks } from "../../context/TaskContext";
 import ListModal from "../tasks/ListsModal";
 import TagModal from "../tasks/TagModal";
+import Modal from "../layout/Modal";
+import { Trash2 } from "lucide-react";
+import { LogOut } from "lucide-react";
 
 export default function Sidebar({
   activeMenu,
@@ -25,17 +28,54 @@ export default function Sidebar({
   counts,
   lists,
   tags,
-  setLists
+  setLists,
+  setTags,
+  deleteList
+
   } = useTasks();
 
   const [showListModal, setShowListModal] = useState(false);
 
   const [showTagModal, setShowTagModal] = useState(false);
 
+
+  const [showDeleteListModal, setShowDeleteListModal] =
+  useState(false);
+
+  const [selectedList, setSelectedList] =
+  useState(null);
+
   function handleCreateList(newList) {
     setLists(prev => [...prev, newList]);
 
     setShowListModal(false);
+  }
+
+
+  function handleDeleteList(list) {
+
+  setSelectedList(list);
+  setShowDeleteListModal(true);
+
+  }
+
+  function confirmDeleteList() {
+
+  if (!selectedList) {
+    return;
+  }
+
+  deleteList(selectedList.id);
+
+  // Se o usuário estava dentro da lista excluída,
+  // volta para Upcoming
+  if (activeMenu === selectedList.id) {
+    setActiveMenu("upcoming");
+  }
+
+  setShowDeleteListModal(false);
+  setSelectedList(null);
+
   }
 
   function handleCreateTag(newTag) {
@@ -123,40 +163,81 @@ export default function Sidebar({
 
           <ul className="flex flex-col gap-2">
 
-            {lists.map(item => (
-              <li
-                key={item.id}
-                onClick={() => setActiveMenu(item.id)}
-                className={`
-                  flex justify-between items-center
-                  cursor-pointer
-                  px-2 py-1
-                  rounded
-                  transition-all duration-200
-                  ${
-                    activeMenu === item.id
-                      ? "bg-gray-100 text-black font-semibold"
-                      : "hover:bg-gray-100 hover:text-black text-slate-200"
-                  }
-                `}
-              >
-                <div className="flex items-center gap-2">
+          {lists.map(item => (
+            <li
+              key={item.id}
+              onClick={() => setActiveMenu(item.id)}
+              className={`
+                group
+                flex
+                justify-between
+                items-center
+                cursor-pointer
+                px-2
+                py-1
+                rounded
+                transition-all
+                duration-200
+                ${
+                  activeMenu === item.id
+                    ? "bg-gray-100 text-black font-semibold"
+                    : "hover:bg-gray-100 hover:text-black text-slate-200"
+                }
+              `}
+            >
 
-                  <span
-                    className={`w-3 h-3 rounded-full ${item.color}`}
-                  />
+              <div className="flex items-center gap-2 min-w-0">
 
+                <span
+                  className={`w-3 h-3 rounded-full shrink-0 ${item.color}`}
+                />
+
+                <span className="truncate">
                   {item.label}
+                </span>
 
-                </div>
+              </div>
 
-                {counts[item.id] > 0 && (
-                  <span className="text-xs bg-gray-200 text-black px-2 rounded">
-                    {counts[item.id]}
-                  </span>
-                )}
-              </li>
-            ))}
+
+              <div className="flex items-center gap-1 ml-2">
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteList(item);
+                }}
+                className="
+                  opacity-0
+                  group-hover:opacity-100
+                  transition
+                  p-1
+                  rounded
+                  text-slate-400
+                  hover:text-red-400
+                  hover:bg-red-500/10
+                "
+                title="Excluir lista"
+              >
+                <Trash2 size={15} />
+              </button>
+
+
+              {counts[item.id] > 0 && (
+                <span className="
+                  text-xs
+                  bg-gray-200
+                  text-black
+                  px-2
+                  rounded
+                ">
+                  {counts[item.id]}
+                </span>
+              )}
+
+              </div>
+
+            </li>
+          ))}
 
             {/* ADD NEW LIST */}
             <li
@@ -219,12 +300,21 @@ export default function Sidebar({
           {/* FOOTER */}
           <div className="mt-auto flex flex-col gap-2 pt-6">
 
-            <span
-              onClick={handleSignOutClick}
-              className="cursor-pointer text-slate-300 hover:text-red-400 transition"
-            >
-              ↩ Sign out
-            </span>
+                  <button
+          onClick={handleSignOutClick}
+          className="
+            flex
+            items-center
+            gap-2
+            text-slate-300
+            hover:text-red-400
+            transition
+            text-sm
+          "
+        >
+          <LogOut size={18} />
+          <span>Sign out</span>
+        </button>
 
           </div>
 
@@ -244,6 +334,27 @@ export default function Sidebar({
 
           )}
 
+
+            {showDeleteListModal && (
+
+            <Modal
+              title="Excluir Lista"
+              message={
+                `Tem certeza que deseja excluir a lista "${selectedList?.label}"? ` 
+              
+              }
+              confirmText="Excluir lista"
+              cancelText="Cancelar"
+
+              onCancel={() => {
+                setShowDeleteListModal(false);
+                setSelectedList(null);
+              }}
+
+              onConfirm={confirmDeleteList}
+            />
+
+          )}
 
         </>
       )}
