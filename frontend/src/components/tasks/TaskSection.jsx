@@ -6,6 +6,7 @@ import StickyWallDashboard from "./StickyWallDashboard";
 import CalendarDashboard from "./CalendarDashboard";
 import ListsDashboard from "./ListsDashboard";
 import TaskDetailsPanel from "./TaskDetailsPanel";
+import Dashboard from "./Dashboard";
 
 export default function TaskSection({
   sidebarOpen,
@@ -49,6 +50,9 @@ const [creationMode, setCreationMode] = useState("default");
       </div>
 
       {/* DASHBOARDS PRINCIPAIS */}
+    {activeMenu === "dashboard" && (
+        <Dashboard />
+      )}
 
     {activeMenu === "upcoming" && (
 

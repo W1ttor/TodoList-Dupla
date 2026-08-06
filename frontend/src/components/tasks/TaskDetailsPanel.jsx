@@ -32,11 +32,15 @@ export default function TaskDetailsPanel({
   );
 
   const [list, setList] = useState(
-    task?.list ?? "personal"
+    task?.list ?? ""
   );
   const [dueDate, setDueDate] = useState(
     task?.dueDate || ""
   );
+
+  const [dueTime, setDueTime] = useState(
+  task?.dueTime || ""
+);
 
   const [tags, setTags] = useState(
     task?.tags || []
@@ -59,10 +63,13 @@ export default function TaskDetailsPanel({
   
   const [dateError, setDateError] = useState("");
 
+  const [titleError, setTitleError] = useState("");
+
 
   useEffect(() => {
 
     setDateError("");
+    setTitleError("");
 
     if (task) {
 
@@ -74,10 +81,13 @@ export default function TaskDetailsPanel({
         task.description || ""
       );
 
-
       
       setDueDate(
         task.dueDate || ""
+      );
+
+      setDueTime(
+        task.dueTime || ""
       );
 
       setTags(
@@ -98,6 +108,8 @@ export default function TaskDetailsPanel({
 
       setDescription("");
 
+      setDueTime("");
+
       // Se a criação veio diretamente de uma List,
       // já seleciona essa List.
       const creatingFromList = lists.some(
@@ -107,81 +119,86 @@ export default function TaskDetailsPanel({
       if (creatingFromList) {
         setList(activeMenu);
       } else {
-        setList("personal");
+        setList("");
       }
 
+/*
+ * DATA ATUAL
+ *
+ * Todas as novas tasks começam
+ * automaticamente com a data de hoje.
+ */
+const today = new Date();
 
-      /*
-       * TODAY
-       *
-       * Criação pelo painel Today:
-       * data automaticamente configurada
-       * para o dia atual.
-       */
-      if (creationMode === "today") {
-
-        const today = new Date();
-
-        const formatted =
-          `${today.getFullYear()}-${String(
-            today.getMonth() + 1
-          ).padStart(2, "0")}-${String(
-            today.getDate()
-          ).padStart(2, "0")}`;
-
-        setDueDate(formatted);
-
-      }
+const formattedToday =
+  `${today.getFullYear()}-${String(
+    today.getMonth() + 1
+  ).padStart(2, "0")}-${String(
+    today.getDate()
+  ).padStart(2, "0")}`;
 
 
-      /*
-       * TOMORROW
-       *
-       * Criação pelo painel Tomorrow:
-       * data automaticamente configurada
-       * para o dia seguinte.
-       */
-      else if (creationMode === "tomorrow") {
+/*
+ * TODAY
+ *
+ * Data de hoje e bloqueada.
+ */
+if (creationMode === "today") {
 
-        const tomorrow = new Date();
+  setDueDate(formattedToday);
 
-        tomorrow.setDate(
-          tomorrow.getDate() + 1
-        );
-
-        const formatted =
-          `${tomorrow.getFullYear()}-${String(
-            tomorrow.getMonth() + 1
-          ).padStart(2, "0")}-${String(
-            tomorrow.getDate()
-          ).padStart(2, "0")}`;
-
-        setDueDate(formatted);
-
-      }
+}
 
 
-      /*
-       * THIS WEEK
-       *
-       * A pessoa precisa escolher
-       * uma data manualmente.
-       */
-      else if (creationMode === "week") {
+/*
+ * TOMORROW
+ *
+ * Data de amanhã e bloqueada.
+ */
+else if (creationMode === "tomorrow") {
 
-        setDueDate("");
+  const tomorrow = new Date();
 
-      }
+  tomorrow.setDate(
+    tomorrow.getDate() + 1
+  );
+
+  const formattedTomorrow =
+    `${tomorrow.getFullYear()}-${String(
+      tomorrow.getMonth() + 1
+    ).padStart(2, "0")}-${String(
+      tomorrow.getDate()
+    ).padStart(2, "0")}`;
+
+  setDueDate(formattedTomorrow);
+
+}
 
 
-      /*
-       * Outros modos de criação
-       */
-      else {
+/*
+ * THIS WEEK
+ *
+ * Precisa escolher uma data manualmente.
+ * Isso mantém a validação de data obrigatória.
+ */
+else if (creationMode === "week") {
 
-        setDueDate("");
+  setDueDate("");
 
-      }
+}
+
+
+/*
+ * LISTS / OUTROS
+ *
+ * Começam com a data de hoje,
+ * mas a pessoa pode alterar.
+ */
+else {
+
+  setDueDate(formattedToday);
+
+}
 
       setTags([]);
 
@@ -198,22 +215,34 @@ export default function TaskDetailsPanel({
   ]);
 
 
-  function handleSave() {
+function handleSave() {
 
-    if (
-  isCreatingTask &&
-  creationMode === "week" &&
-  !dueDate
-) {
+  if (isCreatingTask && !title.trim()) {
 
-  setDateError(
-    "Informe uma data para criar esta tarefa."
-  );
+    setTitleError(
+      "Informe um título para criar esta tarefa."
+    );
 
-  return;
-}
+    return;
+  }
 
-setDateError("");
+  setTitleError("");
+
+
+  if (
+    isCreatingTask &&
+    creationMode === "week" &&
+    !dueDate
+  ) {
+
+    setDateError(
+      "Informe uma data para criar esta tarefa."
+    );
+
+    return;
+  }
+
+  setDateError("");
 
 
     const taskData = {
@@ -227,6 +256,8 @@ setDateError("");
       list,
 
       dueDate,
+
+      dueTime,
 
       priority,
 
@@ -329,7 +360,7 @@ function handleDelete() {
   return (
     <>
 
-      <div className="bg-slate-800/40 border border-slate-600 rounded p-6 h-full min-h-[920px] -mt-24">
+      <div className="bg-slate-800/40 border border-slate-600 rounded p-6 h-full min-h-[1030px] -mt-24">
 
         <div className="flex items-start justify-between border-b border-slate-700 pb-5 mb-7">
 
@@ -377,14 +408,39 @@ function handleDelete() {
               Title
             </label>
 
-            <input
-              value={title}
-              onChange={(e) =>
-                setTitle(e.target.value)
+          <input
+            value={title}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              setTitleError("");
+            }}
+            className={`
+              w-full
+              bg-slate-800
+              border
+              ${
+                titleError
+                  ? "border-red-500"
+                  : "border-slate-700"
               }
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-              placeholder="Task title"
-            />
+              rounded-xl
+              px-4
+              py-3
+              outline-none
+              transition
+              focus:border-blue-500
+              focus:ring-2
+              focus:ring-blue-500/20
+            `}
+            placeholder="Task title"
+          />
+
+          {titleError && (
+            <p className="mt-2 text-sm text-red-400 flex items-center gap-2">
+              <span className="text-xs">●</span>
+              {titleError}
+            </p>
+          )}
 
           </div>
 
@@ -475,46 +531,81 @@ function handleDelete() {
 
 
            <input
-  disabled={isDateLocked}
-  type="date"
-  value={dueDate}
-  onChange={(e) => {
-    setDueDate(e.target.value);
-    setDateError("");
-  }}
-  className={`
-    w-full
-    bg-slate-800
-    border
-    ${
-      dateError
-        ? "border-red-500"
-        : "border-slate-700"
-    }
-    rounded-xl
-    px-4
-    py-3
-    outline-none
-    transition
-    focus:border-blue-500
-    focus:ring-2
-    focus:ring-blue-500/20
-    ${
-      isDateLocked
-        ? "opacity-60 cursor-not-allowed"
-        : ""
-    }
-  `}
-/>
+              disabled={isDateLocked}
+              type="date"
+              value={dueDate}
+              onChange={(e) => {
+                setDueDate(e.target.value);
+                setDateError("");
+              }}
+              className={`
+                w-full
+                bg-slate-800
+                border
+                ${
+                  dateError
+                    ? "border-red-500"
+                    : "border-slate-700"
+                }
+                rounded-xl
+                px-4
+                py-3
+                outline-none
+                transition
+                focus:border-blue-500
+                focus:ring-2
+                focus:ring-blue-500/20
+                ${
+                  isDateLocked
+                    ? "opacity-60 cursor-not-allowed"
+                    : ""
+                }
+              `}
+            />
 
-{dateError && (
-  <p className="mt-2 text-sm text-red-400 flex items-center gap-2">
-    <span className="text-xs">●</span>
-    {dateError}
-  </p>
-)}
+                {dateError && (
+                  <p className="mt-2 text-sm text-red-400 flex items-center gap-2">
+                    <span className="text-xs">●</span>
+                    {dateError}
+                  </p>
+                )}
 
-          </div>
+            </div>
+
+
+          {/* DUE TIME */}
+
+            <div>
+
+              <label className="block text-xs uppercase tracking-wider text-slate-400 mb-2 font-semibold">
+                Due Time
+              </label>
+
+              <input
+                type="time"
+                value={dueTime}
+                onChange={(e) =>
+                  setDueTime(e.target.value)
+                }
+                className="
+                  w-full
+                  bg-slate-800
+                  border
+                  border-slate-700
+                  rounded-xl
+                  px-4
+                  py-3
+                  outline-none
+                  transition
+                  focus:border-blue-500
+                  focus:ring-2
+                  focus:ring-blue-500/20
+                "
+              />
+
+            </div>
+
+
 
 
           {/* PRIORITY */}

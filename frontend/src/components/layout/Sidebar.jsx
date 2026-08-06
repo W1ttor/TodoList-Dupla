@@ -18,11 +18,12 @@ export default function Sidebar({
   handleSignOutClick
 }) {
   const tasksMenu = [
-    { id: "upcoming", label: "➤ Upcoming" },
-    { id: "today", label: "📄 Today" },
-    { id: "calendar", label: "📅 Calendar" },
-    { id: "sticky", label: "🧱 Sticky Wall" }
-  ];
+  { id: "dashboard", label: "▦ Dashboard" },
+  { id: "upcoming", label: "➤ Upcoming" },
+  { id: "today", label: "📄 Today" },
+  { id: "calendar", label: "📅 Calendar" },
+  { id: "sticky", label: "🧱 Sticky Wall" }
+];
 
   const {
   counts,

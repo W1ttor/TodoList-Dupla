@@ -10,14 +10,17 @@ export default function CalendarDashboard() {
   const { tasks } = useTasks();
 
 
-  const hours = [
-    "09:00",
-    "10:00",
-    "11:00",
-    "12:00",
-    "13:00",
-    "14:00"
-  ];
+const hours = Array.from(
+  { length: 33 },
+  (_, index) => {
+    const totalMinutes = 6 * 60 + index * 30;
+
+    const hour = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    return `${String(hour).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+  }
+);
 
   const weekDays = [
     "Mon",
@@ -132,7 +135,7 @@ const calendarEvents = tasks
       id: task.id,
       title: task.title,
       date,
-      hour: "09:00",
+      hour: task.dueTime || null,
 
       color:
         task.priority === "High"

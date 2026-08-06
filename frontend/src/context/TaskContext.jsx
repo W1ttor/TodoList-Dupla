@@ -65,6 +65,7 @@ export function TaskProvider({ children }) {
   });
 
   const titles = {
+    dashboard: "Dashboard",
     today: "Today",
     upcoming: "Upcoming",
     calendar: "Calendar",

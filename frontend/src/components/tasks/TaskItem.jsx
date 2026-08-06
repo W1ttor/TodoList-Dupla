@@ -1,5 +1,6 @@
 import { useTasks } from "../../context/TaskContext";
 import { CalendarDays, Check } from "lucide-react";
+import { CalendarDays, Clock, Check } from "lucide-react";
 
 export default function TaskItem({
   task,
@@ -107,6 +108,17 @@ export default function TaskItem({
               />
 
               {formatDate(task.dueDate)}
+            </span>
+          )}
+
+          {task.dueTime && (
+            <span className="flex items-center gap-1 text-slate-400">
+              <Clock
+                size={13}
+                strokeWidth={2}
+              />
+
+              {task.dueTime}
             </span>
           )}
 
