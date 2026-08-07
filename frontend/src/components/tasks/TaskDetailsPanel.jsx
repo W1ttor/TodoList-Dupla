@@ -102,6 +102,8 @@ export default function TaskDetailsPanel({
         task.completed || false
       );
 
+      setList(task.list ?? "");
+
     } else if (isCreatingTask) {
 
       setTitle("");
@@ -277,6 +279,8 @@ function handleSave() {
       updateTask(taskData);
 
     }
+
+
 
 
     setSelectedTask(null);

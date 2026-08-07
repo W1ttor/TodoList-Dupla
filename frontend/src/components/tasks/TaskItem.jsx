@@ -1,5 +1,4 @@
 import { useTasks } from "../../context/TaskContext";
-import { CalendarDays, Check } from "lucide-react";
 import { CalendarDays, Clock, Check } from "lucide-react";
 
 export default function TaskItem({
