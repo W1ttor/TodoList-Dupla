@@ -7,7 +7,7 @@ export default function CalendarDashboard({ setSelectedTask, setIsCreatingTask }
   const [viewMode, setViewMode] = useState("week");
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  const { tasks } = useTasks();
+  const {tasks, setActiveMenu } = useTasks();
 
   const hours = generateTimeSlots(7, 23);
   const today = new Date();
@@ -28,16 +28,17 @@ export default function CalendarDashboard({ setSelectedTask, setIsCreatingTask }
 
   /* ---------------- TASK ACTIONS ---------------- */
 
-  const handleTaskClick = (task) => {
-    setSelectedTask(task);
-    setIsCreatingTask(false);
-  };
+const handleTaskClick = (task) => {
+  setSelectedTask(task);
+  setIsCreatingTask(false);
+  setActiveMenu("upcoming");
+};
 
-  const handleNewTask = () => {
-    setSelectedTask(null);
-    setIsCreatingTask(true);
-  };
-
+const handleNewTask = () => {
+  setSelectedTask(null);
+  setIsCreatingTask(true);
+  setActiveMenu("upcoming");
+};
   /* ---------------- NAVIGATION ---------------- */
 
   const handlePrev = () => {

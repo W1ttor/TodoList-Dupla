@@ -25,6 +25,11 @@ const [isCreatingTask, setIsCreatingTask] = useState(false);
 
 const [creationMode, setCreationMode] = useState("default");
 
+
+console.log("ACTIVE MENU:", activeMenu);
+console.log("SELECTED TASK:", selectedTask);
+console.log("CREATING TASK:", isCreatingTask);
+
   return (
     <main className="flex-1 p-10 bg-gradient-to-br from-slate-700 via-gray-700 to-black min-h-screen text-slate-100">
 
@@ -120,11 +125,28 @@ const [creationMode, setCreationMode] = useState("default");
       )}
 
       {activeMenu === "calendar" && (
-        <CalendarDashboard
-          setCreationMode={setCreationMode}
-          setSelectedTask={setSelectedTask}
-          setIsCreatingTask={setIsCreatingTask}
-        />
+        <div
+          className={
+            (selectedTask || isCreatingTask)
+              ? "grid grid-cols-[2fr_430px] gap-8"
+              : ""
+          }
+        >
+          <CalendarDashboard
+            setSelectedTask={setSelectedTask}
+            setIsCreatingTask={setIsCreatingTask}
+          />
+
+          {(selectedTask || isCreatingTask) && (
+            <TaskDetailsPanel
+              task={selectedTask}
+              isCreatingTask={isCreatingTask}
+              creationMode={creationMode}
+              setSelectedTask={setSelectedTask}
+              setIsCreatingTask={setIsCreatingTask}
+            />
+          )}
+        </div>
       )}
 
       {/* LISTAS */}
