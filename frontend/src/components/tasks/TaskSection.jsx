@@ -15,7 +15,8 @@ export default function TaskSection({
   const {
     activeMenu,
     counts,
-    titles
+    titles,
+    lists
   } = useTasks();
 
 
@@ -151,11 +152,7 @@ console.log("CREATING TASK:", isCreatingTask);
 
       {/* LISTAS */}
 
-      {[
-        "personal",
-        "work",
-        "list1"
-      ].includes(activeMenu) && (
+      {lists.some(list => list.id === activeMenu) && (
         <div
   className={
     (selectedTask || isCreatingTask)
