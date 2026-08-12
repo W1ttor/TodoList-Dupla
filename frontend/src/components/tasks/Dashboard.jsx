@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { useTasks } from "../../context/TaskContext";
+
 import {
   AlertTriangle,
   Clock3,
@@ -6,12 +8,18 @@ import {
   ListTodo,
   ArrowUpRight,
   Activity,
-  CalendarDays
+  CalendarDays,
+  X,
+  Check,
+  Tag
 } from "lucide-react";
 
 export default function Dashboard() {
 
   const { tasks } = useTasks();
+
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
 
   /* ==========================
      TASK DATA
@@ -94,6 +102,63 @@ export default function Dashboard() {
   ).format(now);
 
 
+  /* ==========================
+     MODAL DATA
+  ========================== */
+
+  const categoryData = {
+
+    active: {
+      title: "Active Tasks",
+      description: "Tasks that are currently in progress.",
+      tasks: activeTasks,
+      icon: <ListTodo size={19} />,
+      color: "blue"
+    },
+
+    today: {
+      title: "Today's Tasks",
+      description: "Tasks scheduled for today.",
+      tasks: todayTasks,
+      icon: <Clock3 size={19} />,
+      color: "cyan"
+    },
+
+    overdue: {
+      title: "Overdue Tasks",
+      description: "Tasks that require your attention.",
+      tasks: overdueTasks,
+      icon: <AlertTriangle size={19} />,
+      color: "red"
+    },
+
+    completed: {
+      title: "Completed Tasks",
+      description: "Tasks that have already been completed.",
+      tasks: completedTasks,
+      icon: <CheckCircle2 size={19} />,
+      color: "green"
+    }
+
+  };
+
+
+  const selectedData =
+    selectedCategory
+      ? categoryData[selectedCategory]
+      : null;
+
+
+  function openCategory(category) {
+    setSelectedCategory(category);
+  }
+
+
+  function closeCategory() {
+    setSelectedCategory(null);
+  }
+
+
   return (
 
     <div className="space-y-6">
@@ -132,7 +197,6 @@ export default function Dashboard() {
 
           </div>
 
-       
 
           <p className="text-sm text-slate-400 mt-1">
             Your productivity at a glance.
@@ -174,6 +238,7 @@ export default function Dashboard() {
           value={activeTasks.length}
           icon={<ListTodo size={19} />}
           accent="blue"
+          onClick={() => openCategory("active")}
         />
 
         <StatCard
@@ -181,6 +246,7 @@ export default function Dashboard() {
           value={todayTasks.length}
           icon={<Clock3 size={19} />}
           accent="cyan"
+          onClick={() => openCategory("today")}
         />
 
         <StatCard
@@ -188,6 +254,7 @@ export default function Dashboard() {
           value={overdueTasks.length}
           icon={<AlertTriangle size={19} />}
           accent="red"
+          onClick={() => openCategory("overdue")}
         />
 
         <StatCard
@@ -195,6 +262,7 @@ export default function Dashboard() {
           value={completedTasks.length}
           icon={<CheckCircle2 size={19} />}
           accent="green"
+          onClick={() => openCategory("completed")}
         />
 
       </div>
@@ -229,8 +297,6 @@ export default function Dashboard() {
             hover:shadow-[0_10px_35px_rgba(0,0,0,0.25)]
           "
         >
-
-          {/* Hover glow */}
 
           <div
             className="
@@ -588,6 +654,20 @@ export default function Dashboard() {
 
       )}
 
+
+      {/* =====================================
+          TASKS MODAL
+      ===================================== */}
+
+      {selectedData && (
+
+        <TaskListModal
+          data={selectedData}
+          onClose={closeCategory}
+        />
+
+      )}
+
     </div>
   );
 }
@@ -601,7 +681,8 @@ function StatCard({
   title,
   value,
   icon,
-  accent
+  accent,
+  onClick
 }) {
 
   const accents = {
@@ -642,7 +723,9 @@ function StatCard({
 
   return (
 
-    <div
+    <button
+      type="button"
+      onClick={onClick}
       className={`
         group
         relative
@@ -653,13 +736,18 @@ function StatCard({
         bg-slate-800/65
         px-5
         py-4
-        cursor-default
+        text-left
+        cursor-pointer
         transition-all
         duration-300
         hover:-translate-y-1
         hover:bg-slate-800/90
+        active:translate-y-0
         ${style.border}
         ${style.shadow}
+        focus:outline-none
+        focus:ring-2
+        focus:ring-cyan-400/30
       `}
     >
 
@@ -748,7 +836,443 @@ function StatCard({
             "
           >
             {value}
+
           </span>
+
+        </div>
+
+      </div>
+
+    </button>
+
+  );
+}
+
+
+/* ==================================================
+   TASK LIST MODAL
+================================================== */
+
+function TaskListModal({
+  data,
+  onClose
+}) {
+
+  const colorStyles = {
+
+    blue: {
+      icon: "text-blue-400",
+      iconBg: "bg-blue-400/10",
+      border: "border-blue-400/20",
+      badge: "bg-blue-400/10 text-blue-300 border-blue-400/20"
+    },
+
+    cyan: {
+      icon: "text-cyan-400",
+      iconBg: "bg-cyan-400/10",
+      border: "border-cyan-400/20",
+      badge: "bg-cyan-400/10 text-cyan-300 border-cyan-400/20"
+    },
+
+    red: {
+      icon: "text-red-400",
+      iconBg: "bg-red-400/10",
+      border: "border-red-400/20",
+      badge: "bg-red-400/10 text-red-300 border-red-400/20"
+    },
+
+    green: {
+      icon: "text-emerald-400",
+      iconBg: "bg-emerald-400/10",
+      border: "border-emerald-400/20",
+      badge: "bg-emerald-400/10 text-emerald-300 border-emerald-400/20"
+    }
+
+  };
+
+
+  const style = colorStyles[data.color];
+
+
+  function formatDate(date) {
+
+    if (!date) {
+      return null;
+    }
+
+    const parts = date.split("-");
+
+    if (parts.length !== 3) {
+      return date;
+    }
+
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  }
+
+
+  return (
+
+    <div
+      className="
+        fixed
+        inset-0
+        z-50
+        flex
+        items-center
+        justify-center
+        bg-black/65
+        backdrop-blur-sm
+        p-6
+        animate-in
+        fade-in
+        duration-200
+      "
+      onMouseDown={(event) => {
+
+        if (event.target === event.currentTarget) {
+          onClose();
+        }
+
+      }}
+    >
+
+      <div
+        className="
+          w-full
+          max-w-2xl
+          max-h-[75vh]
+          overflow-hidden
+          rounded-2xl
+          border
+          border-slate-600
+          bg-slate-900
+          shadow-[0_25px_80px_rgba(0,0,0,0.55)]
+          animate-in
+          zoom-in-95
+          duration-200
+        "
+      >
+
+        {/* ==========================
+            MODAL HEADER
+        ========================== */}
+
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            px-6
+            py-5
+            border-b
+            border-slate-700
+          "
+        >
+
+          <div className="flex items-center gap-3">
+
+            <div
+              className={`
+                w-9
+                h-9
+                rounded-lg
+                flex
+                items-center
+                justify-center
+                border
+                ${style.iconBg}
+                ${style.border}
+                ${style.icon}
+              `}
+            >
+              {data.icon}
+            </div>
+
+
+            <div>
+
+              <div className="flex items-center gap-2">
+
+                <h2 className="text-lg font-semibold text-white">
+                  {data.title}
+                </h2>
+
+                <span
+                  className={`
+                    px-2
+                    py-0.5
+                    rounded-md
+                    border
+                    text-[11px]
+                    font-semibold
+                    ${style.badge}
+                  `}
+                >
+                  {data.tasks.length}
+                </span>
+
+              </div>
+
+              <p className="text-xs text-slate-400 mt-0.5">
+                {data.description}
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="
+              w-8
+              h-8
+              flex
+              items-center
+              justify-center
+              rounded-lg
+              text-slate-400
+              hover:text-white
+              hover:bg-slate-800
+              transition
+            "
+            aria-label="Fechar"
+          >
+
+            <X size={18} />
+
+          </button>
+
+        </div>
+
+
+        {/* ==========================
+            TASKS
+        ========================== */}
+
+        <div className="overflow-y-auto max-h-[calc(75vh-90px)] p-5">
+
+          {data.tasks.length === 0 ? (
+
+            <div
+              className="
+                min-h-48
+                flex
+                flex-col
+                items-center
+                justify-center
+                rounded-xl
+                border
+                border-dashed
+                border-slate-700
+                bg-slate-800/30
+                text-center
+              "
+            >
+
+              <div
+                className={`
+                  w-11
+                  h-11
+                  rounded-full
+                  flex
+                  items-center
+                  justify-center
+                  mb-3
+                  ${style.iconBg}
+                  ${style.icon}
+                `}
+              >
+                {data.icon}
+              </div>
+
+              <p className="text-sm font-medium text-slate-300">
+                No tasks here
+              </p>
+
+              <p className="text-xs text-slate-500 mt-1">
+                There are no tasks in this category yet.
+              </p>
+
+            </div>
+
+          ) : (
+
+            <div className="space-y-2">
+
+              {data.tasks.map(task => (
+
+                <div
+                  key={task.id}
+                  className="
+                    group
+                    rounded-xl
+                    border
+                    border-slate-700
+                    bg-slate-800/60
+                    p-4
+                    transition-all
+                    duration-200
+                    hover:bg-slate-800
+                    hover:border-slate-600
+                    hover:-translate-y-0.5
+                  "
+                >
+
+                  <div className="flex items-start justify-between gap-4">
+
+                    <div className="flex items-start gap-3 min-w-0">
+
+                      <div
+                        className={`
+                          mt-0.5
+                          w-7
+                          h-7
+                          rounded-lg
+                          flex
+                          items-center
+                          justify-center
+                          shrink-0
+                          ${
+                            task.completed
+                              ? "bg-emerald-400/10 text-emerald-400 border border-emerald-400/20"
+                              : `${style.iconBg} ${style.icon}`
+                          }
+                        `}
+                      >
+
+                        {task.completed
+                          ? <Check size={15} />
+                          : data.icon
+                        }
+
+                      </div>
+
+
+                      <div className="min-w-0">
+
+                        <p
+                          className={`
+                            text-sm
+                            font-medium
+                            truncate
+                            ${
+                              task.completed
+                                ? "text-slate-400 line-through"
+                                : "text-white"
+                            }
+                          `}
+                        >
+                          {task.title}
+                        </p>
+
+
+                        {/* DATE / TIME */}
+
+                        {(task.dueDate || task.dueTime) && (
+
+                          <div
+                            className="
+                              flex
+                              items-center
+                              gap-3
+                              mt-1.5
+                              text-[11px]
+                              text-slate-500
+                            "
+                          >
+
+                            {task.dueDate && (
+                              <span>
+                                {formatDate(task.dueDate)}
+                              </span>
+                            )}
+
+                            {task.dueTime && (
+                              <span>
+                                {task.dueTime}
+                              </span>
+                            )}
+
+                          </div>
+
+                        )}
+
+                      </div>
+
+                    </div>
+
+
+                    {/* LIST */}
+
+                    {task.list && (
+
+                      <span
+                        className="
+                          shrink-0
+                          text-[10px]
+                          text-slate-400
+                          bg-slate-700/70
+                          border
+                          border-slate-600
+                          px-2
+                          py-1
+                          rounded-md
+                        "
+                      >
+                        {task.list}
+                      </span>
+
+                    )}
+
+                  </div>
+
+
+                  {/* TAGS */}
+
+                  {task.tags && task.tags.length > 0 && (
+
+                    <div className="flex flex-wrap gap-1.5 mt-3 ml-10">
+
+                      {task.tags.map((tag, index) => (
+
+                        <span
+                          key={`${tag}-${index}`}
+                          className="
+                            inline-flex
+                            items-center
+                            gap-1
+                            px-2
+                            py-1
+                            rounded-md
+                            bg-slate-700/70
+                            border
+                            border-slate-600
+                            text-[10px]
+                            text-slate-400
+                          "
+                        >
+
+                          <Tag size={10} />
+
+                          {tag}
+
+                        </span>
+
+                      ))}
+
+                    </div>
+
+                  )}
+
+                </div>
+
+              ))}
+
+            </div>
+
+          )}
 
         </div>
 
@@ -896,4 +1420,5 @@ function OverdueItem({ task }) {
     </div>
 
   );
+
 }
