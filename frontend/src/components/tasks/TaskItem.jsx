@@ -122,7 +122,7 @@ export default function TaskItem({
 
       deadlineStatus = "critical";
 
-    } else if (remainingMinutes <= 240) {
+    } else if (remainingMinutes <= 180) {
 
       deadlineStatus = "warning";
 

@@ -259,6 +259,146 @@ export default function Sidebar({
 
           </ul>
 
+
+          {/* PRIORITY */}
+
+{/* PRIORITY */}
+
+<h2 className="text-xs font-semibold text-gray-400 uppercase mt-6 mb-2">
+  Priority
+</h2>
+
+<ul className="flex flex-col gap-2">
+
+  {/* LOW */}
+
+  <li
+    onClick={() => setActiveMenu("priority-low")}
+    className={`
+      flex
+      justify-between
+      items-center
+      cursor-pointer
+      px-2
+      py-1
+      rounded
+      transition-all
+      duration-200
+      ${
+        activeMenu === "priority-low"
+          ? "bg-gray-100 text-black font-semibold"
+          : "hover:bg-gray-100 hover:text-black text-slate-200"
+      }
+    `}
+  >
+
+<span className="flex items-center gap-2">
+  <span className="w-1 h-4 rounded-full bg-green-400" />
+  <span className="text-sm">Low</span>
+</span>
+
+    {counts["priority-low"] > 0 && (
+      <span className="
+        text-xs
+        bg-gray-200
+        text-black
+        px-2
+        rounded
+      ">
+        {counts["priority-low"]}
+      </span>
+    )}
+
+  </li>
+
+
+  {/* MEDIUM */}
+
+  <li
+    onClick={() => setActiveMenu("priority-medium")}
+    className={`
+      flex
+      justify-between
+      items-center
+      cursor-pointer
+      px-2
+      py-1
+      rounded
+      transition-all
+      duration-200
+      ${
+        activeMenu === "priority-medium"
+          ? "bg-gray-100 text-black font-semibold"
+          : "hover:bg-gray-100 hover:text-black text-slate-200"
+      }
+    `}
+  >
+
+<span className="flex items-center gap-2">
+  <span className="w-1 h-4 rounded-full bg-yellow-400" />
+  <span className="text-sm">Medium</span>
+</span>
+
+    {counts["priority-medium"] > 0 && (
+      <span className="
+        text-xs
+        bg-gray-200
+        text-black
+        px-2
+        rounded
+      ">
+        {counts["priority-medium"]}
+      </span>
+    )}
+
+  </li>
+
+
+  {/* HIGH */}
+
+  <li
+    onClick={() => setActiveMenu("priority-high")}
+    className={`
+      flex
+      justify-between
+      items-center
+      cursor-pointer
+      px-2
+      py-1
+      rounded
+      transition-all
+      duration-200
+      ${
+        activeMenu === "priority-high"
+          ? "bg-gray-100 text-black font-semibold"
+          : "hover:bg-gray-100 hover:text-black text-slate-200"
+      }
+    `}
+  >
+
+<span className="flex items-center gap-2">
+  <span className="w-1 h-4 rounded-full bg-red-400" />
+  <span className="text-sm">High</span>
+</span>
+
+    {counts["priority-high"] > 0 && (
+      <span className="
+        text-xs
+        bg-gray-200
+        text-black
+        px-2
+        rounded
+      ">
+        {counts["priority-high"]}
+      </span>
+    )}
+
+  </li>
+
+</ul>
+
+        
+
           {/* TAGS */}
           <div className="mt-6">
 

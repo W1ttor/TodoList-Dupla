@@ -9,7 +9,8 @@ export default function TaskDetailsPanel({
   isCreatingTask,
   creationMode,
   setSelectedTask,
-  setIsCreatingTask
+  setIsCreatingTask,
+  defaultPriority
 }) {
 
   const {
@@ -47,8 +48,16 @@ export default function TaskDetailsPanel({
   );
 
   const [priority, setPriority] = useState(
-    task?.priority || "Medium"
-  );
+  defaultPriority || "Medium"
+);
+
+useEffect(() => {
+  if (isCreatingTask) {
+    setPriority(defaultPriority || "Medium");
+  }
+}, [isCreatingTask, defaultPriority]);
+
+
 
   const [completed, setCompleted] = useState(
     task?.completed || false

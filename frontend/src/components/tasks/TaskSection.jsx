@@ -7,6 +7,7 @@ import CalendarDashboard from "./CalendarDashboard";
 import ListsDashboard from "./ListsDashboard";
 import TaskDetailsPanel from "./TaskDetailsPanel";
 import Dashboard from "./Dashboard";
+import PriorityDashboard from "./PriorityDashboard";
 
 export default function TaskSection({
   sidebarOpen,
@@ -179,6 +180,194 @@ console.log("CREATING TASK:", isCreatingTask);
 
 </div>
       )}
+
+
+{/* ==========================
+    PRIORIDADES
+========================== */}
+
+{activeMenu === "priority-low" && (
+
+  <div
+    className={
+      (selectedTask || isCreatingTask)
+        ? "grid grid-cols-[2fr_430px] gap-8"
+        : ""
+    }
+  >
+
+    <PriorityDashboard
+
+      priority="Low"
+
+      setSelectedTask={
+        setSelectedTask
+      }
+
+      setIsCreatingTask={
+        setIsCreatingTask
+      }
+
+      setCreationMode={
+        setCreationMode
+      }
+
+
+      defaultPriority="Low"
+
+    />
+
+
+    {(selectedTask || isCreatingTask) && (
+
+      <TaskDetailsPanel
+
+        task={selectedTask}
+
+        isCreatingTask={
+          isCreatingTask
+        }
+
+        setSelectedTask={
+          setSelectedTask
+        }
+
+        setIsCreatingTask={
+          setIsCreatingTask
+        }
+
+        creationMode={
+          creationMode
+        }
+
+      />
+
+    )}
+
+  </div>
+
+)}
+
+
+{activeMenu === "priority-medium" && (
+
+  <div
+    className={
+      (selectedTask || isCreatingTask)
+        ? "grid grid-cols-[2fr_430px] gap-8"
+        : ""
+    }
+  >
+
+    <PriorityDashboard
+
+      priority="Medium"
+
+      setSelectedTask={
+        setSelectedTask
+      }
+
+      setIsCreatingTask={
+        setIsCreatingTask
+      }
+
+      setCreationMode={
+        setCreationMode
+      }
+      defaultPriority="Medium"
+    />
+
+
+    {(selectedTask || isCreatingTask) && (
+
+      <TaskDetailsPanel
+
+        task={selectedTask}
+
+        isCreatingTask={
+          isCreatingTask
+        }
+
+        setSelectedTask={
+          setSelectedTask
+        }
+
+        setIsCreatingTask={
+          setIsCreatingTask
+        }
+
+        creationMode={
+          creationMode
+        }
+
+      />
+
+    )}
+
+  </div>
+
+)}
+
+
+{activeMenu === "priority-high" && (
+
+  <div
+    className={
+      (selectedTask || isCreatingTask)
+        ? "grid grid-cols-[2fr_430px] gap-8"
+        : ""
+    }
+  >
+
+    <PriorityDashboard
+
+      priority="High"
+
+      setSelectedTask={
+        setSelectedTask
+      }
+
+      setIsCreatingTask={
+        setIsCreatingTask
+      }
+
+      setCreationMode={
+        setCreationMode
+      }
+
+      defaultPriority="High"
+    />
+
+
+    {(selectedTask || isCreatingTask) && (
+
+      <TaskDetailsPanel
+
+        task={selectedTask}
+
+        isCreatingTask={
+          isCreatingTask
+        }
+
+        setSelectedTask={
+          setSelectedTask
+        }
+
+        setIsCreatingTask={
+          setIsCreatingTask
+        }
+
+        creationMode={
+          creationMode
+        }
+
+      />
+
+    )}
+
+  </div>
+
+)}
 
     </main>
   );

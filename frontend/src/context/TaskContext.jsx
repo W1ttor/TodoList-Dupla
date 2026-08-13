@@ -69,7 +69,12 @@ export function TaskProvider({ children }) {
     today: "Today",
     upcoming: "Upcoming",
     calendar: "Calendar",
-    sticky: "Sticky Wall"
+    sticky: "Sticky Wall",
+
+  "priority-low": "Low Priority",
+  "priority-medium": "Medium Priority",
+  "priority-high": "High Priority"
+
   };
 
   lists.forEach(list => {
@@ -307,6 +312,28 @@ export function TaskProvider({ children }) {
       ).length;
 
   });
+
+
+  /* ==========================
+   PRIORIDADES
+========================== */
+
+counts["priority-low"] =
+  tasks.filter(
+    task => task.priority === "Low"
+  ).length;
+
+
+counts["priority-medium"] =
+  tasks.filter(
+    task => task.priority === "Medium"
+  ).length;
+
+
+counts["priority-high"] =
+  tasks.filter(
+    task => task.priority === "High"
+  ).length;
 
   return (
     <TaskContext.Provider
