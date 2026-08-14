@@ -51,13 +51,6 @@ export default function TaskDetailsPanel({
   defaultPriority || "Medium"
 );
 
-useEffect(() => {
-  if (isCreatingTask) {
-    setPriority(defaultPriority || "Medium");
-  }
-}, [isCreatingTask, defaultPriority]);
-
-
 
   const [completed, setCompleted] = useState(
     task?.completed || false
@@ -107,6 +100,7 @@ useEffect(() => {
         task.priority || "Medium"
       );
 
+
       setCompleted(
         task.completed || false
       );
@@ -120,6 +114,11 @@ useEffect(() => {
       setDescription("");
 
       setDueTime("");
+
+
+       setPriority(
+        defaultPriority || "Medium"
+      );
 
       // Se a criação veio diretamente de uma List,
       // já seleciona essa List.
@@ -213,7 +212,7 @@ else {
 
       setTags([]);
 
-      setPriority("Medium");
+      setPriority(defaultPriority || "Medium");
 
       setCompleted(false);
 
@@ -222,7 +221,8 @@ else {
   }, [
     task,
     isCreatingTask,
-    creationMode
+    creationMode,
+    defaultPriority
   ]);
 
 

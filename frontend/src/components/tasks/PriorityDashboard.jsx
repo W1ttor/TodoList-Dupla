@@ -121,15 +121,14 @@ export default function PriorityDashboard({
      NOVA TASK
   ========================== */
 
-  function handleCreateTask() {
+function handleCreateTask() {
 
-    setCreationMode("priority");
+  setCreationMode("priority");
 
-    setSelectedTask(null);
+  setSelectedTask(null);
 
-    setIsCreatingTask(true);
-
-  }
+  setIsCreatingTask(true);
+}
 
 
   const hasSelection =

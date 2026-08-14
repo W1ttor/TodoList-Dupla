@@ -238,7 +238,9 @@ console.log("CREATING TASK:", isCreatingTask);
 
         creationMode={
           creationMode
-        }
+        } 
+        
+        defaultPriority="Low"
 
       />
 
@@ -300,6 +302,8 @@ console.log("CREATING TASK:", isCreatingTask);
           creationMode
         }
 
+        defaultPriority="Medium"
+
       />
 
     )}
@@ -360,6 +364,8 @@ console.log("CREATING TASK:", isCreatingTask);
         creationMode={
           creationMode
         }
+
+        defaultPriority="High"
 
       />
 

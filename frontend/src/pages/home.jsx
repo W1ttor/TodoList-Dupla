@@ -4,6 +4,7 @@ import Sidebar from "../components/layout/Sidebar";
 import Modal from "../components/layout/Modal";
 import TaskSection from "../components/tasks/TaskSection";
 import { useTasks } from "../context/TaskContext";
+import DeadlineAlerts from "../components/tasks/DeadlineAlerts";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -33,6 +34,8 @@ export default function Home() {
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
       />
+
+      <DeadlineAlerts />
 
       {showModal && (
         <Modal
