@@ -11,27 +11,23 @@ import {
   CalendarDays,
   X,
   Check,
-  Tag
+  Tag,
+  RefreshCw,
 } from "lucide-react";
 
 export default function Dashboard() {
-
-  const { tasks } = useTasks();
+  const { tasks, updateTask } = useTasks();
 
   const [selectedCategory, setSelectedCategory] = useState(null);
-
+  const [taskToReschedule, setTaskToReschedule] = useState(null);
 
   /* ==========================
      TASK DATA
   ========================== */
 
-  const activeTasks = tasks.filter(
-    task => !task.completed
-  );
+  const activeTasks = tasks.filter((task) => !task.completed);
 
-  const completedTasks = tasks.filter(
-    task => task.completed
-  );
+  const completedTasks = tasks.filter((task) => task.completed);
 
   const now = new Date();
 
@@ -41,37 +37,25 @@ export default function Dashboard() {
   const endOfToday = new Date();
   endOfToday.setHours(23, 59, 59, 999);
 
-
-  const overdueTasks = activeTasks.filter(task => {
-
+  const overdueTasks = activeTasks.filter((task) => {
     if (!task.dueDate) {
       return false;
     }
 
-    const due = new Date(
-      `${task.dueDate}T${task.dueTime || "23:59"}`
-    );
+    const due = new Date(`${task.dueDate}T${task.dueTime || "23:59"}`);
 
     return due < now;
   });
 
-
-  const todayTasks = activeTasks.filter(task => {
-
+  const todayTasks = activeTasks.filter((task) => {
     if (!task.dueDate) {
       return false;
     }
 
-    const due = new Date(
-      `${task.dueDate}T${task.dueTime || "23:59"}`
-    );
+    const due = new Date(`${task.dueDate}T${task.dueTime || "23:59"}`);
 
-    return (
-      due >= startOfToday &&
-      due <= endOfToday
-    );
+    return due >= startOfToday && due <= endOfToday;
   });
-
 
   /* ==========================
      PRODUCTIVITY
@@ -80,40 +64,30 @@ export default function Dashboard() {
   const totalTasks = tasks.length;
 
   const completionRate =
-    totalTasks > 0
-      ? Math.round(
-          (completedTasks.length / totalTasks) * 100
-        )
-      : 0;
-
+    totalTasks > 0 ? Math.round((completedTasks.length / totalTasks) * 100) : 0;
 
   /* ==========================
      DATE
   ========================== */
 
-  const currentDate = new Intl.DateTimeFormat(
-    "en-US",
-    {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-      year: "numeric"
-    }
-  ).format(now);
-
+  const currentDate = new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(now);
 
   /* ==========================
      MODAL DATA
   ========================== */
 
   const categoryData = {
-
     active: {
       title: "Active Tasks",
       description: "Tasks that are currently in progress.",
       tasks: activeTasks,
       icon: <ListTodo size={19} />,
-      color: "blue"
+      color: "blue",
     },
 
     today: {
@@ -121,7 +95,7 @@ export default function Dashboard() {
       description: "Tasks scheduled for today.",
       tasks: todayTasks,
       icon: <Clock3 size={19} />,
-      color: "cyan"
+      color: "cyan",
     },
 
     overdue: {
@@ -129,7 +103,7 @@ export default function Dashboard() {
       description: "Tasks that require your attention.",
       tasks: overdueTasks,
       icon: <AlertTriangle size={19} />,
-      color: "red"
+      color: "red",
     },
 
     completed: {
@@ -137,42 +111,37 @@ export default function Dashboard() {
       description: "Tasks that have already been completed.",
       tasks: completedTasks,
       icon: <CheckCircle2 size={19} />,
-      color: "green"
-    }
-
+      color: "green",
+    },
   };
 
-
-  const selectedData =
-    selectedCategory
-      ? categoryData[selectedCategory]
-      : null;
-
+  const selectedData = selectedCategory ? categoryData[selectedCategory] : null;
 
   function openCategory(category) {
     setSelectedCategory(category);
   }
 
-
   function closeCategory() {
     setSelectedCategory(null);
   }
 
+  function openReschedule(task) {
+    setTaskToReschedule(task);
+  }
+
+  function closeReschedule() {
+    setTaskToReschedule(null);
+  }
 
   return (
-
     <div className="space-y-6">
-
       {/* =====================================
           HEADER
       ===================================== */}
 
       <div className="flex items-end justify-between">
-
         <div>
-
           <div className="flex items-center gap-2 mb-2">
-
             <span
               className="
                 w-1.5
@@ -194,16 +163,12 @@ export default function Dashboard() {
             >
               Overview
             </span>
-
           </div>
-
 
           <p className="text-sm text-slate-400 mt-1">
             Your productivity at a glance.
           </p>
-
         </div>
-
 
         <div
           className="
@@ -214,25 +179,17 @@ export default function Dashboard() {
             text-slate-400
           "
         >
-
-          <CalendarDays
-            size={14}
-            className="text-cyan-400"
-          />
+          <CalendarDays size={14} className="text-cyan-400" />
 
           {currentDate}
-
         </div>
-
       </div>
-
 
       {/* =====================================
           STAT CARDS
       ===================================== */}
 
       <div className="grid grid-cols-4 gap-4">
-
         <StatCard
           title="Active"
           value={activeTasks.length}
@@ -264,17 +221,13 @@ export default function Dashboard() {
           accent="green"
           onClick={() => openCategory("completed")}
         />
-
       </div>
-
 
       {/* =====================================
           MAIN AREA
       ===================================== */}
 
       <div className="grid grid-cols-[1.1fr_0.9fr] gap-4">
-
-
         {/* =================================
             PRODUCTIVITY
         ================================= */}
@@ -297,7 +250,6 @@ export default function Dashboard() {
             hover:shadow-[0_10px_35px_rgba(0,0,0,0.25)]
           "
         >
-
           <div
             className="
               pointer-events-none
@@ -317,13 +269,9 @@ export default function Dashboard() {
           />
 
           <div className="relative">
-
             <div className="flex items-start justify-between">
-
               <div>
-
                 <div className="flex items-center gap-2">
-
                   <Activity
                     size={17}
                     className="
@@ -334,18 +282,13 @@ export default function Dashboard() {
                     "
                   />
 
-                  <h3 className="font-semibold text-white">
-                    Productivity
-                  </h3>
-
+                  <h3 className="font-semibold text-white">Productivity</h3>
                 </div>
 
                 <p className="text-xs text-slate-400 mt-1">
                   Overall completion
                 </p>
-
               </div>
-
 
               <span
                 className="
@@ -360,14 +303,11 @@ export default function Dashboard() {
               >
                 {completionRate}%
               </span>
-
             </div>
-
 
             {/* PROGRESS */}
 
             <div className="mt-7">
-
               <div
                 className="
                   h-2.5
@@ -379,7 +319,6 @@ export default function Dashboard() {
                   overflow-hidden
                 "
               >
-
                 <div
                   className="
                     h-full
@@ -393,14 +332,11 @@ export default function Dashboard() {
                     shadow-[0_0_12px_rgba(34,211,238,0.35)]
                   "
                   style={{
-                    width: `${completionRate}%`
+                    width: `${completionRate}%`,
                   }}
                 />
-
               </div>
-
             </div>
-
 
             <div
               className="
@@ -411,21 +347,12 @@ export default function Dashboard() {
                 text-slate-400
               "
             >
+              <span>{completedTasks.length} completed</span>
 
-              <span>
-                {completedTasks.length} completed
-              </span>
-
-              <span>
-                {totalTasks} total
-              </span>
-
+              <span>{totalTasks} total</span>
             </div>
-
           </div>
-
         </section>
-
 
         {/* =================================
             TODAY
@@ -449,13 +376,9 @@ export default function Dashboard() {
             hover:shadow-[0_10px_35px_rgba(0,0,0,0.25)]
           "
         >
-
           <div className="flex items-center justify-between mb-5">
-
             <div>
-
               <div className="flex items-center gap-2">
-
                 <Clock3
                   size={17}
                   className="
@@ -466,18 +389,13 @@ export default function Dashboard() {
                   "
                 />
 
-                <h3 className="font-semibold text-white">
-                  Today's Tasks
-                </h3>
-
+                <h3 className="font-semibold text-white">Today's Tasks</h3>
               </div>
 
               <p className="text-xs text-slate-400 mt-1">
                 Tasks scheduled for today
               </p>
-
             </div>
-
 
             <span
               className="
@@ -498,12 +416,9 @@ export default function Dashboard() {
             >
               {todayTasks.length}
             </span>
-
           </div>
 
-
           {todayTasks.length === 0 ? (
-
             <div
               className="
                 h-24
@@ -519,39 +434,23 @@ export default function Dashboard() {
                 text-slate-500
               "
             >
-
               No tasks scheduled for today.
-
             </div>
-
           ) : (
-
             <div className="space-y-2">
-
-              {todayTasks.slice(0, 4).map(task => (
-
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                />
-
+              {todayTasks.slice(0, 4).map((task) => (
+                <TaskItem key={task.id} task={task} />
               ))}
-
             </div>
-
           )}
-
         </section>
-
       </div>
-
 
       {/* =====================================
           OVERDUE
       ===================================== */}
 
       {overdueTasks.length > 0 && (
-
         <section
           className="
             group
@@ -567,7 +466,6 @@ export default function Dashboard() {
             hover:shadow-[0_10px_30px_rgba(248,113,113,0.08)]
           "
         >
-
           <div
             className="
               flex
@@ -579,9 +477,7 @@ export default function Dashboard() {
               border-red-400/20
             "
           >
-
             <div className="flex items-center gap-3">
-
               <div
                 className="
                   flex
@@ -595,16 +491,10 @@ export default function Dashboard() {
                   border-red-400/20
                 "
               >
-
-                <AlertTriangle
-                  size={17}
-                  className="text-red-400"
-                />
-
+                <AlertTriangle size={17} className="text-red-400" />
               </div>
 
               <div>
-
                 <h3 className="text-sm font-semibold text-white">
                   Overdue Tasks
                 </h3>
@@ -612,11 +502,8 @@ export default function Dashboard() {
                 <p className="text-xs text-slate-400">
                   Requires your attention
                 </p>
-
               </div>
-
             </div>
-
 
             <span
               className="
@@ -633,96 +520,89 @@ export default function Dashboard() {
             >
               {overdueTasks.length}
             </span>
-
           </div>
 
-
           <div className="divide-y divide-slate-700/60">
-
-            {overdueTasks.slice(0, 3).map(task => (
-
+            {overdueTasks.slice(0, 3).map((task) => (
               <OverdueItem
                 key={task.id}
                 task={task}
+                onReschedule={openReschedule}
               />
-
             ))}
-
           </div>
-
         </section>
-
       )}
-
 
       {/* =====================================
           TASKS MODAL
       ===================================== */}
 
       {selectedData && (
-
         <TaskListModal
           data={selectedData}
           onClose={closeCategory}
+          onReschedule={openReschedule}
         />
-
       )}
 
+      {taskToReschedule && (
+        <RescheduleModal
+          task={taskToReschedule}
+          onClose={closeReschedule}
+          onSave={(newDueDate, newDueTime) => {
+            updateTask({
+              ...taskToReschedule,
+              dueDate: newDueDate,
+              dueTime: newDueTime,
+            });
+
+            closeReschedule();
+          }}
+        />
+      )}
     </div>
   );
 }
-
 
 /* ==================================================
    STAT CARD
 ================================================== */
 
-function StatCard({
-  title,
-  value,
-  icon,
-  accent,
-  onClick
-}) {
-
+function StatCard({ title, value, icon, accent, onClick }) {
   const accents = {
-
     blue: {
       icon: "text-blue-400",
       border: "hover:border-blue-400/50",
       glow: "group-hover:bg-blue-400/10",
-      shadow: "group-hover:shadow-[0_8px_30px_rgba(59,130,246,0.12)]"
+      shadow: "group-hover:shadow-[0_8px_30px_rgba(59,130,246,0.12)]",
     },
 
     cyan: {
       icon: "text-cyan-400",
       border: "hover:border-cyan-400/50",
       glow: "group-hover:bg-cyan-400/10",
-      shadow: "group-hover:shadow-[0_8px_30px_rgba(34,211,238,0.12)]"
+      shadow: "group-hover:shadow-[0_8px_30px_rgba(34,211,238,0.12)]",
     },
 
     red: {
       icon: "text-red-400",
       border: "hover:border-red-400/50",
       glow: "group-hover:bg-red-400/10",
-      shadow: "group-hover:shadow-[0_8px_30px_rgba(248,113,113,0.12)]"
+      shadow: "group-hover:shadow-[0_8px_30px_rgba(248,113,113,0.12)]",
     },
 
     green: {
       icon: "text-emerald-400",
       border: "hover:border-emerald-400/50",
       glow: "group-hover:bg-emerald-400/10",
-      shadow: "group-hover:shadow-[0_8px_30px_rgba(52,211,153,0.12)]"
-    }
-
+      shadow: "group-hover:shadow-[0_8px_30px_rgba(52,211,153,0.12)]",
+    },
   };
-
 
   const style = accents[accent];
 
-
   return (
-
     <button
       type="button"
       onClick={onClick}
@@ -750,7 +630,6 @@ function StatCard({
         focus:ring-cyan-400/30
       `}
     >
-
       {/* Accent glow */}
 
       <div
@@ -771,11 +650,8 @@ function StatCard({
         `}
       />
 
-
       <div className="relative">
-
         <div className="flex items-center justify-between">
-
           <span
             className={`
               ${style.icon}
@@ -786,7 +662,6 @@ function StatCard({
           >
             {icon}
           </span>
-
 
           <ArrowUpRight
             size={15}
@@ -803,12 +678,9 @@ function StatCard({
               group-hover:translate-y-0
             "
           />
-
         </div>
 
-
         <div className="mt-4">
-
           <p
             className="
               text-xs
@@ -821,7 +693,6 @@ function StatCard({
           >
             {title}
           </p>
-
 
           <span
             className="
@@ -836,66 +707,51 @@ function StatCard({
             "
           >
             {value}
-
           </span>
-
         </div>
-
       </div>
-
     </button>
-
   );
 }
-
 
 /* ==================================================
    TASK LIST MODAL
 ================================================== */
 
-function TaskListModal({
-  data,
-  onClose
-}) {
-
+function TaskListModal({ data, onClose, onReschedule }) {
   const colorStyles = {
-
     blue: {
       icon: "text-blue-400",
       iconBg: "bg-blue-400/10",
       border: "border-blue-400/20",
-      badge: "bg-blue-400/10 text-blue-300 border-blue-400/20"
+      badge: "bg-blue-400/10 text-blue-300 border-blue-400/20",
     },
 
     cyan: {
       icon: "text-cyan-400",
       iconBg: "bg-cyan-400/10",
       border: "border-cyan-400/20",
-      badge: "bg-cyan-400/10 text-cyan-300 border-cyan-400/20"
+      badge: "bg-cyan-400/10 text-cyan-300 border-cyan-400/20",
     },
 
     red: {
       icon: "text-red-400",
       iconBg: "bg-red-400/10",
       border: "border-red-400/20",
-      badge: "bg-red-400/10 text-red-300 border-red-400/20"
+      badge: "bg-red-400/10 text-red-300 border-red-400/20",
     },
 
     green: {
       icon: "text-emerald-400",
       iconBg: "bg-emerald-400/10",
       border: "border-emerald-400/20",
-      badge: "bg-emerald-400/10 text-emerald-300 border-emerald-400/20"
-    }
-
+      badge: "bg-emerald-400/10 text-emerald-300 border-emerald-400/20",
+    },
   };
-
 
   const style = colorStyles[data.color];
 
-
   function formatDate(date) {
-
     if (!date) {
       return null;
     }
@@ -909,9 +765,7 @@ function TaskListModal({
     return `${parts[2]}/${parts[1]}/${parts[0]}`;
   }
 
-
   return (
-
     <div
       className="
         fixed
@@ -928,14 +782,11 @@ function TaskListModal({
         duration-200
       "
       onMouseDown={(event) => {
-
         if (event.target === event.currentTarget) {
           onClose();
         }
-
       }}
     >
-
       <div
         className="
           w-full
@@ -952,7 +803,6 @@ function TaskListModal({
           duration-200
         "
       >
-
         {/* ==========================
             MODAL HEADER
         ========================== */}
@@ -968,9 +818,7 @@ function TaskListModal({
             border-slate-700
           "
         >
-
           <div className="flex items-center gap-3">
-
             <div
               className={`
                 w-9
@@ -988,11 +836,8 @@ function TaskListModal({
               {data.icon}
             </div>
 
-
             <div>
-
               <div className="flex items-center gap-2">
-
                 <h2 className="text-lg font-semibold text-white">
                   {data.title}
                 </h2>
@@ -1010,17 +855,13 @@ function TaskListModal({
                 >
                   {data.tasks.length}
                 </span>
-
               </div>
 
               <p className="text-xs text-slate-400 mt-0.5">
                 {data.description}
               </p>
-
             </div>
-
           </div>
-
 
           <button
             type="button"
@@ -1039,22 +880,16 @@ function TaskListModal({
             "
             aria-label="Fechar"
           >
-
             <X size={18} />
-
           </button>
-
         </div>
-
 
         {/* ==========================
             TASKS
         ========================== */}
 
         <div className="overflow-y-auto max-h-[calc(75vh-90px)] p-5">
-
           {data.tasks.length === 0 ? (
-
             <div
               className="
                 min-h-48
@@ -1070,7 +905,6 @@ function TaskListModal({
                 text-center
               "
             >
-
               <div
                 className={`
                   w-11
@@ -1094,15 +928,10 @@ function TaskListModal({
               <p className="text-xs text-slate-500 mt-1">
                 There are no tasks in this category yet.
               </p>
-
             </div>
-
           ) : (
-
             <div className="space-y-2">
-
-              {data.tasks.map(task => (
-
+              {data.tasks.map((task) => (
                 <div
                   key={task.id}
                   className="
@@ -1119,11 +948,8 @@ function TaskListModal({
                     hover:-translate-y-0.5
                   "
                 >
-
                   <div className="flex items-start justify-between gap-4">
-
                     <div className="flex items-start gap-3 min-w-0">
-
                       <div
                         className={`
                           mt-0.5
@@ -1141,17 +967,10 @@ function TaskListModal({
                           }
                         `}
                       >
-
-                        {task.completed
-                          ? <Check size={15} />
-                          : data.icon
-                        }
-
+                        {task.completed ? <Check size={15} /> : data.icon}
                       </div>
 
-
                       <div className="min-w-0">
-
                         <p
                           className={`
                             text-sm
@@ -1167,11 +986,9 @@ function TaskListModal({
                           {task.title}
                         </p>
 
-
                         {/* DATE / TIME */}
 
                         {(task.dueDate || task.dueTime) && (
-
                           <div
                             className="
                               flex
@@ -1182,32 +999,19 @@ function TaskListModal({
                               text-slate-500
                             "
                           >
-
                             {task.dueDate && (
-                              <span>
-                                {formatDate(task.dueDate)}
-                              </span>
+                              <span>{formatDate(task.dueDate)}</span>
                             )}
 
-                            {task.dueTime && (
-                              <span>
-                                {task.dueTime}
-                              </span>
-                            )}
-
+                            {task.dueTime && <span>{task.dueTime}</span>}
                           </div>
-
                         )}
-
                       </div>
-
                     </div>
-
 
                     {/* LIST */}
 
                     {task.list && (
-
                       <span
                         className="
                           shrink-0
@@ -1223,20 +1027,48 @@ function TaskListModal({
                       >
                         {task.list}
                       </span>
-
                     )}
 
+                    {data.title === "Overdue Tasks" && (
+                      <button
+                        type="button"
+                        onClick={() => onReschedule(task)}
+                        className="
+                          flex
+                          items-center
+                          gap-2
+                          px-3
+                          py-2
+                          rounded-lg
+                          bg-cyan-400/10
+                          border
+                          border-cyan-400/30
+                          text-cyan-400
+                          text-[11px]
+                          font-semibold
+                          transition-all
+                          duration-200
+                          hover:bg-cyan-400/20
+                          hover:border-cyan-400/60
+                          hover:text-cyan-300
+                          hover:shadow-[0_0_18px_rgba(34,211,238,0.18)]
+                          active:scale-95
+                        "
+                      >
+                        <RefreshCw
+                          size={14}
+                          className="transition-transform duration-500 hover:rotate-180"
+                        />
+                        Reagendar
+                      </button>
+                    )}
                   </div>
-
 
                   {/* TAGS */}
 
                   {task.tags && task.tags.length > 0 && (
-
                     <div className="flex flex-wrap gap-1.5 mt-3 ml-10">
-
                       {task.tags.map((tag, index) => (
-
                         <span
                           key={`${tag}-${index}`}
                           className="
@@ -1253,45 +1085,29 @@ function TaskListModal({
                             text-slate-400
                           "
                         >
-
                           <Tag size={10} />
 
                           {tag}
-
                         </span>
-
                       ))}
-
                     </div>
-
                   )}
-
                 </div>
-
               ))}
-
             </div>
-
           )}
-
         </div>
-
       </div>
-
     </div>
-
   );
 }
-
 
 /* ==================================================
    TODAY ITEM
 ================================================== */
 
 function TaskItem({ task }) {
-
   return (
-
     <div
       className="
         group/item
@@ -1310,9 +1126,7 @@ function TaskItem({ task }) {
         hover:border-slate-600
       "
     >
-
       <div className="flex items-center gap-3 min-w-0">
-
         <span
           className="
             w-1.5
@@ -1335,9 +1149,7 @@ function TaskItem({ task }) {
         >
           {task.title}
         </span>
-
       </div>
-
 
       <span
         className="
@@ -1349,21 +1161,16 @@ function TaskItem({ task }) {
       >
         {task.dueTime || "--:--"}
       </span>
-
     </div>
-
   );
 }
-
 
 /* ==================================================
    OVERDUE ITEM
 ================================================== */
 
-function OverdueItem({ task }) {
-
+function OverdueItem({ task, onReschedule }) {
   return (
-
     <div
       className="
         group/item
@@ -1377,9 +1184,7 @@ function OverdueItem({ task }) {
         hover:bg-red-400/[0.05]
       "
     >
-
       <div className="flex items-center gap-3 min-w-0">
-
         <span
           className="
             w-1.5
@@ -1397,28 +1202,286 @@ function OverdueItem({ task }) {
             text-slate-300
             truncate
             transition-colors
+            duration-200
             group-hover/item:text-white
           "
         >
           {task.title}
         </span>
-
       </div>
 
+      <div className="flex items-start gap-4 shrink-0 ml-3">
+        <button
+          type="button"
+          onClick={() => onReschedule(task)}
+          title="Reagendar"
+          className="
+      group/reschedule
+      flex
+      items-center
+      gap-2
+      px-3
+      py-2
+      rounded-lg
+      bg-cyan-400/10
+      border
+      border-cyan-400/30
+      text-cyan-400
+      shadow-[0_0_12px_rgba(34,211,238,0.08)]
+      transition-all
+      duration-200
+      hover:bg-cyan-400/20
+      hover:border-cyan-400/60
+      hover:text-cyan-300
+      hover:shadow-[0_0_18px_rgba(34,211,238,0.18)]
+      active:scale-95
+    "
+        >
+          <RefreshCw
+            size={15}
+            className="
+        transition-transform
+        duration-500
+        group-hover/reschedule:rotate-180
+      "
+          />
 
-      <span
+          <span className="text-[11px] font-semibold">Reagendar</span>
+        </button>
+
+        <span
+          className="
+      text-[11px]
+      text-red-400
+      pt-1
+    "
+        >
+          {task.dueDate}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function RescheduleModal({ task, onClose, onSave }) {
+  const today = new Date();
+
+  const formattedToday = `${today.getFullYear()}-${String(
+    today.getMonth() + 1,
+  ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+
+  const [dueDate, setDueDate] = useState(formattedToday);
+
+  const [dueTime, setDueTime] = useState(task.dueTime || "");
+
+  function handleSubmit() {
+    if (!dueDate || !dueTime) {
+      return;
+    }
+
+    onSave(dueDate, dueTime);
+  }
+
+  return (
+    <div
+      className="
+        fixed
+        inset-0
+        z-50
+        flex
+        items-center
+        justify-center
+        bg-black/65
+        backdrop-blur-sm
+        p-6
+      "
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div
         className="
-          text-[11px]
-          text-red-400
-          shrink-0
-          ml-3
+          w-full
+          max-w-md
+          rounded-2xl
+          border
+          border-slate-600
+          bg-slate-900
+          shadow-[0_25px_80px_rgba(0,0,0,0.55)]
         "
       >
-        {task.dueDate}
-      </span>
+        {/* HEADER */}
 
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            px-6
+            py-5
+            border-b
+            border-slate-700
+          "
+        >
+          <h2 className="text-lg font-semibold text-white">Reagendar Task</h2>
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="
+              w-8
+              h-8
+              flex
+              items-center
+              justify-center
+              rounded-lg
+              text-slate-400
+              hover:text-white
+              hover:bg-slate-800
+              transition
+            "
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* CONTENT */}
+
+        <div className="p-6 space-y-5">
+          <p className="text-sm text-slate-400">
+            Selecione a nova data e horário para esta task.
+          </p>
+
+          {/* DATA */}
+
+          <div>
+            <label
+              className="
+                block
+                text-xs
+                uppercase
+                tracking-wider
+                text-slate-400
+                mb-2
+                font-semibold
+              "
+            >
+              Nova data
+            </label>
+
+            <input
+              type="date"
+              min={formattedToday}
+              value={dueDate}
+              onChange={(event) => setDueDate(event.target.value)}
+              className="
+                w-full
+                bg-slate-800
+                border
+                border-slate-700
+                rounded-xl
+                px-4
+                py-3
+                text-white
+                outline-none
+                transition
+                focus:border-blue-500
+                focus:ring-2
+                focus:ring-blue-500/20
+              "
+            />
+          </div>
+
+          {/* HORÁRIO */}
+
+          <div>
+            <label
+              className="
+                block
+                text-xs
+                uppercase
+                tracking-wider
+                text-slate-400
+                mb-2
+                font-semibold
+              "
+            >
+              Novo horário
+            </label>
+
+            <input
+              type="time"
+              value={dueTime}
+              onChange={(event) => setDueTime(event.target.value)}
+              className="
+                w-full
+                bg-slate-800
+                border
+                border-slate-700
+                rounded-xl
+                px-4
+                py-3
+                text-white
+                outline-none
+                transition
+                focus:border-blue-500
+                focus:ring-2
+                focus:ring-blue-500/20
+              "
+            />
+          </div>
+
+          {/* ACTIONS */}
+
+          <div
+            className="
+              flex
+              justify-end
+              gap-3
+              pt-4
+              border-t
+              border-slate-700
+            "
+          >
+            <button
+              type="button"
+              onClick={onClose}
+              className="
+                px-5
+                py-2.5
+                rounded-xl
+                bg-slate-700
+                text-slate-200
+                hover:bg-slate-600
+                transition
+              "
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="button"
+              disabled={!dueDate || !dueTime}
+              onClick={handleSubmit}
+              className="
+                px-5
+                py-2.5
+                rounded-xl
+                bg-blue-600
+                text-white
+                hover:bg-blue-700
+                disabled:opacity-50
+                disabled:cursor-not-allowed
+                transition
+              "
+            >
+              Reagendar
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-
   );
-
 }

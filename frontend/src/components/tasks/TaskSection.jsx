@@ -8,33 +8,21 @@ import ListsDashboard from "./ListsDashboard";
 import TaskDetailsPanel from "./TaskDetailsPanel";
 import Dashboard from "./Dashboard";
 import PriorityDashboard from "./PriorityDashboard";
+import TagDashboard from "./TagDashboard";
 
-export default function TaskSection({
-  sidebarOpen,
-  setSidebarOpen
-}) {
-  const {
-    activeMenu,
-    counts,
-    titles,
-    lists
-  } = useTasks();
+export default function TaskSection({ sidebarOpen, setSidebarOpen }) {
+  const { activeMenu, counts, titles, lists, tags } = useTasks();
 
+  const [selectedTask, setSelectedTask] = useState(null);
 
-const [selectedTask, setSelectedTask] = useState(null);
+  const [isCreatingTask, setIsCreatingTask] = useState(false);
 
-const [isCreatingTask, setIsCreatingTask] = useState(false);
+  const [creationMode, setCreationMode] = useState("default");
 
-const [creationMode, setCreationMode] = useState("default");
-
-
-console.log("ACTIVE MENU:", activeMenu);
-console.log("SELECTED TASK:", selectedTask);
-console.log("CREATING TASK:", isCreatingTask);
+  const activeTag = tags.find((tag) => `tag-${tag.id}` === activeMenu);
 
   return (
     <main className="flex-1 p-10 bg-gradient-to-br from-slate-700 via-gray-700 to-black min-h-screen text-slate-100">
-
       {!sidebarOpen && (
         <button
           onClick={() => setSidebarOpen(true)}
@@ -45,9 +33,7 @@ console.log("CREATING TASK:", isCreatingTask);
       )}
 
       <div className="flex items-center gap-3 mb-8">
-        <h1 className="text-4xl font-bold">
-          {titles[activeMenu]}
-        </h1>
+        <h1 className="text-4xl font-bold">{titles[activeMenu]}</h1>
 
         {counts[activeMenu] > 0 && (
           <span className="text-xl bg-slate-600/50 px-3 py-1 rounded border border-slate-500">
@@ -57,79 +43,70 @@ console.log("CREATING TASK:", isCreatingTask);
       </div>
 
       {/* DASHBOARDS PRINCIPAIS */}
-    {activeMenu === "dashboard" && (
-        <Dashboard />
+      {activeMenu === "dashboard" && <Dashboard />}
+
+      {activeMenu === "upcoming" && (
+        <div
+          className={
+            selectedTask || isCreatingTask
+              ? "grid grid-cols-[2fr_430px] gap-8"
+              : ""
+          }
+        >
+          <UpcomingDashboard
+            selectedTask={selectedTask}
+            setSelectedTask={setSelectedTask}
+            isCreatingTask={isCreatingTask}
+            setIsCreatingTask={setIsCreatingTask}
+            setCreationMode={setCreationMode}
+          />
+
+          {(selectedTask || isCreatingTask) && (
+            <TaskDetailsPanel
+              task={selectedTask}
+              isCreatingTask={isCreatingTask}
+              setSelectedTask={setSelectedTask}
+              setIsCreatingTask={setIsCreatingTask}
+              creationMode={creationMode}
+            />
+          )}
+        </div>
       )}
-
-    {activeMenu === "upcoming" && (
-
-  <div
-    className={
-      (selectedTask || isCreatingTask)
-        ? "grid grid-cols-[2fr_430px] gap-8"
-        : ""
-    }
-  >
-
-    <UpcomingDashboard
-  selectedTask={selectedTask}
-  setSelectedTask={setSelectedTask}
-  isCreatingTask={isCreatingTask}
-  setIsCreatingTask={setIsCreatingTask}
-  setCreationMode={setCreationMode}
-/>
-
-    {(selectedTask || isCreatingTask) && (
-      <TaskDetailsPanel
-        task={selectedTask}
-        isCreatingTask={isCreatingTask}
-        setSelectedTask={setSelectedTask}
-        setIsCreatingTask={setIsCreatingTask}
-        creationMode={creationMode}
-      />
-    )}
-
-  </div>
-
-)}
 
       {activeMenu === "today" && (
         <div
-  className={
-  (selectedTask || isCreatingTask)
-    ? "grid grid-cols-[2fr_430px] gap-8"
-    : ""
-}
->
+          className={
+            selectedTask || isCreatingTask
+              ? "grid grid-cols-[2fr_430px] gap-8"
+              : ""
+          }
+        >
+          <TodayDashboard
+            selectedTask={selectedTask}
+            setSelectedTask={setSelectedTask}
+            isCreatingTask={isCreatingTask}
+            setIsCreatingTask={setIsCreatingTask}
+            setCreationMode={setCreationMode}
+          />
 
-  <TodayDashboard
-  selectedTask={selectedTask}
-  setSelectedTask={setSelectedTask}
-  isCreatingTask={isCreatingTask}
-  setIsCreatingTask={setIsCreatingTask}
-  setCreationMode={setCreationMode}
-/>
-
-  {(selectedTask || isCreatingTask) && (
-  <TaskDetailsPanel
-    task={selectedTask}
-    isCreatingTask={isCreatingTask}
-    creationMode={creationMode}
-    setSelectedTask={setSelectedTask}
-    setIsCreatingTask={setIsCreatingTask}
-  />
-)}
-</div>
+          {(selectedTask || isCreatingTask) && (
+            <TaskDetailsPanel
+              task={selectedTask}
+              isCreatingTask={isCreatingTask}
+              creationMode={creationMode}
+              setSelectedTask={setSelectedTask}
+              setIsCreatingTask={setIsCreatingTask}
+            />
+          )}
+        </div>
       )}
 
-      {activeMenu === "sticky" && (
-        <StickyWallDashboard />
-      )}
+      {activeMenu === "sticky" && <StickyWallDashboard />}
 
       {activeMenu === "calendar" && (
         <div
           className={
-            (selectedTask || isCreatingTask)
+            selectedTask || isCreatingTask
               ? "grid grid-cols-[2fr_430px] gap-8"
               : ""
           }
@@ -153,228 +130,153 @@ console.log("CREATING TASK:", isCreatingTask);
 
       {/* LISTAS */}
 
-      {lists.some(list => list.id === activeMenu) && (
+      {lists.some((list) => list.id === activeMenu) && (
         <div
-  className={
-    (selectedTask || isCreatingTask)
-      ? "grid grid-cols-[2fr_430px] gap-8"
-      : ""
-  }
->
+          className={
+            selectedTask || isCreatingTask
+              ? "grid grid-cols-[2fr_430px] gap-8"
+              : ""
+          }
+        >
+          <ListsDashboard
+            setSelectedTask={setSelectedTask}
+            setIsCreatingTask={setIsCreatingTask}
+            setCreationMode={setCreationMode}
+          />
 
-    <ListsDashboard
-      setSelectedTask={setSelectedTask}
-      setIsCreatingTask={setIsCreatingTask}
-      setCreationMode={setCreationMode}
-    />
-
-  {(selectedTask || isCreatingTask) && (
-    <TaskDetailsPanel
-      task={selectedTask}
-      isCreatingTask={isCreatingTask}
-      setSelectedTask={setSelectedTask}
-      setIsCreatingTask={setIsCreatingTask}
-      creationMode={creationMode}
-    />
-  )}
-
-</div>
+          {(selectedTask || isCreatingTask) && (
+            <TaskDetailsPanel
+              task={selectedTask}
+              isCreatingTask={isCreatingTask}
+              setSelectedTask={setSelectedTask}
+              setIsCreatingTask={setIsCreatingTask}
+              creationMode={creationMode}
+            />
+          )}
+        </div>
       )}
 
-
-{/* ==========================
+      {/* ==========================
     PRIORIDADES
 ========================== */}
 
-{activeMenu === "priority-low" && (
-
-  <div
-    className={
-      (selectedTask || isCreatingTask)
-        ? "grid grid-cols-[2fr_430px] gap-8"
-        : ""
-    }
-  >
-
-    <PriorityDashboard
-
-      priority="Low"
-
-      setSelectedTask={
-        setSelectedTask
-      }
-
-      setIsCreatingTask={
-        setIsCreatingTask
-      }
-
-      setCreationMode={
-        setCreationMode
-      }
-
-
-      defaultPriority="Low"
-
-    />
-
-
-    {(selectedTask || isCreatingTask) && (
-
-      <TaskDetailsPanel
-
-        task={selectedTask}
-
-        isCreatingTask={
-          isCreatingTask
-        }
-
-        setSelectedTask={
-          setSelectedTask
-        }
-
-        setIsCreatingTask={
-          setIsCreatingTask
-        }
-
-        creationMode={
-          creationMode
-        } 
-        
-        defaultPriority="Low"
-
-      />
-
-    )}
-
-  </div>
-
-)}
-
-
-{activeMenu === "priority-medium" && (
-
-  <div
-    className={
-      (selectedTask || isCreatingTask)
-        ? "grid grid-cols-[2fr_430px] gap-8"
-        : ""
-    }
-  >
-
-    <PriorityDashboard
-
-      priority="Medium"
-
-      setSelectedTask={
-        setSelectedTask
-      }
-
-      setIsCreatingTask={
-        setIsCreatingTask
-      }
-
-      setCreationMode={
-        setCreationMode
-      }
-      defaultPriority="Medium"
-    />
-
-
-    {(selectedTask || isCreatingTask) && (
-
-      <TaskDetailsPanel
-
-        task={selectedTask}
-
-        isCreatingTask={
-          isCreatingTask
-        }
-
-        setSelectedTask={
-          setSelectedTask
-        }
-
-        setIsCreatingTask={
-          setIsCreatingTask
-        }
-
-        creationMode={
-          creationMode
-        }
-
-        defaultPriority="Medium"
-
-      />
-
-    )}
-
-  </div>
-
-)}
-
-
-{activeMenu === "priority-high" && (
-
-  <div
-    className={
-      (selectedTask || isCreatingTask)
-        ? "grid grid-cols-[2fr_430px] gap-8"
-        : ""
-    }
-  >
-
-    <PriorityDashboard
-
-      priority="High"
-
-      setSelectedTask={
-        setSelectedTask
-      }
-
-      setIsCreatingTask={
-        setIsCreatingTask
-      }
-
-      setCreationMode={
-        setCreationMode
-      }
-
-      defaultPriority="High"
-    />
-
-
-    {(selectedTask || isCreatingTask) && (
-
-      <TaskDetailsPanel
-
-        task={selectedTask}
-
-        isCreatingTask={
-          isCreatingTask
-        }
-
-        setSelectedTask={
-          setSelectedTask
-        }
-
-        setIsCreatingTask={
-          setIsCreatingTask
-        }
-
-        creationMode={
-          creationMode
-        }
-
-        defaultPriority="High"
-
-      />
-
-    )}
-
-  </div>
-
-)}
-
+      {activeMenu === "priority-low" && (
+        <div
+          className={
+            selectedTask || isCreatingTask
+              ? "grid grid-cols-[2fr_430px] gap-8"
+              : ""
+          }
+        >
+          <PriorityDashboard
+            priority="Low"
+            setSelectedTask={setSelectedTask}
+            setIsCreatingTask={setIsCreatingTask}
+            setCreationMode={setCreationMode}
+            defaultPriority="Low"
+          />
+
+          {(selectedTask || isCreatingTask) && (
+            <TaskDetailsPanel
+              task={selectedTask}
+              isCreatingTask={isCreatingTask}
+              setSelectedTask={setSelectedTask}
+              setIsCreatingTask={setIsCreatingTask}
+              creationMode={creationMode}
+              defaultPriority="Low"
+            />
+          )}
+        </div>
+      )}
+
+      {activeMenu === "priority-medium" && (
+        <div
+          className={
+            selectedTask || isCreatingTask
+              ? "grid grid-cols-[2fr_430px] gap-8"
+              : ""
+          }
+        >
+          <PriorityDashboard
+            priority="Medium"
+            setSelectedTask={setSelectedTask}
+            setIsCreatingTask={setIsCreatingTask}
+            setCreationMode={setCreationMode}
+            defaultPriority="Medium"
+          />
+
+          {(selectedTask || isCreatingTask) && (
+            <TaskDetailsPanel
+              task={selectedTask}
+              isCreatingTask={isCreatingTask}
+              setSelectedTask={setSelectedTask}
+              setIsCreatingTask={setIsCreatingTask}
+              creationMode={creationMode}
+              defaultPriority="Medium"
+            />
+          )}
+        </div>
+      )}
+
+      {activeMenu === "priority-high" && (
+        <div
+          className={
+            selectedTask || isCreatingTask
+              ? "grid grid-cols-[2fr_430px] gap-8"
+              : ""
+          }
+        >
+          <PriorityDashboard
+            priority="High"
+            setSelectedTask={setSelectedTask}
+            setIsCreatingTask={setIsCreatingTask}
+            setCreationMode={setCreationMode}
+            defaultPriority="High"
+          />
+
+          {(selectedTask || isCreatingTask) && (
+            <TaskDetailsPanel
+              task={selectedTask}
+              isCreatingTask={isCreatingTask}
+              setSelectedTask={setSelectedTask}
+              setIsCreatingTask={setIsCreatingTask}
+              creationMode={creationMode}
+              defaultPriority="High"
+            />
+          )}
+        </div>
+      )}
+
+      {/* ==========================
+    TAGS
+========================== */}
+
+      {activeTag && (
+        <div
+          className={
+            selectedTask || isCreatingTask
+              ? "grid grid-cols-[2fr_430px] gap-8"
+              : ""
+          }
+        >
+          <TagDashboard
+            tag={activeTag}
+            setSelectedTask={setSelectedTask}
+            setIsCreatingTask={setIsCreatingTask}
+            setCreationMode={setCreationMode}
+          />
+
+          {(selectedTask || isCreatingTask) && (
+            <TaskDetailsPanel
+              task={selectedTask}
+              isCreatingTask={isCreatingTask}
+              setSelectedTask={setSelectedTask}
+              setIsCreatingTask={setIsCreatingTask}
+              creationMode={creationMode}
+            />
+          )}
+        </div>
+      )}
     </main>
   );
 }

@@ -10,9 +10,8 @@ export default function TaskDetailsPanel({
   creationMode,
   setSelectedTask,
   setIsCreatingTask,
-  defaultPriority
+  defaultPriority,
 }) {
-
   const {
     createTask,
     updateTask,
@@ -20,110 +19,69 @@ export default function TaskDetailsPanel({
     lists,
     tags: availableTags,
     setTags: setAvailableTags,
-    activeMenu
+    activeMenu,
   } = useTasks();
 
+/* ==================================================
+   FORM STATES
+================================================== */
 
-  const [title, setTitle] = useState(
-    task?.title || ""
-  );
+const [title, setTitle] = useState(task?.title || "");
+const [description, setDescription] = useState(task?.description || "");
+const [list, setList] = useState(task?.list ?? "");
+const [dueDate, setDueDate] = useState(task?.dueDate || "");
+const [dueTime, setDueTime] = useState(task?.dueTime || "");
+const [tags, setTags] = useState(task?.tags || []);
+const [priority, setPriority] = useState(defaultPriority || "Medium");
+const [completed, setCompleted] = useState(task?.completed || false);
 
-  const [description, setDescription] = useState(
-    task?.description || ""
-  );
+/* ==================================================
+   MODAL STATES
+================================================== */
 
-  const [list, setList] = useState(
-    task?.list ?? ""
-  );
-  const [dueDate, setDueDate] = useState(
-    task?.dueDate || ""
-  );
+const [showTagModal, setShowTagModal] = useState(false);
+const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const [dueTime, setDueTime] = useState(
-  task?.dueTime || ""
-);
+/* ==================================================
+   VALIDATION STATES
+================================================== */
 
-  const [tags, setTags] = useState(
-    task?.tags || []
-  );
-
-  const [priority, setPriority] = useState(
-  defaultPriority || "Medium"
-);
-
-
-  const [completed, setCompleted] = useState(
-    task?.completed || false
-  );
-
-  const [showTagModal, setShowTagModal] =
-    useState(false);
-
-  const [showDeleteModal, setShowDeleteModal] =
-    useState(false);
-
-  
-  const [dateError, setDateError] = useState("");
-
-  const [titleError, setTitleError] = useState("");
-
+const [dateError, setDateError] = useState("");
+const [titleError, setTitleError] = useState("");
 
   useEffect(() => {
-
     setDateError("");
     setTitleError("");
 
     if (task) {
+      setTitle(task.title || "");
 
-      setTitle(
-        task.title || ""
-      );
+      setDescription(task.description || "");
 
-      setDescription(
-        task.description || ""
-      );
+      setDueDate(task.dueDate || "");
 
-      
-      setDueDate(
-        task.dueDate || ""
-      );
+      setDueTime(task.dueTime || "");
 
-      setDueTime(
-        task.dueTime || ""
-      );
+      setTags(task.tags || []);
 
-      setTags(
-        task.tags || []
-      );
+      setPriority(task.priority || "Medium");
 
-      setPriority(
-        task.priority || "Medium"
-      );
-
-
-      setCompleted(
-        task.completed || false
-      );
+      setCompleted(task.completed || false);
 
       setList(task.list ?? "");
-
     } else if (isCreatingTask) {
-
       setTitle("");
 
       setDescription("");
 
       setDueTime("");
 
-
-       setPriority(
-        defaultPriority || "Medium"
-      );
+      setPriority(defaultPriority || "Medium");
 
       // Se a criação veio diretamente de uma List,
       // já seleciona essa List.
       const creatingFromList = lists.some(
-        listItem => listItem.id === activeMenu
+        (listItem) => listItem.id === activeMenu,
       );
 
       if (creatingFromList) {
@@ -132,132 +90,84 @@ export default function TaskDetailsPanel({
         setList("");
       }
 
-/*
- * DATA ATUAL
- *
- * Todas as novas tasks começam
- * automaticamente com a data de hoje.
- */
-const today = new Date();
+      /*
+       * DATA ATUAL
+       *
+       * Todas as novas tasks começam
+       * automaticamente com a data de hoje.
+       */
+      const today = new Date();
 
-const formattedToday =
-  `${today.getFullYear()}-${String(
-    today.getMonth() + 1
-  ).padStart(2, "0")}-${String(
-    today.getDate()
-  ).padStart(2, "0")}`;
+      const formattedToday = `${today.getFullYear()}-${String(
+        today.getMonth() + 1,
+      ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
+      /*
+       * TODAY
+       *
+       * Data de hoje e bloqueada.
+       */
+      if (creationMode === "today") {
+        setDueDate(formattedToday);
+      } else if (creationMode === "tomorrow") {
+        /*
+         * TOMORROW
+         *
+         * Data de amanhã e bloqueada.
+         */
+        const tomorrow = new Date();
 
-/*
- * TODAY
- *
- * Data de hoje e bloqueada.
- */
-if (creationMode === "today") {
+        tomorrow.setDate(tomorrow.getDate() + 1);
 
-  setDueDate(formattedToday);
+        const formattedTomorrow = `${tomorrow.getFullYear()}-${String(
+          tomorrow.getMonth() + 1,
+        ).padStart(2, "0")}-${String(tomorrow.getDate()).padStart(2, "0")}`;
 
-}
-
-
-/*
- * TOMORROW
- *
- * Data de amanhã e bloqueada.
- */
-else if (creationMode === "tomorrow") {
-
-  const tomorrow = new Date();
-
-  tomorrow.setDate(
-    tomorrow.getDate() + 1
-  );
-
-  const formattedTomorrow =
-    `${tomorrow.getFullYear()}-${String(
-      tomorrow.getMonth() + 1
-    ).padStart(2, "0")}-${String(
-      tomorrow.getDate()
-    ).padStart(2, "0")}`;
-
-  setDueDate(formattedTomorrow);
-
-}
-
-
-/*
- * THIS WEEK
- *
- * Precisa escolher uma data manualmente.
- * Isso mantém a validação de data obrigatória.
- */
-else if (creationMode === "week") {
-
-  setDueDate("");
-
-}
-
-
-/*
- * LISTS / OUTROS
- *
- * Começam com a data de hoje,
- * mas a pessoa pode alterar.
- */
-else {
-
-  setDueDate(formattedToday);
-
-}
+        setDueDate(formattedTomorrow);
+      } else if (creationMode === "week") {
+        /*
+         * THIS WEEK
+         *
+         * Precisa escolher uma data manualmente.
+         * Isso mantém a validação de data obrigatória.
+         */
+        setDueDate("");
+      } else {
+        /*
+         * LISTS / OUTROS
+         *
+         * Começam com a data de hoje,
+         * mas a pessoa pode alterar.
+         */
+        setDueDate(formattedToday);
+      }
 
       setTags([]);
 
       setPriority(defaultPriority || "Medium");
 
       setCompleted(false);
+    }
+  }, [task, isCreatingTask, creationMode, defaultPriority]);
 
+  function handleSave() {
+    if (isCreatingTask && !title.trim()) {
+      setTitleError("Informe um título para criar esta tarefa.");
+
+      return;
     }
 
-  }, [
-    task,
-    isCreatingTask,
-    creationMode,
-    defaultPriority
-  ]);
+    setTitleError("");
 
+    if (isCreatingTask && creationMode === "week" && !dueDate) {
+      setDateError("Informe uma data para criar esta tarefa.");
 
-function handleSave() {
+      return;
+    }
 
-  if (isCreatingTask && !title.trim()) {
-
-    setTitleError(
-      "Informe um título para criar esta tarefa."
-    );
-
-    return;
-  }
-
-  setTitleError("");
-
-
-  if (
-    isCreatingTask &&
-    creationMode === "week" &&
-    !dueDate
-  ) {
-
-    setDateError(
-      "Informe uma data para criar esta tarefa."
-    );
-
-    return;
-  }
-
-  setDateError("");
-
+    setDateError("");
 
     const taskData = {
-
       ...(task || {}),
 
       title,
@@ -274,117 +184,84 @@ function handleSave() {
 
       completed,
 
-      tags
-
+      tags,
     };
 
-
     if (isCreatingTask) {
-
       createTask(taskData);
-
     } else {
-
       updateTask(taskData);
-
     }
-
-
-
 
     setSelectedTask(null);
 
     setIsCreatingTask(false);
-
   }
 
+  function handleDelete() {
+    if (!task) {
+      return;
+    }
 
-function handleDelete() {
+    deleteTask(task.id);
 
-  if (!task) {
-    return;
+    toast.success("Task deleted.");
+
+    setShowDeleteModal(false);
+    setSelectedTask(null);
+    setIsCreatingTask(false);
   }
-
-  deleteTask(task.id);
-
-  toast.success("Task deleted.");
-
-  setShowDeleteModal(false);
-  setSelectedTask(null);
-  setIsCreatingTask(false);
-
-}
-
 
   function handleCreateTag(newTag) {
-
-    setAvailableTags(prev => [
-      ...prev,
-      newTag
-    ]);
-
-    setTags(prev => [
-      ...prev,
-      newTag.label
-    ]);
-
-    setShowTagModal(false);
-
-  }
-
-
-  if (!task && !isCreatingTask) {
-
-    return (
-      <div className="bg-slate-800/40 border border-slate-600 rounded-xl p-6 sticky top-8">
-
-        <p className="text-slate-400">
-          Selecione uma tarefa.
-        </p>
-
-      </div>
+    const alreadyExists = availableTags.some(
+      (tag) => tag.label.toLowerCase() === newTag.label.toLowerCase(),
     );
 
+    if (alreadyExists) {
+      setShowTagModal(false);
+      return;
+    }
+
+    setAvailableTags((prev) => [...prev, newTag]);
+
+    setTags((prev) => {
+      if (prev.includes(newTag.label)) {
+        return prev;
+      }
+
+      return [...prev, newTag.label];
+    });
+
+    setShowTagModal(false);
   }
 
+  if (!task && !isCreatingTask) {
+    return (
+      <div className="bg-slate-800/40 border border-slate-600 rounded-xl p-6 sticky top-8">
+        <p className="text-slate-400">Selecione uma tarefa.</p>
+      </div>
+    );
+  }
 
   const priorityColor = {
     Low: "text-green-400",
     Medium: "text-yellow-400",
-    High: "text-red-400"
+    High: "text-red-400",
   };
 
-
-  
   const isDateLocked =
-    isCreatingTask &&
-    (
-      creationMode === "today" ||
-      creationMode === "tomorrow"
-    );
+    isCreatingTask && (creationMode === "today" || creationMode === "tomorrow");
 
-    const isListLocked =
-    isCreatingTask &&
-    lists.some(
-      listItem => listItem.id === activeMenu
-    );
-
+  const isListLocked =
+    isCreatingTask && lists.some((listItem) => listItem.id === activeMenu);
 
   return (
     <>
-
-      <div className="bg-slate-800/40 border border-slate-600 rounded p-6 h-full min-h-[1030px] -mt-24">
-
+      <div className="bg-slate-800/40 border border-slate-600 rounded p-6 min-h-[1030px] -mt-24">
         <div className="flex items-start justify-between border-b border-slate-700 pb-5 mb-7">
-
           <h2 className="text-2xl font-bold text-white">
-
-            {isCreatingTask
-              ? "New Task"
-              : "Edit Task"}
-
+            {isCreatingTask ? "New Task" : "Edit Task"}
           </h2>
-
 
           <button
             onClick={() => {
@@ -406,36 +283,27 @@ function handleDelete() {
           >
             ✕
           </button>
-
         </div>
 
-
         <div className="space-y-6">
-
-
           {/* TITLE */}
 
           <div>
-
             <label className="block text-xs uppercase tracking-wider text-slate-400 mb-2 font-semibold">
               Title
             </label>
 
-          <input
-            value={title}
-            onChange={(e) => {
-              setTitle(e.target.value);
-              setTitleError("");
-            }}
-            className={`
+            <input
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                setTitleError("");
+              }}
+              className={`
               w-full
               bg-slate-800
               border
-              ${
-                titleError
-                  ? "border-red-500"
-                  : "border-slate-700"
-              }
+              ${titleError ? "border-red-500" : "border-slate-700"}
               rounded-xl
               px-4
               py-3
@@ -445,23 +313,20 @@ function handleDelete() {
               focus:ring-2
               focus:ring-blue-500/20
             `}
-            placeholder="Task title"
-          />
+              placeholder="Task title"
+            />
 
-          {titleError && (
-            <p className="mt-2 text-sm text-red-400 flex items-center gap-2">
-              <span className="text-xs">●</span>
-              {titleError}
-            </p>
-          )}
-
+            {titleError && (
+              <p className="mt-2 text-sm text-red-400 flex items-center gap-2">
+                <span className="text-xs">●</span>
+                {titleError}
+              </p>
+            )}
           </div>
-
 
           {/* DESCRIPTION */}
 
           <div>
-
             <label className="block text-xs uppercase tracking-wider text-slate-400 mb-2 font-semibold">
               Description
             </label>
@@ -469,20 +334,15 @@ function handleDelete() {
             <textarea
               rows={5}
               value={description}
-              onChange={(e) =>
-                setDescription(e.target.value)
-              }
+              onChange={(e) => setDescription(e.target.value)}
               className="w-full mt-2 bg-slate-700 border border-slate-600 rounded-lg p-3 resize-none outline-none focus:border-blue-500"
               placeholder="Task description"
             />
-
           </div>
-
 
           {/* LIST */}
 
           <div>
-
             <label className="block text-xs uppercase tracking-wider text-slate-400 mb-2 font-semibold">
               List
             </label>
@@ -490,9 +350,7 @@ function handleDelete() {
             <select
               disabled={isListLocked}
               value={list}
-              onChange={(e) =>
-                setList(e.target.value)
-              }
+              onChange={(e) => setList(e.target.value)}
               className={`
                 w-full
                 bg-slate-800
@@ -506,44 +364,27 @@ function handleDelete() {
                 focus:border-blue-500
                 focus:ring-2
                 focus:ring-blue-500/20
-                ${
-                  isListLocked
-                    ? "opacity-60 cursor-not-allowed"
-                    : ""
-                }
+                ${isListLocked ? "opacity-60 cursor-not-allowed" : ""}
               `}
             >
+              <option value="">No List</option>
 
-                <option value="">
-                  No List
-                </option>
-
-              {lists.map(listItem => (
-
-                <option
-                  key={listItem.id}
-                  value={listItem.id}
-                >
+              {lists.map((listItem) => (
+                <option key={listItem.id} value={listItem.id}>
                   {listItem.label}
                 </option>
-
               ))}
-
             </select>
-
           </div>
-
 
           {/* DUE DATE */}
 
           <div>
-
             <label className="block text-xs uppercase tracking-wider text-slate-400 mb-2 font-semibold">
               Due Date
             </label>
 
-
-           <input
+            <input
               disabled={isDateLocked}
               type="date"
               value={dueDate}
@@ -555,11 +396,7 @@ function handleDelete() {
                 w-full
                 bg-slate-800
                 border
-                ${
-                  dateError
-                    ? "border-red-500"
-                    : "border-slate-700"
-                }
+                ${dateError ? "border-red-500" : "border-slate-700"}
                 rounded-xl
                 px-4
                 py-3
@@ -568,39 +405,30 @@ function handleDelete() {
                 focus:border-blue-500
                 focus:ring-2
                 focus:ring-blue-500/20
-                ${
-                  isDateLocked
-                    ? "opacity-60 cursor-not-allowed"
-                    : ""
-                }
+                ${isDateLocked ? "opacity-60 cursor-not-allowed" : ""}
               `}
             />
 
-                {dateError && (
-                  <p className="mt-2 text-sm text-red-400 flex items-center gap-2">
-                    <span className="text-xs">●</span>
-                    {dateError}
-                  </p>
-                )}
-
-            </div>
-
+            {dateError && (
+              <p className="mt-2 text-sm text-red-400 flex items-center gap-2">
+                <span className="text-xs">●</span>
+                {dateError}
+              </p>
+            )}
+          </div>
 
           {/* DUE TIME */}
 
-            <div>
+          <div>
+            <label className="block text-xs uppercase tracking-wider text-slate-400 mb-2 font-semibold">
+              Due Time
+            </label>
 
-              <label className="block text-xs uppercase tracking-wider text-slate-400 mb-2 font-semibold">
-                Due Time
-              </label>
-
-              <input
-                type="time"
-                value={dueTime}
-                onChange={(e) =>
-                  setDueTime(e.target.value)
-                }
-                className="
+            <input
+              type="time"
+              value={dueTime}
+              onChange={(e) => setDueTime(e.target.value)}
+              className="
                   w-full
                   bg-slate-800
                   border
@@ -614,139 +442,201 @@ function handleDelete() {
                   focus:ring-2
                   focus:ring-blue-500/20
                 "
-              />
-
-            </div>
-
-
-
+            />
+          </div>
 
           {/* PRIORITY */}
 
           <div>
-
             <label className="block text-xs uppercase tracking-wider text-slate-400 mb-2 font-semibold">
               Priority
             </label>
 
             <select
               value={priority}
-              onChange={(e) =>
-                setPriority(e.target.value)
-              }
+              onChange={(e) => setPriority(e.target.value)}
               className={`w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 ${priorityColor[priority]}`}
             >
+              <option value="Low">Low</option>
 
-              <option value="Low">
-                Low
-              </option>
+              <option value="Medium">Medium</option>
 
-              <option value="Medium">
-                Medium
-              </option>
-
-              <option value="High">
-                High
-              </option>
-
+              <option value="High">High</option>
             </select>
-
           </div>
-
 
           {/* TAGS */}
 
           <div>
-
-            <label className="block text-xs uppercase tracking-wider text-slate-400 mb-2 font-semibold">
+            <label
+              className="
+    block
+    text-xs
+    uppercase
+    tracking-wider
+    text-slate-400
+    mb-2
+    font-semibold
+  "
+            >
               Tags
             </label>
 
+            {/* TAGS DISPONÍVEIS */}
 
-            <div className="flex flex-wrap gap-2 mt-3">
+            <div
+              className="
+    flex
+    flex-wrap
+    gap-2
+    mt-3
+  "
+            >
+              {availableTags.map((tag) => {
+                const isSelected = tags.includes(tag.label);
 
-              {tags.map(tag => (
-
-                <div
-                  key={tag}
-                  className="
-                    px-3
-                    py-1
-                    rounded-lg
-                    bg-sky-300
-                    text-slate-900
-                    text-sm
-                    flex
-                    items-center
-                    gap-2
-                  "
-                >
-
-                  {tag}
-
+                return (
                   <button
-                    onClick={() =>
-                      setTags(
-                        tags.filter(
-                          t => t !== tag
-                        )
-                      )
-                    }
+                    key={tag.id}
+                    type="button"
+                    onClick={() => {
+                      if (isSelected) {
+                        setTags((prev) =>
+                          prev.filter((item) => item !== tag.label),
+                        );
+                      } else {
+                        setTags((prev) => [...prev, tag.label]);
+                      }
+                    }}
+                    className={`
+            px-3
+            py-1
+            rounded-lg
+            text-sm
+            transition
+            flex
+            items-center
+            gap-1.5
+            ${
+              isSelected
+                ? `${tag.color} text-slate-900 ring-2 ring-white/60`
+                : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+            }
+          `}
                   >
-                    ×
+                    {tag.label}
+
+                    {isSelected && <span className="font-bold">✓</span>}
                   </button>
+                );
+              })}
 
-                </div>
-
-              ))}
-
+              {/* ADD TAG */}
 
               <button
-                onClick={() =>
-                  setShowTagModal(true)
-                }
+                type="button"
+                onClick={() => setShowTagModal(true)}
                 className="
-                  text-blue-400
-                  text-sm
-                  hover:text-blue-300
-                "
+        px-3
+        py-1
+        text-blue-400
+        text-sm
+        rounded-lg
+        hover:bg-blue-500/10
+        hover:text-blue-300
+        transition
+      "
               >
                 + Add Tag
               </button>
-
             </div>
 
-          </div>
+            {/* TAGS SELECIONADAS */}
 
+            {tags.length > 0 && (
+              <div className="mt-4">
+                <p
+                  className="
+        text-[11px]
+        uppercase
+        tracking-wider
+        text-slate-500
+        mb-2
+      "
+                >
+                  Selected
+                </p>
+
+                <div
+                  className="
+        flex
+        flex-wrap
+        gap-2
+      "
+                >
+                  {tags.map((tagName) => {
+                    const tagObject = availableTags.find(
+                      (tag) => tag.label === tagName,
+                    );
+
+                    return (
+                      <span
+                        key={tagName}
+                        className={`
+                ${tagObject?.color || "bg-cyan-300"}
+                px-3
+                py-1
+                rounded-lg
+                text-slate-900
+                text-sm
+                flex
+                items-center
+                gap-2
+              `}
+                      >
+                        {tagName}
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setTags((prev) =>
+                              prev.filter((tag) => tag !== tagName),
+                            )
+                          }
+                          className="
+                  font-bold
+                  hover:text-red-700
+                "
+                        >
+                          ×
+                        </button>
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* COMPLETED */}
 
           <div className="flex items-center justify-between">
-
             <label className="text-xs uppercase tracking-wider text-slate-400 font-semibold">
               Completed
             </label>
 
-
             <button
               type="button"
-              onClick={() =>
-                setCompleted(!completed)
-              }
+              onClick={() => setCompleted(!completed)}
               className={`
                 w-11
                 h-6
                 rounded-full
                 transition
                 relative
-                ${
-                  completed
-                    ? "bg-blue-600"
-                    : "bg-slate-600"
-                }
+                ${completed ? "bg-blue-600" : "bg-slate-600"}
               `}
             >
-
               <span
                 className={`
                   absolute
@@ -757,27 +647,19 @@ function handleDelete() {
                   rounded-full
                   bg-white
                   transition
-                  ${
-                    completed
-                      ? "translate-x-5"
-                      : ""
-                  }
+                  ${completed ? "translate-x-5" : ""}
                 `}
               />
-
             </button>
-
           </div>
-
 
           {/* ACTIONS */}
 
           <div className="flex justify-between items-center pt-8 border-t border-slate-700">
-
-        {!isCreatingTask && task && (
-          <button
-            onClick={() => setShowDeleteModal(true)}
-            className="
+            {!isCreatingTask && task && (
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="
               px-4
               py-2
               rounded-lg
@@ -791,14 +673,12 @@ function handleDelete() {
               transition
               font-medium
             "
-          >
-            Delete
-          </button>
-        )}
-
+              >
+                Delete
+              </button>
+            )}
 
             <div className="flex gap-3 ml-auto">
-
               <button
                 onClick={() => {
                   setSelectedTask(null);
@@ -816,7 +696,6 @@ function handleDelete() {
                 Cancel
               </button>
 
-
               <button
                 onClick={handleSave}
                 className="
@@ -831,49 +710,32 @@ function handleDelete() {
               >
                 Save
               </button>
-
             </div>
-
           </div>
-
         </div>
-
       </div>
-
 
       {/* DELETE MODAL */}
 
       {showDeleteModal && (
-
         <Modal
           title="Delete task"
           message="This action cannot be undone."
           confirmText="Delete"
           cancelText="Cancel"
-
-          onCancel={() =>
-            setShowDeleteModal(false)
-          }
-
+          onCancel={() => setShowDeleteModal(false)}
           onConfirm={handleDelete}
         />
-
       )}
-
 
       {/* TAG MODAL */}
 
       {showTagModal && (
-
         <TagModal
-          onClose={() =>
-            setShowTagModal(false)
-          }
+          onClose={() => setShowTagModal(false)}
           onSave={handleCreateTag}
         />
-
       )}
-
     </>
   );
 }
