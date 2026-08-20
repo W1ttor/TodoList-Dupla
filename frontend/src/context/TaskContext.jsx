@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import mockTasks from "../data/tasks";
 import stickyNotes from "../data/stickyNotes";
+import { getTaskSection } from "../utils/taskUtils";
 
 const TaskContext = createContext();
 
@@ -219,42 +220,6 @@ export function TaskProvider({ children }) {
   }
 
   /* ==========================
-     TASK SECTION
-  ========================== */
-
-  function getTaskSection(dueDate) {
-    if (!dueDate) {
-      return "today";
-    }
-
-    const today = new Date();
-
-    today.setHours(0, 0, 0, 0);
-
-    const [year, month, day] = dueDate.split("-");
-
-    const taskDate = new Date(Number(year), Number(month) - 1, Number(day));
-
-    taskDate.setHours(0, 0, 0, 0);
-
-    const diffDays = Math.floor((taskDate - today) / (1000 * 60 * 60 * 24));
-
-    if (diffDays < 0) {
-      return "overdue";
-    }
-
-    if (diffDays === 0) {
-      return "today";
-    }
-
-    if (diffDays === 1) {
-      return "tomorrow";
-    }
-
-    return "week";
-  }
-
-  /* ==========================
      CREATE TASK
   ========================== */
 
@@ -262,7 +227,7 @@ export function TaskProvider({ children }) {
     const newTask = {
       id: Date.now(),
       ...taskData,
-      section: getTaskSection(taskData.dueDate),
+      section: getTaskSection(taskData),
     };
 
     setTasks((prev) => [...prev, newTask]);
@@ -295,7 +260,7 @@ export function TaskProvider({ children }) {
         task.id === taskData.id
           ? {
               ...taskData,
-              section: getTaskSection(taskData.dueDate),
+              section: getTaskSection(taskData),
             }
           : task,
       ),
@@ -378,14 +343,15 @@ export function TaskProvider({ children }) {
   ========================== */
 
   const counts = {
-    today: tasks.filter((task) => task.section === "today").length,
+    today: tasks.filter((task) => getTaskSection(task) === "today").length,
 
-    upcoming: tasks.filter(
-      (task) =>
-        task.section === "today" ||
-        task.section === "tomorrow" ||
-        task.section === "week",
-    ).length,
+    upcoming: tasks.filter((task) => {
+      const section = getTaskSection(task);
+
+      return (
+        section === "today" || section === "tomorrow" || section === "week"
+      );
+    }).length,
 
     calendar: 0,
 

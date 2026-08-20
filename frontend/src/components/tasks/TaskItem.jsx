@@ -3,9 +3,13 @@ import {
   CalendarDays,
   Clock,
   Check,
-  AlertTriangle
+  AlertTriangle,
+  RefreshCw,
+  Trash2
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import RescheduleModal from "./RescheduleModal";
+import Modal from "../layout/Modal";
 
 export default function TaskItem({
   task,
@@ -15,7 +19,7 @@ export default function TaskItem({
   onToggleSelect
 }) {
 
-  const { lists } = useTasks();
+  const { lists, updateTask, deleteTask } = useTasks();
 
   const currentList = lists.find(
     listItem => listItem.id === task.list
@@ -24,6 +28,14 @@ export default function TaskItem({
   const [currentTime, setCurrentTime] = useState(
     new Date()
   );
+
+  const [showRescheduleModal, setShowRescheduleModal] =
+  useState(false);
+
+  const [contextMenu, setContextMenu] = useState(null);
+
+  const [showDeleteModal, setShowDeleteModal] =
+    useState(false);
 
 
   /* ==========================
@@ -42,6 +54,97 @@ export default function TaskItem({
 
   }, []);
 
+  useEffect(() => {
+  function handleOtherTaskContextMenu(e) {
+    if (e.detail !== task.id) {
+      setContextMenu(null);
+    }
+  }
+
+  window.addEventListener(
+    "task-context-menu",
+    handleOtherTaskContextMenu
+  );
+
+  return () => {
+    window.removeEventListener(
+      "task-context-menu",
+      handleOtherTaskContextMenu
+    );
+  };
+}, [task.id]);
+
+  function handleOpenReschedule(e) {
+  e.stopPropagation();
+
+  setShowRescheduleModal(true);
+}
+
+function handleCloseReschedule() {
+  setShowRescheduleModal(false);
+}
+
+function handleReschedule(updatedTask) {
+  updateTask(updatedTask);
+
+  setShowRescheduleModal(false);
+}
+
+/* ==========================
+   MENU DE CONTEXTO
+========================== */
+
+function handleContextMenu(e) {
+  e.preventDefault();
+  e.stopPropagation();
+
+  window.dispatchEvent(
+    new CustomEvent("task-context-menu", {
+      detail: task.id
+    })
+  );
+
+  setContextMenu({
+    x: e.clientX,
+    y: e.clientY
+  });
+}
+
+/* ==========================
+   EXCLUIR TASK
+========================== */
+
+function handleOpenDeleteModal() {
+  setContextMenu(null);
+  setShowDeleteModal(true);
+}
+
+function handleCloseDeleteModal() {
+  setShowDeleteModal(false);
+}
+
+function handleDeleteTask() {
+  deleteTask(task.id);
+  setShowDeleteModal(false);
+}
+
+useEffect(() => {
+  function handleClickOutside() {
+    setContextMenu(null);
+  }
+
+  document.addEventListener(
+    "click",
+    handleClickOutside
+  );
+
+  return () => {
+    document.removeEventListener(
+      "click",
+      handleClickOutside
+    );
+  };
+}, []);
 
   /* ==========================
      PRIORIDADE
@@ -236,8 +339,9 @@ export default function TaskItem({
 
 
   return (
-
+    <>
     <div
+      onContextMenu={handleContextMenu}
       className={`
         bg-slate-800
         rounded-xl
@@ -467,6 +571,49 @@ export default function TaskItem({
       </div>
 
 
+
+      {/* REAGENDAR */}
+
+        {deadlineStatus === "overdue" && !task.completed && (
+  <button
+    type="button"
+    onClick={handleOpenReschedule}
+    className="
+      flex
+      items-center
+      gap-2
+      px-3
+      py-2
+      rounded-lg
+      text-xs
+      font-medium
+      text-cyan-400
+      bg-cyan-500/10
+      border
+      border-cyan-400/50
+      hover:bg-cyan-500/20
+      hover:border-cyan-400
+      hover:text-cyan-300
+      transition
+      duration-200
+      shrink-0
+      group
+    "
+  >
+    <RefreshCw
+      size={14}
+      strokeWidth={2}
+      className="
+        transition-transform
+        duration-500
+        group-hover:rotate-180
+      "
+    />
+
+    Reagendar
+  </button>
+)}
+
       {/* STATUS */}
 
       <span
@@ -508,5 +655,70 @@ export default function TaskItem({
 
     </div>
 
+    {contextMenu && (
+      <div
+        className="
+          fixed
+          z-50
+          min-w-[150px]
+          bg-slate-800
+          border
+          border-slate-600
+          rounded-lg
+          shadow-2xl
+          p-1
+        "
+        style={{
+          left: contextMenu.x,
+          top: contextMenu.y
+        }}
+        onClick={(e) => e.stopPropagation()}
+        onContextMenu={(e) => e.preventDefault()}
+      >
+        <button
+          type="button"
+          onClick={handleOpenDeleteModal}
+          className="
+            w-full
+            flex
+            items-center
+            gap-2
+            px-3
+            py-2
+            rounded-md
+            text-sm
+            text-red-400
+            hover:bg-red-500/10
+            hover:text-red-300
+            transition
+          "
+        >
+          <Trash2 size={15} />
+
+          Excluir
+        </button>
+      </div>
+    )}
+
+      {showRescheduleModal && (
+      <RescheduleModal
+        task={task}
+        onClose={handleCloseReschedule}
+        onSave={handleReschedule}
+      />
+    )}
+
+    {showDeleteModal && (
+      <Modal
+        title="Excluir tarefa"
+        message={`Deseja realmente excluir a tarefa "${task.title}"?`}
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        onConfirm={handleDeleteTask}
+        onCancel={handleCloseDeleteModal}
+      />
+    )}
+
+  </>
   );
 }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTasks } from "../../context/TaskContext";
 import TaskItem from "./TaskItem";
+import Modal from "../layout/Modal";
 import { Check, Trash2, ListChecks } from "lucide-react";
 
 export default function TagDashboard({
@@ -12,6 +13,8 @@ export default function TagDashboard({
   const { tasks, updateTask, deleteTask } = useTasks();
 
   const [selectedIds, setSelectedIds] = useState([]);
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   /* ==========================
      TASKS DA TAG
@@ -54,17 +57,21 @@ export default function TagDashboard({
      CONCLUIR SELECIONADAS
   ========================== */
 
-  function handleCompleteSelected() {
-    filteredTasks
-      .filter((task) => selectedIds.includes(task.id))
-      .forEach((task) => {
-        updateTask({
-          ...task,
-          completed: true,
-        });
-      });
+  function handleDeleteSelected() {
+    setShowDeleteModal(true);
+  }
+
+  function handleCloseDeleteModal() {
+    setShowDeleteModal(false);
+  }
+
+  function handleConfirmDeleteSelected() {
+    selectedIds.forEach((id) => {
+      deleteTask(id);
+    });
 
     setSelectedIds([]);
+    setShowDeleteModal(false);
   }
 
   /* ==========================
@@ -201,6 +208,18 @@ export default function TagDashboard({
           <p className="text-slate-400">Nenhuma tarefa com esta tag.</p>
         )}
       </div>
+
+        {showDeleteModal && (
+        <Modal
+          title="Excluir tarefas"
+          message={`Deseja realmente excluir ${selectedIds.length} tarefa(s) selecionada(s)?`}
+          confirmText="Excluir"
+          cancelText="Cancelar"
+          onConfirm={handleConfirmDeleteSelected}
+          onCancel={handleCloseDeleteModal}
+        />
+      )}
+
     </div>
   );
 }

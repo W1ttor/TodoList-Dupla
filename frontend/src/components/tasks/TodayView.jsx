@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useTasks } from "../../context/TaskContext";
 import TaskItem from "./TaskItem";
+import Modal from "../layout/Modal";
 import { Check, Trash2, ListChecks } from "lucide-react";
+
 
 export default function TodayView({
   title,
@@ -19,6 +21,8 @@ export default function TodayView({
   } = useTasks();
 
   const [selectedIds, setSelectedIds] = useState([]);
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   function handleToggleSelect(id) {
 
@@ -58,15 +62,22 @@ export default function TodayView({
 
   }
 
-  function handleDeleteSelected() {
+function handleDeleteSelected() {
+  setShowDeleteModal(true);
+}
 
-    selectedIds.forEach(id => {
-      deleteTask(id);
-    });
+function handleCloseDeleteModal() {
+  setShowDeleteModal(false);
+}
 
-    setSelectedIds([]);
+function handleConfirmDeleteSelected() {
+  selectedIds.forEach(id => {
+    deleteTask(id);
+  });
 
-  }
+  setSelectedIds([]);
+  setShowDeleteModal(false);
+}
 
   function handleCreateTask() {
 
@@ -238,6 +249,17 @@ export default function TodayView({
         )}
 
       </div>
+
+      {showDeleteModal && (
+  <Modal
+    title="Excluir tarefas"
+    message={`Deseja realmente excluir ${selectedIds.length} tarefa(s) selecionada(s)?`}
+    confirmText="Excluir"
+    cancelText="Cancelar"
+    onConfirm={handleConfirmDeleteSelected}
+    onCancel={handleCloseDeleteModal}
+  />
+)}
 
     </div>
   );

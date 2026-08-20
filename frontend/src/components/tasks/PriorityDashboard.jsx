@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTasks } from "../../context/TaskContext";
 import TaskItem from "./TaskItem";
+import Modal from "../layout/Modal";
 import { Check, Trash2, ListChecks } from "lucide-react";
 
 export default function PriorityDashboard({
@@ -17,6 +18,8 @@ export default function PriorityDashboard({
   } = useTasks();
 
   const [selectedIds, setSelectedIds] = useState([]);
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   /* ==========================
      TASKS DA PRIORIDADE
@@ -105,16 +108,22 @@ export default function PriorityDashboard({
   /* ==========================
      EXCLUIR SELECIONADAS
   ========================== */
+function handleDeleteSelected() {
+  setShowDeleteModal(true);
+}
 
-  function handleDeleteSelected() {
+function handleCloseDeleteModal() {
+  setShowDeleteModal(false);
+}
 
-    selectedIds.forEach(id => {
-      deleteTask(id);
-    });
+function handleConfirmDeleteSelected() {
+  selectedIds.forEach(id => {
+    deleteTask(id);
+  });
 
-    setSelectedIds([]);
-
-  }
+  setSelectedIds([]);
+  setShowDeleteModal(false);
+}
 
 
   /* ==========================
@@ -399,6 +408,18 @@ function handleCreateTask() {
         )}
 
       </div>
+
+
+      {showDeleteModal && (
+  <Modal
+    title="Excluir tarefas"
+    message={`Deseja realmente excluir ${selectedIds.length} tarefa(s) selecionada(s)?`}
+    confirmText="Excluir"
+    cancelText="Cancelar"
+    onConfirm={handleConfirmDeleteSelected}
+    onCancel={handleCloseDeleteModal}
+  />
+)}
 
     </div>
 
