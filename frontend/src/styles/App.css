@@ -10,7 +10,8 @@
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
-}
+} 
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
@@ -39,4 +40,26 @@
 
 .read-the-docs {
   color: #888;
+}
+
+
+@keyframes deadlineToastIn {
+  0% {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+
+  60% {
+    opacity: 1;
+    transform: translateY(-6px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-deadline-toast {
+  animation: deadlineToastIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }

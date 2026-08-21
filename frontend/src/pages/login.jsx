@@ -82,7 +82,6 @@ export default function Login() {
     // =========================
     // LOGIN
     // =========================
-    
     try {
   setLoading(true);
 
@@ -104,24 +103,29 @@ export default function Login() {
     throw new Error("Login inválido");
   }
 
-  //COLOQUEI RESPONSE EM VEZ DE JSON
+  
   const token = await response.text();
-
-  if (!token) {
-    throw new Error("JWT não retornado pelo backend");
-  }
 
   console.log("Token recebido:", token);
 
+  if (!token) {
+    throw new Error("Token não retornado pelo backend");
+  }
+
+  // salva token
   localStorage.setItem("token", token);
 
+  console.log("Redirecionando para /home...");
+
+  // redireciona pra pagina principal
   navigate("/home");
 
 } catch (err) {
-  showError("E-mail ou senha incorretos.");
+  console.error("Erro no login:", err);
+  showError("Erro ao realizar o login.");
 } finally {
   setLoading(false);
-};
+}}
 
   // =========================
   // JSX
@@ -237,5 +241,5 @@ export default function Login() {
 
       </div>
     </div>
-      );
-    }}; 
+  );
+}
